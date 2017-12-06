@@ -1,0 +1,77 @@
+6
+ --job-dir $OUTPUT_PATH \
+ --runtime-version 1.2 \
+ --package-path nmt/ \
+ --packages ./nmt/utils-0.0.1.tar.gz,./nmt/scripts-0.0.1.tar.gz \
+ --module-name nmt.nmt \
+ --region $REGION \
+
+Traceback (most recent call last): File "<string>", line 1, in <module> IOError: [Errno 2] No such file or directory: '/tmp/pip-juK8Y2-build/setup.py'
+Installation of package failed on try 1/2: Command '['pip', 'install', '--user', '--upgrade', '--force-reinstall', '--no-deps', u'utils-0.0.1.tar.gz']' returned non-zero exit status 1 Retrying ...
+
+7
+ --job-dir $OUTPUT_PATH \
+ --runtime-version 1.2 \
+ --packages ./nmt/utils-0.0.1.tar.gz,./nmt/scripts-0.0.1.tar.gz \
+ --module-name nmt.nmt \
+ --region $REGION \
+
+Traceback (most recent call last): File "<string>", line 1, in <module> IOError: [Errno 2] No such file or directory: '/tmp/pip-Qrjf29-build/setup.py'
+Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-Qrjf29-build/
+Installation of package failed on try 1/2: Command '['pip', 'install', '--user', '--upgrade', '--force-reinstall', '--no-deps', u'utils-0.0.1.tar.gz']' returned non-zero exit status 1 Retrying ...
+
+8
+ --job-dir $OUTPUT_PATH \
+ --runtime-version 1.2 \
+ --packages nmt-0.0.1.tar.gz \
+ --module-name nmt.nmt \
+ --region $REGION \
+
+Traceback (most recent call last): File "<string>", line 1, in <module> IOError: [Errno 2] No such file or directory: '/tmp/pip-ADapx8-build/setup.py'
+Installation of package failed on try 1/2: Command '['pip', 'install', '--user', '--upgrade', '--force-reinstall', '--no-deps', u'nmt-0.0.1.tar.gz']' returned non-zero exit status 1 Retrying ...
+
+9
+setup.py
+ --job-dir $OUTPUT_PATH \
+ --runtime-version 1.2 \
+ --package-path nmt \
+ --module-name nmt.nmt \
+ --region $REGION \
+
+EnvironmentError: Tensorflow version must >= 1.4.0
+
+10
+use tf1.2.1 (git checkout tf-1.2)
+setup.py
+ --job-dir $OUTPUT_PATH \
+ --runtime-version 1.2 \
+ --package-path nmt \
+ --module-name nmt.nmt \
+ --region $REGION \
+
+EnvironmentError: Tensorflow version must >= 1.2.1
+
+11
+use tf1.2.0 (git checkout 842c4358695b3da42927e85e7b963a579f8a3363)
+setup.py
+ --job-dir $OUTPUT_PATH \
+ --runtime-version 1.2 \
+ --package-path nmt \
+ --module-name nmt.nmt \
+ --region $REGION \
+
+NotFoundError: Error executing an HTTP request (HTTP response code 404, error code 0, error message '') when reading gs://ryuji-test1-mlengine/aplac_chat_11/log
+
+aplac_chat_171122_073122
+same as 11 above
+use tf1.2.0 (git checkout 842c4358695b3da42927e85e7b963a579f8a3363)
+setup.py
+ --job-dir $OUTPUT_PATH \
+ --runtime-version 1.2 \
+ --package-path nmt \
+ --module-name nmt.nmt \
+ --region $REGION \
+
+
+
+

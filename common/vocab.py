@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 special_tokens = ['<unk>', '<s>', '</s>', '<br>', '<sp>']
 
 def delimit_multi_char_text(text):

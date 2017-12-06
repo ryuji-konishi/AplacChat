@@ -1,6 +1,6 @@
+# -*- coding: utf-8 -*-
 import vocab
 import unittest
-
 
 class TestVocabUtils(unittest.TestCase):
     def setUp(self):
@@ -14,10 +14,10 @@ class TestVocabUtils(unittest.TestCase):
             vocab.delimit_multi_char_text("That isn't cat. That is a dog."), 
             ['That', "isn't", 'cat', '.', 'That', 'is', 'a', 'dog', '.'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("abcあいうdef"), 
+            vocab.delimit_multi_char_text(unicode("abcあいうdef")), 
             ['abc', 'あ', 'い', 'う', 'def'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("abc defあい　うえお"), 
+            vocab.delimit_multi_char_text(unicode("abc defあい　うえお")), 
             ['abc', 'def', 'あ', 'い', '　', 'う', 'え', 'お'])
         self.assertListEqual(
             vocab.delimit_multi_char_text("abc\ndef"), 
