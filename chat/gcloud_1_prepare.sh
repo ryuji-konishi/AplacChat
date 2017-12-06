@@ -17,26 +17,14 @@ REGION=asia-east1
 gsutil mb -l $REGION gs://$BUCKET_NAME
 
 # Upload files to the cloud storage.
-# The files are generated with HTMLParser in T450s, within the dropbox folder.
+# The files are in advance generated within generated folder.
 DATA_NAME="4_2316"
 LOCAL_DATA_PATH="generated/$DATA_NAME"
 REMOTE_DATA_PATH=gs://$BUCKET_NAME/data
 gsutil -m cp -r "$LOCAL_DATA_PATH/data/*" "$REMOTE_DATA_PATH"
 
-# Create setup.py file at the root.
-from setuptools import find_packages
-from setuptools import setup
-
-REQUIRED_PACKAGES = []
-
-setup(
-    name='nmt',
-    version='0.1',
-    install_requires=REQUIRED_PACKAGES,
-    packages=find_packages(),
-    include_package_data=True,
-    description='My APLaC chat application package.'
-)
+# Check uploaded files in storage
+# https://console.cloud.google.com/storage
 
 # Run the initial job
 JOB_NAME=job_$(date +"%y%m%d_%H%M%S")_$DATA_NAME
@@ -71,7 +59,7 @@ gcloud ml-engine jobs submit training $JOB_NAME \
  --tgt_max_len=200
 
 # Check Jobs
-https://console.cloud.google.com/mlengine/jobs
+# https://console.cloud.google.com/mlengine/jobs
 
 # Download files from Cloud Storage
 mkdir $LOCAL_DATA_PATH/model
