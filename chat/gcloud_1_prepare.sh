@@ -13,7 +13,7 @@ PROJECT_ID=ryuji-test1
 BUCKET_NAME=${PROJECT_ID}-mlengine
 REGION=asia-east1
 
-# Create a cloud storage.
+# Create a cloud storage if not exist.
 gsutil mb -l $REGION gs://$BUCKET_NAME
 
 # Upload files to the cloud storage.
