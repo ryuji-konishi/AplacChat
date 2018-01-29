@@ -13,13 +13,18 @@ HTML Parser is used to parse Japanese sentenses in HTML files and emit files tha
 
 The HTML files, that are fed into HTML Parser, are downloaded from APLaC site and saved locally as HTML (*.html) files. 
 
-[How to setup and run HTML Parser](README Setup HTML Parser.md)
+[How to setup and run HTML Parser](<README Setup HTML Parser.md>)
 
 ## Chat
 Chat is the component that plays the main role of the AplacChat project that is NMT Training and Inference. The running environment of this component changes depending on the project phases and the usage of this component.
+
 When the project is in the development phase and you test run it locally, your local computer (MacOS X) is used. Here both NMT Training and Inference are your main subject.
-[How to setup Chat on MacOS](README Setup Chat on MacOS.md)
+
+[How to setup Chat on MacOS](<README Setup Chat on MacOS.md>)
+
 The project phase moves on, when you want to train Chat, Google Cloud Platform (GCP) is used. You upload the Chat component to GCP and it runs on there.
+
 The final phase is inference. In this phase you upload the Chat component to Amazon Web Service (AWS) in which a Linux EC2 instance executes the inference part of Chat.
-[How to setup Chat on AWS EC2](README Setup Chat on AWS EC2.md)
+
+[How to setup Chat on AWS EC2](<README Setup Chat on AWS EC2.md>)
 
