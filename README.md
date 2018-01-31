@@ -26,7 +26,7 @@ When the project is in the development phase and you test run it locally, your l
 ### NMT Training
 The project phase moves on, when you want to train Chat, Google Cloud Platform (GCP) is used. This is the case where you want to run training intensively but your local machine is not sufficient as a resource, and thus you need a more powerful machine. You upload the Chat component to GCP and it runs on there.
 
-[How to setup Chat on AWS EC2](<README%20Setup%20Chat%20on%20AWS%20GCP.md>)
+[How to setup Chat on AWS EC2](<README%20Setup%20Chat%20on%20GCP.md>)
 
 ### NMT Inference
 The final phase is inference. In this phase you upload the Chat component to Amazon Web Service (AWS) in which a Linux EC2 instance executes the inference part of Chat.
