@@ -43,8 +43,8 @@ Now create a new bucket in GCS with the command below. Once created you don't ne
 gsutil mb -l $REGION gs://$BUCKET_NAME
 ```
 In this bucket, the following two folders will be created in the end.
-'data' - The folder containing input files. The files are placed directly under this folder and no sub-folders will be created.
-'model' - The folder containing the output. At every run a sub-folder with job name is created, and the all output is placed here.
+* 'data' - The folder containing input files. The files are placed directly under this folder and no sub-folders will be created.
+* 'model' - The folder containing the output. At every run a sub-folder with job name is created, and the all output is placed here.
 
 ## Upload the Input Files
 
