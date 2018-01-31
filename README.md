@@ -18,12 +18,15 @@ The HTML files, that are fed into HTML Parser, are downloaded from APLaC site an
 ## Chat
 Chat is the component that plays the main role of the AplacChat project that is NMT Training and Inference. The running environment of this component changes depending on the project phases and the usage of this component.
 
+* Local Development
 When the project is in the development phase and you test run it locally, your local computer (MacOS X) is used. Here both NMT Training and Inference are your main subject.
 
 [How to setup Chat on MacOS](<README%20Setup%20Chat%20on%20MacOS.md>)
 
-The project phase moves on, when you want to train Chat, Google Cloud Platform (GCP) is used. You upload the Chat component to GCP and it runs on there.
+* NMT Training
+The project phase moves on, when you want to train Chat, Google Cloud Platform (GCP) is used. This is the case where you want to run training intensively but your local machine is not sufficient as a resource, and thus you need a more powerful machine. You upload the Chat component to GCP and it runs on there.
 
+* NMT Inference
 The final phase is inference. In this phase you upload the Chat component to Amazon Web Service (AWS) in which a Linux EC2 instance executes the inference part of Chat.
 
 [How to setup Chat on AWS EC2](<README%20Setup%20Chat%20on%20AWS%20EC2.md>)

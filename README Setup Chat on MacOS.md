@@ -1,3 +1,5 @@
+# Setup Chat on MacOS
+
 ## Setup Environment (MacOS + Python 2)
 Python 2 is used because Google Cloud Machine Learning Engine doesn't support Python3 as of Dec.2017. Also Tensorflow version 1.2.0 is required because Google Cloud Platform doesn't support 1.4 as of Dec.2017.
 This environment is for both development and actual use of APLaC Chat training and inference. Follow the steps below to setup.
