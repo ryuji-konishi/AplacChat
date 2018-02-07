@@ -17,8 +17,11 @@ Here the running environment is MacOS.
 
 ## Preparation
 
-In your terminal, run the commands below before proceeding. Those symbols will be used in the later sections.
-
+In this section we are going to define several symbols as the shell script environment variables. Those symbols will be used in the later sections. The current terminal directory is set as below.
+```
+$ pwd
+/Users/ryuji/prg/aplac/chat
+```
 Assuming you already have a cloud project on GCP, and in this document it's named as 'ryuji-test1'.
 ```
 PROJECT_ID=ryuji-test1
@@ -31,7 +34,7 @@ Choose the GCP region where your program and GCS files are located.
 ```
 REGION=asia-east1
 ```
-Define a local older name where the input files are stored. During the training phase, you will want to try many different data sets and see how the training went on. So here we define a folder name where the input files of each training are stored.
+Define a local folder name where the input files are stored. During the training phase, you will want to try many different data sets and see how the training went on. So here we define a folder name where the input files of each training are stored.
 ```
 DATA_NAME="4_2316"
 ```
@@ -75,7 +78,7 @@ Now run the job.
 ```
 gcloud ml-engine jobs submit training $JOB_NAME \
  --job-dir $OUTPUT_PATH \
- --runtime-version 1.2 \
+ --runtime-version 1.4 \
  --package-path nmt \
  --module-name nmt.nmt \
  --region $REGION \
@@ -93,6 +96,7 @@ gcloud ml-engine jobs submit training $JOB_NAME \
  --num_units=128 \
  --dropout=0.2 \
  --metrics="bleu" \
+ --share_vocab=True \
  --src_max_len=200 \
  --tgt_max_len=200
 ```
@@ -122,7 +126,7 @@ sed -i -- "s/$S1/$S2/g" $HPARAMS
 ```
 
 ## Try Inference with the Resulted Data
-Start the inference web server with the training data you just downloaded.
+Start the inference web server locally with the training data you just downloaded.
 ```
 python run_infer_web.py --out_dir=$LOCAL_DATA_PATH/model
 ```

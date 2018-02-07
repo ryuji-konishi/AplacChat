@@ -20,6 +20,9 @@ from __future__ import print_function
 
 import tensorflow as tf
 
+# TODO(rzhao): Use tf.contrib.framework.nest once 1.3 is out.
+from tensorflow.python.util import nest
+
 from . import attention_model
 from . import model_helper
 from .utils import misc_utils as utils
@@ -38,7 +41,8 @@ class GNMTModel(attention_model.AttentionModel):
                source_vocab_table,
                target_vocab_table,
                reverse_target_vocab_table=None,
-               scope=None):
+               scope=None,
+               extra_args=None):
     super(GNMTModel, self).__init__(
         hparams=hparams,
         mode=mode,
@@ -46,7 +50,8 @@ class GNMTModel(attention_model.AttentionModel):
         source_vocab_table=source_vocab_table,
         target_vocab_table=target_vocab_table,
         reverse_target_vocab_table=reverse_target_vocab_table,
-        scope=scope)
+        scope=scope,
+        extra_args=extra_args)
 
   def _build_encoder(self, hparams):
     """Build a GNMT encoder."""
@@ -96,7 +101,8 @@ class GNMTModel(attention_model.AttentionModel):
           dropout=hparams.dropout,
           num_gpus=hparams.num_gpus,
           base_gpu=1,
-          mode=self.mode)
+          mode=self.mode,
+          single_cell_fn=self.single_cell_fn)
 
       # encoder_outputs: size [max_time, batch_size, num_units]
       #   when time_major = True
@@ -142,8 +148,8 @@ class GNMTModel(attention_model.AttentionModel):
     else:
       batch_size = self.batch_size
 
-    attention_mechanism = attention_model.create_attention_mechanism(
-        attention_option, num_units, memory, source_sequence_length)
+    attention_mechanism = self.attention_mechanism_fn(
+        attention_option, num_units, memory, source_sequence_length, self.mode)
 
     cell_list = model_helper._cell_list(  # pylint: disable=protected-access
         unit_type=hparams.unit_type,
@@ -153,7 +159,8 @@ class GNMTModel(attention_model.AttentionModel):
         forget_bias=hparams.forget_bias,
         dropout=hparams.dropout,
         num_gpus=hparams.num_gpus,
-        mode=self.mode)
+        mode=self.mode,
+        single_cell_fn=self.single_cell_fn)
 
     # Only wrap the bottom layer with the attention mechanism.
     attention_cell = cell_list.pop(0)
@@ -172,15 +179,22 @@ class GNMTModel(attention_model.AttentionModel):
     if attention_architecture == "gnmt":
       cell = GNMTAttentionMultiCell(
           attention_cell, cell_list)
+    elif attention_architecture == "gnmt_v2":
+      cell = GNMTAttentionMultiCell(
+          attention_cell, cell_list, use_new_attention=True)
     else:
       raise ValueError(
           "Unknown attention_architecture %s" % attention_architecture)
 
-    decoder_initial_state = tuple(
-        zs.clone(cell_state=es)
-        if isinstance(zs, tf.contrib.seq2seq.AttentionWrapperState) else es
-        for zs, es in zip(
-            cell.zero_state(batch_size, dtype), encoder_state))
+
+    if hparams.pass_hidden_state:
+      decoder_initial_state = tuple(
+          zs.clone(cell_state=es)
+          if isinstance(zs, tf.contrib.seq2seq.AttentionWrapperState) else es
+          for zs, es in zip(
+              cell.zero_state(batch_size, dtype), encoder_state))
+    else:
+      decoder_initial_state = cell.zero_state(batch_size, dtype)
 
     return cell, decoder_initial_state
 
@@ -194,19 +208,22 @@ class GNMTModel(attention_model.AttentionModel):
 class GNMTAttentionMultiCell(tf.nn.rnn_cell.MultiRNNCell):
   """A MultiCell with GNMT attention style."""
 
-  def __init__(self, attention_cell, cells):
+  def __init__(self, attention_cell, cells, use_new_attention=False):
     """Creates a GNMTAttentionMultiCell.
 
     Args:
       attention_cell: An instance of AttentionWrapper.
       cells: A list of RNNCell wrapped with AttentionInputWrapper.
+      use_new_attention: Whether to use the attention generated from current
+        step bottom layer's output. Default is False.
     """
     cells = [attention_cell] + cells
+    self.use_new_attention = use_new_attention
     super(GNMTAttentionMultiCell, self).__init__(cells, state_is_tuple=True)
 
   def __call__(self, inputs, state, scope=None):
     """Run the cell with bottom layer's attention copied to all upper layers."""
-    if not tf.contrib.framework.nest.is_sequence(state):
+    if not nest.is_sequence(state):
       raise ValueError(
           "Expected state to be a tuple of length %d, but received: %s"
           % (len(self.state_size), state))
@@ -229,8 +246,13 @@ class GNMTAttentionMultiCell(tf.nn.rnn_cell.MultiRNNCell):
           if not isinstance(cur_state, tf.contrib.rnn.LSTMStateTuple):
             raise TypeError("`state[{}]` must be a LSTMStateTuple".format(i))
 
-          cur_state = cur_state._replace(h=tf.concat(
-              [cur_state.h, attention_state.attention], 1))
+          if self.use_new_attention:
+            cur_state = cur_state._replace(h=tf.concat(
+                [cur_state.h, new_attention_state.attention], 1))
+          else:
+            cur_state = cur_state._replace(h=tf.concat(
+                [cur_state.h, attention_state.attention], 1))
+
           cur_inp, new_state = cell(cur_inp, cur_state)
           new_states.append(new_state)
 

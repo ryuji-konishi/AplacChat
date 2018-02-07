@@ -29,8 +29,9 @@ import tensorflow as tf
 
 
 def check_tensorflow_version():
-  if tf.__version__ < "1.2":
-    raise EnvironmentError("Tensorflow version must >= 1.2")
+  min_tf_version = "1.4.0"
+  if tf.__version__ < min_tf_version:
+    raise EnvironmentError("Tensorflow version must >= %s" % min_tf_version)
 
 
 def safe_exp(value):
@@ -60,7 +61,11 @@ def print_out(s, f=None, new_line=True):
       f.write(b"\n")
 
   # stdout
-  print(s.encode("utf-8"), end="", file=sys.stdout)
+  out_s = s.encode("utf-8")
+  if not isinstance(out_s, str):
+    out_s = out_s.decode("utf-8")
+  print(out_s, end="", file=sys.stdout)
+
   if new_line:
     sys.stdout.write("\n")
   sys.stdout.flush()
@@ -69,7 +74,7 @@ def print_out(s, f=None, new_line=True):
 def print_hparams(hparams, skip_patterns=None):
   """Print hparams, can skip keys based on pattern."""
   values = hparams.values()
-  for key in sorted(values.iterkeys()):
+  for key in sorted(values.keys()):
     if not skip_patterns or all(
         [skip_pattern not in key for skip_pattern in skip_patterns]):
       print_out("  %s=%s" % (key, str(values[key])))
@@ -80,7 +85,7 @@ def load_hparams(model_dir):
   hparams_file = os.path.join(model_dir, "hparams")
   if tf.gfile.Exists(hparams_file):
     print_out("# Loading hparams from %s" % hparams_file)
-    with codecs.getreader("utf-8")(tf.gfile.GFile(hparams_file, "r")) as f:
+    with codecs.getreader("utf-8")(tf.gfile.GFile(hparams_file, "rb")) as f:
       try:
         hparams_values = json.load(f)
         hparams = tf.contrib.training.HParams(**hparams_values)
@@ -92,14 +97,14 @@ def load_hparams(model_dir):
     return None
 
 
-def maybe_parse_standard_hparams(hparams, path_to_standard_hparams):
+def maybe_parse_standard_hparams(hparams, hparams_path):
   """Override hparams values with existing standard hparams config."""
-  if not path_to_standard_hparams:
+  if not hparams_path:
     return hparams
 
-  if tf.gfile.Exists(path_to_standard_hparams):
-    print_out("# Loading standard hparams from %s" % path_to_standard_hparams)
-    with tf.gfile.GFile(path_to_standard_hparams, "r") as f:
+  if tf.gfile.Exists(hparams_path):
+    print_out("# Loading standard hparams from %s" % hparams_path)
+    with tf.gfile.GFile(hparams_path, "r") as f:
       hparams.parse_json(f.read())
 
   return hparams
@@ -109,7 +114,7 @@ def save_hparams(out_dir, hparams):
   """Save hparams."""
   hparams_file = os.path.join(out_dir, "hparams")
   print_out("  saving hparams to %s" % hparams_file)
-  with codecs.getreader("utf-8")(tf.gfile.GFile(hparams_file, "w")) as f:
+  with codecs.getwriter("utf-8")(tf.gfile.GFile(hparams_file, "wb")) as f:
     f.write(hparams.to_json())
 
 
@@ -143,7 +148,7 @@ def format_text(words):
   if (not hasattr(words, "__len__") and  # for numpy array
       not isinstance(words, collections.Iterable)):
     words = [words]
-  return " ".join(words)
+  return b" ".join(words)
 
 
 def format_bpe_text(symbols, delimiter=b"@@"):
@@ -161,3 +166,9 @@ def format_bpe_text(symbols, delimiter=b"@@"):
       words.append(word)
       word = b""
   return b" ".join(words)
+
+
+def format_spm_text(symbols):
+  """Decode a text in SPM (https://github.com/google/sentencepiece) format."""
+  return u"".join(format_text(symbols).decode("utf-8").split()).replace(
+      u"\u2581", u" ").strip().encode("utf-8")

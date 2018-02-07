@@ -1,11 +1,12 @@
 # Setup Chat on Amazon Web Service EC2 Instance
+This section describes how to set up an EC2 instance on Amazon Web Service (AWS) and run the inference of Chat component.
 
 ## Create EC2 Instance
-Login to AWS console and create an EC2 instance.
+Login to [AWS console](https://aws.amazon.com) and create an EC2 instance.
 ### 1. Choose AMI
 Choose the following AMI from the list.
 
-**Amazon Linux AMI 2017.09.1 (HVM), SSD Volume Type**
+**Amazon Linux AMI 2017.09.1 (HVM), SSD Volume Type, 64 bit**
 
 | Field  | Value |
 | ------------- | ------------- |
@@ -38,7 +39,7 @@ ssh -i /path/to/your/keyfile ec2-user@your_public_dnsname_here
 ```
 Example
 ```
-ssh -i AWS/MacBookAir13.pem ec2-user@ec2-54-252-240-215.ap-southeast-2.compute.amazonaws.com
+ssh -i AWS/MacBookAir13.pem ec2-user@ec2-13-211-104-139.ap-southeast-2.compute.amazonaws.com
 ```
 
 ### 2. Install tools with root user

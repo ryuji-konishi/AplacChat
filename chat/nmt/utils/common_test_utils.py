@@ -25,13 +25,17 @@ from tensorflow.python.ops import lookup_ops
 
 from ..utils import iterator_utils
 
+
 def create_test_hparams(unit_type="lstm",
                         encoder_type="uni",
                         num_layers=4,
                         attention="",
                         attention_architecture=None,
                         use_residual=False,
-                        inference_indices=None):
+                        inference_indices=None,
+                        num_translations_per_input=1,
+                        beam_width=0,
+                        init_op="uniform"):
   """Create training and inference test hparams."""
   num_residual_layers = 0
   if use_residual:
@@ -48,20 +52,26 @@ def create_test_hparams(unit_type="lstm",
       encoder_type=encoder_type,
       num_residual_layers=num_residual_layers,
       time_major=True,
+      num_embeddings_partitions=0,
 
       # Attention mechanisms
       attention=attention,
       attention_architecture=attention_architecture,
+      pass_hidden_state=True,
 
       # Train
       optimizer="sgd",
+      init_op=init_op,
       init_weight=0.1,
       max_gradient_norm=5.0,
       max_emb_gradient_norm=None,
       learning_rate=1.0,
+      learning_rate_warmup_steps=0,
+      learning_rate_warmup_factor=1.0,
       start_decay_step=0,
       decay_factor=0.98,
       decay_steps=100,
+      learning_rate_decay_scheme="",
       colocate_gradients_with_ops=True,
       batch_size=128,
       num_buckets=5,
@@ -69,7 +79,9 @@ def create_test_hparams(unit_type="lstm",
       # Infer
       tgt_max_len_infer=100,
       infer_batch_size=32,
-      beam_width=0,
+      beam_width=beam_width,
+      length_penalty_weight=0.0,
+      num_translations_per_input=num_translations_per_input,
 
       # Misc
       forget_bias=0.0,
@@ -86,6 +98,7 @@ def create_test_hparams(unit_type="lstm",
       # For inference.py test
       source_reverse=False,
       bpe_delimiter="@@",
+      subword_option="bpe",
       src="src",
       tgt="tgt",
       src_max_len=400,
@@ -99,6 +112,7 @@ def create_test_hparams(unit_type="lstm",
 
 
 def create_test_iterator(hparams, mode):
+  """Create test iterator."""
   src_vocab_table = lookup_ops.index_table_from_tensor(
       tf.constant([hparams.eos, "a", "b", "c", "d"]))
   tgt_vocab_mapping = tf.constant([hparams.sos, hparams.eos, "a", "b", "c"])

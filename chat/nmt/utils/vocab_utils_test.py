@@ -34,15 +34,15 @@ class VocabUtilsTest(tf.test.TestCase):
     os.makedirs(vocab_dir)
     vocab_file = os.path.join(vocab_dir, "vocab_file")
     vocab = ["a", "b", "c"]
-    with codecs.getreader("utf-8")(tf.gfile.GFile(vocab_file, "w")) as f:
+    with codecs.getwriter("utf-8")(tf.gfile.GFile(vocab_file, "wb")) as f:
       for word in vocab:
         f.write("%s\n" % word)
 
     # Call vocab_utils
     out_dir = os.path.join(tf.test.get_temp_dir(), "out_dir")
     os.makedirs(out_dir)
-    vocab_size, new_vocab_file = vocab_utils.check_and_extract_vocab(
-        vocab_file, None, out_dir)
+    vocab_size, new_vocab_file = vocab_utils.check_vocab(
+        vocab_file, out_dir)
 
     # Assert: we expect the code to add  <unk>, <s>, </s> and
     # create a new vocab file

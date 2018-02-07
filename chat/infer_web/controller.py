@@ -1,28 +1,59 @@
 from common import vocab
 from infer_web import app
 from flask import request, json
-import nmt.utils.misc_utils as utils
+import nmt.nmt as nmt
 from nmt import inference
+import argparse
+import tensorflow as tf
 
+# FLAGS = None
 
-# Global variables.
+# nmt_parser = argparse.ArgumentParser()
+# nmt.add_arguments(nmt_parser)
+# FLAGS, unparsed = nmt_parser.parse_known_args()
+
+# FLAGS.out_dir="/Users/ryuji/tmp/aplac/model"
+# FLAGS.num_units=128
+# FLAGS.share_vocab=True
+
+# default_hparams = nmt.create_hparams(FLAGS)
+
+# # Load hparams.
+# hparams = nmt.create_or_load_hparams(
+# 	FLAGS.out_dir, default_hparams, FLAGS.hparams_path, save_hparams=False)
+
+# ckpt = tf.train.latest_checkpoint(FLAGS.out_dir)
+
+# infer_model = inference.inference_m(ckpt,
+# 	hparams,
+# 	scope=None)
+
 hparams = None
+ckpt = None
 infer_model = None
-model_dir = None
 
-def init(out_dir):
-	global hparams, infer_model, model_dir
-	model_dir = out_dir
+def init(FLAGS):
+	global hparams, ckpt, infer_model
+	FLAGS.num_units=128
+	FLAGS.share_vocab=True
+
+	default_hparams = nmt.create_hparams(FLAGS)
 	# Load hparams.
-	hparams = utils.load_hparams(out_dir)
-	infer_model = inference.inference_m(out_dir, hparams)
+	hparams = nmt.create_or_load_hparams(
+		FLAGS.out_dir, default_hparams, FLAGS.hparams_path, save_hparams=False)
+
+	ckpt = tf.train.latest_checkpoint(FLAGS.out_dir)
+
+	infer_model = inference.inference_m(ckpt,
+		hparams,
+		scope=None)
 
 def nmt_inter(inference_input):
 	buf_list = vocab.delimit_multi_char_text(inference_input)
 	inference_input = vocab.join_list_by_space(buf_list)
 	outputs = inference.single_worker_inference_m(
 		infer_model,
-		model_dir,
+		ckpt,
 		inference_input,
 		hparams)
 	result = ''

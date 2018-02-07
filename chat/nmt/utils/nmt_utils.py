@@ -16,50 +16,59 @@
 """Utility functions specifically for NMT."""
 from __future__ import print_function
 
+import codecs
 import time
-
+import numpy as np
 import tensorflow as tf
 
 from ..utils import evaluation_utils
 from ..utils import misc_utils as utils
 
-__all__ = ["decode_and_evaluate", "get_translation", "print_translation"]
+__all__ = ["decode_and_evaluate", "get_translation"]
 
 
 def decode_and_evaluate_m(name,
                         model,
                         sess,
                         metrics,
-                        bpe_delimiter,
+                        subword_option,
                         beam_width,
-                        tgt_eos):
-  """Decode a test set and compute a score according to the evaluation task."""
-
+                        tgt_eos,
+                        num_translations_per_input=1):
+  """Decode a test set and compute a score according to the evaluation task.
+    The modified version of decode_and_evaluate. The output is not saved into file
+    but returned to the caller.
+    Also evaluation is removed because it's not been used.
+  """
   start_time = time.time()
   num_sentences = 0
   result = []
+
+  num_translations_per_input = max(
+      min(num_translations_per_input, beam_width), 1)
   while True:
     try:
       nmt_outputs, _ = model.decode(sess)
+      if beam_width == 0:
+        nmt_outputs = np.expand_dims(nmt_outputs, 0)
 
-      if beam_width > 0:
-        # get the top translation.
-        nmt_outputs = nmt_outputs[0]
+      batch_size = nmt_outputs.shape[1]
+      num_sentences += batch_size
 
-      num_sentences += len(nmt_outputs)
-      for sent_id in range(len(nmt_outputs)):
-        translation = get_translation(
-            nmt_outputs,
-            sent_id,
-            tgt_eos=tgt_eos,
-            bpe_delimiter=bpe_delimiter)
-        result.append((translation + b'').decode("utf-8"))
+      for sent_id in range(batch_size):
+        for beam_id in range(num_translations_per_input):
+          translation = get_translation(
+              nmt_outputs[beam_id],
+              sent_id,
+              tgt_eos=tgt_eos,
+              subword_option=subword_option)
+          result.append((translation + b'').decode("utf-8"))
     except tf.errors.OutOfRangeError:
-      utils.print_time("  done, num sentences %d" % num_sentences,
-                        start_time)
+      utils.print_time(
+          "  done, num sentences %d, num translations per input %d" %
+          (num_sentences, num_translations_per_input), start_time)
       break
   return result
-
 
 def decode_and_evaluate(name,
                         model,
@@ -67,9 +76,10 @@ def decode_and_evaluate(name,
                         trans_file,
                         ref_file,
                         metrics,
-                        bpe_delimiter,
+                        subword_option,
                         beam_width,
                         tgt_eos,
+                        num_translations_per_input=1,
                         decode=True):
   """Decode a test set and compute a score according to the evaluation task."""
   # Decode
@@ -78,28 +88,33 @@ def decode_and_evaluate(name,
 
     start_time = time.time()
     num_sentences = 0
-    with tf.gfile.GFile(trans_file, mode="w") as trans_f:
+    with codecs.getwriter("utf-8")(
+        tf.gfile.GFile(trans_file, mode="wb")) as trans_f:
       trans_f.write("")  # Write empty string to ensure file is created.
 
+      num_translations_per_input = max(
+          min(num_translations_per_input, beam_width), 1)
       while True:
         try:
           nmt_outputs, _ = model.decode(sess)
+          if beam_width == 0:
+            nmt_outputs = np.expand_dims(nmt_outputs, 0)
 
-          if beam_width > 0:
-            # get the top translation.
-            nmt_outputs = nmt_outputs[0]
+          batch_size = nmt_outputs.shape[1]
+          num_sentences += batch_size
 
-          num_sentences += len(nmt_outputs)
-          for sent_id in range(len(nmt_outputs)):
-            translation = get_translation(
-                nmt_outputs,
-                sent_id,
-                tgt_eos=tgt_eos,
-                bpe_delimiter=bpe_delimiter)
-            trans_f.write("%s\n" % translation)
+          for sent_id in range(batch_size):
+            for beam_id in range(num_translations_per_input):
+              translation = get_translation(
+                  nmt_outputs[beam_id],
+                  sent_id,
+                  tgt_eos=tgt_eos,
+                  subword_option=subword_option)
+              trans_f.write((translation + b"\n").decode("utf-8"))
         except tf.errors.OutOfRangeError:
-          utils.print_time("  done, num sentences %d" % num_sentences,
-                           start_time)
+          utils.print_time(
+              "  done, num sentences %d, num translations per input %d" %
+              (num_sentences, num_translations_per_input), start_time)
           break
 
   # Evaluation
@@ -110,15 +125,16 @@ def decode_and_evaluate(name,
           ref_file,
           trans_file,
           metric,
-          bpe_delimiter=bpe_delimiter)
+          subword_option=subword_option)
       evaluation_scores[metric] = score
       utils.print_out("  %s %s: %.1f" % (metric, name, score))
 
   return evaluation_scores
 
 
-def get_translation(nmt_outputs, sent_id, tgt_eos, bpe_delimiter):
+def get_translation(nmt_outputs, sent_id, tgt_eos, subword_option):
   """Given batch decoding outputs, select a sentence and turn to text."""
+  if tgt_eos: tgt_eos = tgt_eos.encode("utf-8")
   # Select a sentence
   output = nmt_outputs[sent_id, :].tolist()
 
@@ -126,9 +142,11 @@ def get_translation(nmt_outputs, sent_id, tgt_eos, bpe_delimiter):
   if tgt_eos and tgt_eos in output:
     output = output[:output.index(tgt_eos)]
 
-  if not bpe_delimiter:
+  if subword_option == "bpe":  # BPE
+    translation = utils.format_bpe_text(output)
+  elif subword_option == "spm":  # SPM
+    translation = utils.format_spm_text(output)
+  else:
     translation = utils.format_text(output)
-  else:  # BPE
-    translation = utils.format_bpe_text(output, delimiter=bpe_delimiter)
 
   return translation
