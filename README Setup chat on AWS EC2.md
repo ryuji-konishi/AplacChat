@@ -39,7 +39,7 @@ ssh -i /path/to/your/keyfile ec2-user@your_public_dnsname_here
 ```
 Example
 ```
-ssh -i AWS/MacBookAir13.pem ec2-user@ec2-13-211-104-139.ap-southeast-2.compute.amazonaws.com
+ssh -i AWS/MacBookAir13.pem ec2-user@ec2-13-54-26-130.ap-southeast-2.compute.amazonaws.com
 ```
 
 ### 2. Install tools with root user
@@ -60,23 +60,23 @@ $ sudo su apps
 
 #### 1. Create virtualenv environment
 ```
-$ virtualenv --system-site-packages ~/prg/virtualenv/tf120py2
+$ virtualenv --system-site-packages ~/prg/virtualenv/tf140py2
 ```
 
 #### 2. Activate the environment
 Create an alias that activates the virtual environment.
 Open ~/.bashrc and add the following line.
 ```
-alias activate_tf120py2="source /home/apps/prg/virtualenv/tf120py2/bin/activate"
+alias activate_tf140py2="source /home/apps/prg/virtualenv/tf140py2/bin/activate"
 ```
 Re-open the terminal.
 ```
-$ activate_tf120py2
+$ activate_tf140py2
 ```
 
 #### 3. Install Tensorflow
 ```
-$ pip install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.2.0-cp27-none-linux_x86_64.whl
+$ pip install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.4.0-cp27-none-linux_x86_64.whl
 ```
 
 #### 4. Install Flask and Gunicorn
@@ -121,6 +121,7 @@ server {
 ```
 $ sudo /etc/rc.d/init.d/nginx start
 ```
+Now you can see 'hello world' top page when you access to your EC2 instance domain URL with web browser.
 
 ## Start APLaC Chat
 ### 1. Login with SSH and the apps user.
@@ -146,7 +147,7 @@ scp -i AWS/MacBookAir13.pem aplac.zip ec2-user@ec2-54-252-240-215.ap-southeast-2
 
 ### 4. Start aplac chat
 ```
-$ activate_tf120py2
+$ activate_tf140py2
 $ cd ~/prg/aplac/chat/
 $ gunicorn run_infer_web:app -b localhost:8000
 ```
