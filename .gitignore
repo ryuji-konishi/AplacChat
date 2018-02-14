@@ -1,3 +1,6 @@
+# vim cache file
+*.swp
+
 # MacOS Unused Files and Folders
 .DS_Store
 $/
