@@ -1,6 +1,6 @@
 from common import vocab
 from infer_web import app
-from flask import request, json
+from flask import request, json, jsonify
 import nmt.nmt as nmt
 from nmt import inference
 import argparse
@@ -67,13 +67,16 @@ def nmt_inter(inference_input):
 def index():
 	return "hello world"
 
-@app.route('/train', methods = ['POST'])
-def api_train():
+@app.route('/infer', methods = ['POST'])
+def api_infer():
 	contentType = request.headers['Content-Type']
 	if 'text/plain' in contentType:
 		input = request.data.decode('utf-8')
 		output = nmt_inter(input)
-		return "Text Message: " + output
+                print(output)
+		resp = jsonify(output)
+		resp.headers.add('Access-Control-Allow-Origin', '*')
+		return resp
 	elif 'application/json' in contentType:
 		return json.dumps(request.json)
 	elif 'application/octet-stream' in contentType:
