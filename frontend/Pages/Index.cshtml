@@ -6,6 +6,20 @@
 
 <div id="formula-form">
     <input type="text" id="formula-input" autocomplete="off" maxlength="100" placeholder="try 1 * (2 + 3)" />
-    <p>test</p>
+    <div class="alert alert-info" role="alert" id="show-hint" style="display: none"></div>
+    <div class="alert alert-warning" role="alert" id="show-message" style="display: none"></div>
 </div>
+
+<table class="table" id="calc-records">
+    <tbody id="calc-records-tbody"></tbody>
+</table>
+
+@section Scripts {
+    <script type="text/javascript">
+        $('body').css('padding-top', 160);
+        $(window).load(function () {
+            init();
+        });
+    </script>
+}
 

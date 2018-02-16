@@ -8,7 +8,7 @@ body {
   text-align: center;
   position: fixed;
   width: 100%;
-  background-color: #000;
+  background-color: #fff;
 }
 
 #formula-input {
@@ -27,7 +27,7 @@ body {
 }
 
 .formula-input-busy {
-  background: url(busy_icon.gif);
+  background: url(../images/busy_icon.gif);
   background-size: 50px 50px;
   background-repeat: no-repeat;
   background-position: left;
