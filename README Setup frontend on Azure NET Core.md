@@ -21,9 +21,27 @@ Add the bundler minifier NuGet package which is required to generate .min.css an
 ```
 dotnet add package BuildBundlerMinifier
 ```
-To set the build mode (Release/Debug), set an environment variable below but this is only eligible when you run the project with ```dotnet run``` command.
+To set the build mode (Release/Debug), set an environment variable below but this is only eligible when you run the project with `dotnet run` command.
 ```
 export ASPNETCORE_ENVIRONMENT=Development
 ```
 Note when you debug the code with Visual Studio Code, the build mode is automatically set to 'Development'.
+
+### Visual Studio Code Configuration
+To change the default launch URL, modify `.vscode/launch.json` by adding an environment variable into `env` element as below.
+```
+  "env": {
+    "ASPNETCORE_ENVIRONMENT": "Development",
+    "ASPNETCORE_URLS": "http://localhost:5051"
+  },
+```
+The launch URL for web browsers can also be set in `launchBrowser` element, for Google Chrome
+```
+  "osx": {
+    "command": "open",
+    "args": "-a /Applications/\"Google Chrome.app\" --args ${auto-detect-url}"
+  },
+```
+
+
 
