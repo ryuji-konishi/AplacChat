@@ -18,6 +18,17 @@ var init = function(form, records) {
 	input.focus();
 }
 
+var initLayout = function(body, form, records) {
+	var totalHeight = body.height()
+	var formHeight = form.height()
+	// Set the height of records div based on the total height (HTML body)
+	// and the form div where the form div height is constant.
+	// This work is required to make the records div scrollable. To make div
+	// scrollable its height needs to be explicitly set while 'overflow' is
+	// set to 'auto' in CSS.
+	records.height(totalHeight - formHeight)
+}
+
 var submitChat = function(form, records) {
     var input = form.find('#chat-input')
 	var text = input.val();

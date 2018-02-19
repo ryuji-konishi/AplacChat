@@ -27,9 +27,11 @@
         <div class="alert alert-warning" role="alert" id="show-message" style="display: none"></div>
     </div>
 
-    <table class="table" id="chat-records">
-        <tbody></tbody>
-    </table>
+    <div id="chat-records">
+        <table class="table">
+            <tbody></tbody>
+        </table>
+    </div>
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -53,6 +55,7 @@
     </environment>
     <script type="text/javascript">
         $(window).load(function () {
+            initLayout($('body'), $('#chat-form'), $('#chat-records'));
             init($('#chat-form'), $('#chat-records'));
         });
     </script>
