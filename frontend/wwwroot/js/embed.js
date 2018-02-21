@@ -1,4 +1,7 @@
-var init = function(divForm, divScroll, divRecords) {
+var urlChatInferAddress;		// Chat inference request URL given by environment configuration.
+
+var init = function(chatInferAddress, divForm, divScroll, divRecords) {
+	urlChatInferAddress = chatInferAddress;
     var input = divForm.find('#chat-input')
 	input.keypress(function(e) {
 		var code = (e.keyCode ? e.keyCode : e.which);
@@ -44,7 +47,7 @@ var submitChat = function(divForm, divScroll, divRecords) {
 	appendChatSend(divScroll, divRecords, text)
 	showBusyImage(divForm);
 	$.ajax({
-		url : "http://localhost:5000/infer",
+		url : urlChatInferAddress,
 		type : "POST",
         dataType : "json",
         contentType : "text/plain",

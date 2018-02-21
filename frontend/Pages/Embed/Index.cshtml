@@ -55,7 +55,7 @@
     <script type="text/javascript">
         $(window).load(function () {
             initLayout($('body'), $('#chat-form'), $('#chat-scroll'));
-            init($('#chat-form'), $('#chat-scroll'), $('#chat-records'));
+            init("@Model.ChatInferURL", $('#chat-form'), $('#chat-scroll'), $('#chat-records'));
         });
     </script>
 </body>
