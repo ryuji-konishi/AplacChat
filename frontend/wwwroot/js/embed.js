@@ -35,6 +35,7 @@ var submitChat = function(form, records) {
 	text = text.trim();
 	if (text == '')
 		return;
+	appendMessage(records, text, 'chat-msg-send')
 	input.attr("placeholder", "");
 	showBusyImage(form);
 	$.ajax({
@@ -47,7 +48,7 @@ var submitChat = function(form, records) {
 			if (resp != null) {
                 hideMessage(form);
                 input.val('');
-                populateList(records, resp);
+				appendMessage(records, resp, 'chat-msg-receive')
 			}
 			else {
 				showMessage(form, "<strong>Sorry!</strong> Internal error happened.");
@@ -61,15 +62,15 @@ var submitChat = function(form, records) {
 	});
 }
 
-var populateList = function(records, text) {
-    var tableBody = records.find('tbody')
-    // prepend the current HTML content so that the latest text comes at top.
-    var current = tableBody.html();
-    var newText = ''
-    newText += '<tr>';
-    newText += '<td><blockquote>' + text + '</blockquote></td>'
-    newText += '</tr>';
-    tableBody.html(newText + current);
+var appendMessage = function(records, text, className) {
+    // Append to the current HTML content so that the latest text comes at bottom.
+    var current = records.html();
+    var newMsg = '<div class="' + className + '">';
+    newMsg += text
+    newMsg += '</div>';
+	records.html(current + newMsg);
+	
+	// records.animate({ scrollTop: $(document).height() }, 1000)
 }
 
 var showMessage = function(form, message) {
@@ -88,3 +89,4 @@ var showBusyImage = function(form) {
 var hideBusyImage = function(form) {
 	form.find('#chat-input').removeClass('chat-input-busy');
 }
+
