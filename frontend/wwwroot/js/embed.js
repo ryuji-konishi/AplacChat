@@ -18,15 +18,21 @@ var init = function(form, scroll, records) {
 	input.focus();
 }
 
-var initLayout = function(body, form, records) {
+var initLayout = function(body, form, scroll) {
 	var totalHeight = body.height()
 	var formHeight = form.height()
-	// Set the height of records div based on the total height (HTML body)
+	// Set the height of scroll div based on the total height (HTML body)
 	// and the form div where the form div height is constant.
-	// This work is required to make the records div scrollable. To make div
+	// This work is required to make the scroll div scrollable. To make div
 	// scrollable its height needs to be explicitly set while 'overflow' is
 	// set to 'auto' in CSS.
-	records.height(totalHeight - formHeight)
+	var h = totalHeight - formHeight;
+	scroll.height(h)
+	// Setting 'max-height' is not for scroll div but its child div.
+	// The child div's max-height is set to 'inherit' so eventually
+	// the child div inherits the same value in max-height.
+	// By setting a distinct height, the child div can be aligned at bottom.
+	scroll.css('max-height', h)
 }
 
 var submitChat = function(form, scroll, records) {
@@ -35,7 +41,7 @@ var submitChat = function(form, scroll, records) {
 	text = text.trim();
 	if (text == '')
 		return;
-	appendMessage(scroll, records, text, 'chat-msg-send')
+	appendChatSend(scroll, records, text)
 	input.attr("placeholder", "");
 	showBusyImage(form);
 	$.ajax({
@@ -48,7 +54,7 @@ var submitChat = function(form, scroll, records) {
 			if (resp != null) {
                 hideMessage(form);
                 input.val('');
-				appendMessage(scroll, records, resp, 'chat-msg-receive')
+				appendChatReceive(scroll, records, resp)
 			}
 			else {
 				showMessage(form, "<strong>Sorry!</strong> Internal error happened.");
@@ -62,17 +68,34 @@ var submitChat = function(form, scroll, records) {
 	});
 }
 
-var appendMessage = function(scroll, records, text, className) {
+var appendChatSend = function(scroll, records, text) {
+	appendChatText(scroll, records, text, 'chat-send-record', 'chat-send-decorate');
+}
+
+var appendChatReceive = function(scroll, records, text) {
+	appendChatText(scroll, records, text, 'chat-receive-record', 'chat-receive-decorate');
+}
+
+var appendChatText = function(scroll, records, text, classNameRec, classNameDec) {
     // Append to the current HTML content so that the latest text comes at bottom.
-    var current = records.html();
-    var newMsg = '<div class="' + className + '">';
-    newMsg += text
-    newMsg += '</div>';
-	records.html(current + newMsg);
+	var htm = records.html();	// Current HTML content.
 	
-	// records.animate({ scrollTop: $(document).height() }, 1000)
-	scroll.scrollTop(scroll.height())
-	// $('#chat-records').scrollTop($('#chat-records').height())
+	// Decorate div. This div contains the text and style formatted.
+    var decDiv = '<div class="' + classNameDec + '">';
+    decDiv += text
+	decDiv += '</div>';
+	
+	// Outer div. This div piles up the div layer as records.
+	// Its content is horizontally aligned.
+	var outDiv = '<div class="' + classNameRec + '">';
+	outDiv += decDiv;
+	outDiv += '</div>';
+
+	records.html(htm + outDiv);
+	
+	// Scroll down the div section to the bottom so that the last record
+	// is shown at the bottom.
+	scroll.scrollTop(Number.MAX_SAFE_INTEGER)
 }
 
 var showMessage = function(form, message) {

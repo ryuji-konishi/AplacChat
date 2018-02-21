@@ -29,7 +29,9 @@ html, body {
 }
 
 #chat-records {
-  height: 100%;
+  /* height: auto; */
+  max-height: inherit;
+  width: 100%;
   position: absolute;
   bottom: 0;
 }
@@ -41,24 +43,36 @@ html, body {
   background-position: left;
 }
 
-.chat-msg-send {
+.chat-send-record {
+  width: 100%;
+  padding-left: 100px;
+  text-align: right;
+}
+
+.chat-receive-record {
+  width: 100%;
+  padding-right: 100px;
+  text-align: left;
+}
+
+.chat-send-decorate {
   border: 2px solid red;
   border-radius: 10px;
   background-color: aquamarine;
   margin: 10px;
   padding: 10px;
-  margin-left: 30%;
   word-wrap: break-word;
   min-width: 100px;
+  display: inline-block;
 }
 
-.chat-msg-receive {
+.chat-receive-decorate {
   border: 2px solid blue;
   border-radius: 10px;
   background-color: blanchedalmond;
   margin: 10px;
   padding: 10px;
-  margin-right: 30%;
   word-wrap: break-word;
   min-width: 100px;
+  display: inline-block;
 }
