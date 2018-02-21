@@ -23,7 +23,6 @@
   },
   {
     "outputFileName": "wwwroot/css/embed.min.css",
-    // An array of relative input file paths. Globbing patterns supported
     "inputFiles": [
       "wwwroot/css/embed.css"
     ]
@@ -33,12 +32,33 @@
     "inputFiles": [
       "wwwroot/js/embed.js"
     ],
-    // Optionally specify minification options
     "minify": {
       "enabled": true,
       "renameLocals": true
     },
-    // Optionally generate .map file
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/css/pe-icon-7-stroke.min.css",
+    "inputFiles": [
+      "wwwroot/css/pe-icon-7-stroke.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/ct-navbar.min.css",
+    "inputFiles": [
+      "wwwroot/css/ct-navbar.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/ct-navbar.min.js",
+    "inputFiles": [
+      "wwwroot/js/ct-navbar.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
     "sourceMap": false
   }
 ]
