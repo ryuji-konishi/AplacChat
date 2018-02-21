@@ -22,14 +22,17 @@ html, body {
 }
 
 #chat-scroll {
-  overflow: auto;
   font-size:14pt;
   font-family: monospace;
+  /* Show verticall scroll bar when the size exceeds the hight. The height
+  is dynamically set in javascript because this div's height is variable
+  while input form's height is constant. */
+  overflow: auto;
+  /* Make the child div align at bottom. */
   position: relative;
 }
 
 #chat-records {
-  /* height: auto; */
   max-height: inherit;
   width: 100%;
   position: absolute;
@@ -55,10 +58,9 @@ html, body {
   text-align: left;
 }
 
-.chat-send-decorate {
-  border: 2px solid red;
+.chat-send-decorate, .chat-receive-decorate  {
+  border: none;
   border-radius: 10px;
-  background-color: aquamarine;
   margin: 10px;
   padding: 10px;
   word-wrap: break-word;
@@ -66,13 +68,9 @@ html, body {
   display: inline-block;
 }
 
+.chat-send-decorate {
+  background-color: aquamarine;
+}
 .chat-receive-decorate {
-  border: 2px solid blue;
-  border-radius: 10px;
   background-color: blanchedalmond;
-  margin: 10px;
-  padding: 10px;
-  word-wrap: break-word;
-  min-width: 100px;
-  display: inline-block;
 }
