@@ -21,11 +21,17 @@ html, body {
   margin: 10px;
 }
 
-#chat-records {
-  height: 100%;
+#chat-scroll {
   overflow: auto;
   font-size:14pt;
   font-family: monospace;
+  position: relative;
+}
+
+#chat-records {
+  height: 100%;
+  position: absolute;
+  bottom: 0;
 }
 
 .chat-input-busy {
@@ -43,6 +49,7 @@ html, body {
   padding: 10px;
   margin-left: 30%;
   word-wrap: break-word;
+  min-width: 100px;
 }
 
 .chat-msg-receive {
@@ -53,4 +60,5 @@ html, body {
   padding: 10px;
   margin-right: 30%;
   word-wrap: break-word;
+  min-width: 100px;
 }

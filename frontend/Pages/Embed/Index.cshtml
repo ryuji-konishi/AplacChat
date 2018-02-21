@@ -22,7 +22,8 @@
 
 </head>
 <body>
-    <div id="chat-records">
+    <div id="chat-scroll">
+        <div id="chat-records"></div>
     </div>
 
     <div id="chat-form">
@@ -52,8 +53,8 @@
     </environment>
     <script type="text/javascript">
         $(window).load(function () {
-            initLayout($('body'), $('#chat-form'), $('#chat-records'));
-            init($('#chat-form'), $('#chat-records'));
+            initLayout($('body'), $('#chat-form'), $('#chat-scroll'));
+            init($('#chat-form'), $('#chat-scroll'), $('#chat-records'));
         });
     </script>
 </body>

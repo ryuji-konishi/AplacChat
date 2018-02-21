@@ -1,4 +1,4 @@
-var init = function(form, records) {
+var init = function(form, scroll, records) {
     var input = form.find('#chat-input')
 	input.keypress(function(e) {
 		var code = (e.keyCode ? e.keyCode : e.which);
@@ -11,7 +11,7 @@ var init = function(form, records) {
 		switch (code) {
 		case 13:	// enter
 			e.preventDefault();
-            submitChat(form, records);
+            submitChat(form, scroll, records);
 			break;
 		}
 	});
@@ -29,13 +29,13 @@ var initLayout = function(body, form, records) {
 	records.height(totalHeight - formHeight)
 }
 
-var submitChat = function(form, records) {
+var submitChat = function(form, scroll, records) {
     var input = form.find('#chat-input')
 	var text = input.val();
 	text = text.trim();
 	if (text == '')
 		return;
-	appendMessage(records, text, 'chat-msg-send')
+	appendMessage(scroll, records, text, 'chat-msg-send')
 	input.attr("placeholder", "");
 	showBusyImage(form);
 	$.ajax({
@@ -48,7 +48,7 @@ var submitChat = function(form, records) {
 			if (resp != null) {
                 hideMessage(form);
                 input.val('');
-				appendMessage(records, resp, 'chat-msg-receive')
+				appendMessage(scroll, records, resp, 'chat-msg-receive')
 			}
 			else {
 				showMessage(form, "<strong>Sorry!</strong> Internal error happened.");
@@ -62,7 +62,7 @@ var submitChat = function(form, records) {
 	});
 }
 
-var appendMessage = function(records, text, className) {
+var appendMessage = function(scroll, records, text, className) {
     // Append to the current HTML content so that the latest text comes at bottom.
     var current = records.html();
     var newMsg = '<div class="' + className + '">';
@@ -71,6 +71,8 @@ var appendMessage = function(records, text, className) {
 	records.html(current + newMsg);
 	
 	// records.animate({ scrollTop: $(document).height() }, 1000)
+	scroll.scrollTop(scroll.height())
+	// $('#chat-records').scrollTop($('#chat-records').height())
 }
 
 var showMessage = function(form, message) {
