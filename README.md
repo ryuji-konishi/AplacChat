@@ -45,4 +45,4 @@ The final phase is inference. In this phase you upload the Chat component to Ama
 ## Front-End Web Page
 Front-End is a web page that accepts the text the user types in, sends the text to the Chat component and shows the translation that is the result of NMT Inference.
 
-[How to setup Front-End on Azure NET Core](<README%20Setup%20frontend%20on%20Azure%20NET%20Core.md>)
+[How to setup Front-End on Linux](<README%20Setup%20frontend%20on%20Linux.md>)
