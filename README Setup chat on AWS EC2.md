@@ -48,7 +48,9 @@ $ sudo easy_install pip
 $ pip install --upgrade virtualenv
 $ sudo yum install nginx
 $ sudo yum install git
+$ sudo yum install tmux
 ```
+```tmux``` is used to run the web server in a separate session so that it keeps alive after exiting from ssh terminal.
 
 ### 3. Create a new user
 ```
@@ -56,7 +58,7 @@ $ sudo /usr/sbin/useradd apps
 $ sudo su apps
 ```
 
-### 4. Install tools into the user's virtual environment
+### 4. Setup user's virtual environment
 
 #### 1. Create virtualenv environment
 ```
@@ -85,7 +87,17 @@ $ pip install flask
 $ pip install gunicorn
 ```
 
-#### 5. Get back to the root user
+#### 5. Create the application directory
+Place ```~/prg/aplac``` folder either by directly downloading with ```git clone``` or uploading folder from your local machine to the instance.
+```
+$ cd ~/prg
+$ git clone https://github.com/ryuji-konishi/AplacChat.git aplac
+```
+```
+scp -i AWS/MacBookAir13.pem aplac.zip ec2-user@<your AWS EC2 Instance>:~/prg
+```
+
+#### 6. Get back to the root user
 ```
 $ exit
 ```
@@ -124,38 +136,41 @@ $ sudo /etc/rc.d/init.d/nginx start
 Now you can see 'hello world' top page when you access to your EC2 instance domain URL with web browser.
 
 ## Start APLaC Chat
-### 1. Login with SSH and the apps user.
+### 1. Login with SSH and start a new session on tumx
+```
+$ tmux new -s chat
+```
+
+### 2. Start aplac chat with gunicorn
 ```
 $ sudo su apps
-```
-
-### 2. Create the application directory
-```
-$ cd ~/prg
-$ mkdir aplac
-```
-
-or clone from github
-```
-$ git clone https://github.com/ryuji-konishi/AplacChat.git aplac
-```
-
-### 3. Upload the aplac code
-```
-scp -i AWS/MacBookAir13.pem aplac.zip ec2-user@ec2-54-252-240-215.ap-southeast-2.compute.amazonaws.com:~/.
-```
-
-### 4. Start aplac chat
-```
 $ activate_tf140py2
 $ cd ~/prg/aplac/chat/
 $ gunicorn run_infer_web:app -b localhost:8000
 ```
 
-## How to run
+### 4. Detach tmux
+Type Ctrl+b and then d.
+
+
+Now you can exit from ssh terminal. We use tmux here so that the web server keeps running after closing the ssh terminal.
+
+## Manage APLaC Chat
+The following commands are useful when you manage the web server process and tmux session.
+
+### tmux
+List sessions: ```tmux list-sessions```
+Reattach to session: ```tmux attach -t chat```
+
+### gunicorn
+Check if gunicorn running: ```ps ax|grep gunicorn```
+Stop gunicorn: ```sudo pkill gunicorn```
+
+
+## How to use Chat
 Send a POST http request to the following URL that returns the inferred text result.
 
-http://ec2-54-252-240-215.ap-southeast-2.compute.amazonaws.com/train
+http://<your AWS EC2 Instance>/infer
 
 ### The configurations for Postman
 
@@ -187,6 +202,8 @@ $ sudo vi /etc/nginx/conf.d/virtual.conf
 ```
 $ sudo /etc/rc.d/init.d/nginx restart
 ```
+
+Note you also need to change the URL in the front-end web page.
 
 ## Reference
 https://www.matthealy.com.au/blog/post/deploying-flask-to-amazon-web-services-ec2/
