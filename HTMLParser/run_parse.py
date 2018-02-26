@@ -12,14 +12,20 @@ html_folder = "C:\\Tmp\\aplac\\html"
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 export_dir = os.path.join(current_dir, 'export')
-vocab_file = os.path.join(current_dir, 'vocab.src')
+vocab_file = os.path.join(export_dir, 'vocab.src')
 if not os.path.exists(export_dir): os.makedirs(export_dir)
+
+print ("The input directory is", html_folder)
+print ("The output directory is", export_dir)
 
 vocab = ds.VocabStore(vocab_file)
 result_store = ds.ParseResultStore(vocab)
+
+print ("Searching HTML files in the input directory...")
 files = file_utils.get_filelist_in_path("html", html_folder, False)
 # Parse the files and store the result into data store
 for f in files:
+    print ("Processing file", f)
     file_content = file_utils.read_file_any_encoding(f)
 
     # 1st, process the data with Atomic Parser
@@ -35,5 +41,8 @@ for f in files:
     parser.parse(file_content)
 
 # Export the parsed data into file
+print ("Exporting the result...")
 result_store.export_to_file(export_dir)
 vocab.save_to_file()
+
+print ("Finished.")
