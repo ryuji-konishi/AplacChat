@@ -33,13 +33,8 @@ chmod 400 keypairfile.pem
 ## Setup Environment
 
 ### 1. Connect to the EC2 instance with SSH
-'ssh' command format
 ```
 ssh -i /path/to/your/keyfile ec2-user@your_public_dnsname_here
-```
-Example
-```
-ssh -i AWS/MacBookAir13.pem ec2-user@ec2-13-54-26-130.ap-southeast-2.compute.amazonaws.com
 ```
 
 ### 2. Install tools with root user
@@ -94,7 +89,7 @@ $ cd ~/prg
 $ git clone https://github.com/ryuji-konishi/AplacChat.git aplac
 ```
 ```
-scp -i AWS/MacBookAir13.pem aplac.zip ec2-user@<your AWS EC2 Instance>:~/prg
+scp -i AWS/MacBookAir13.pem aplac.zip ec2-user@your_public_dnsname_here:~/prg
 ```
 
 #### 6. Get back to the root user
@@ -136,6 +131,8 @@ $ sudo /etc/rc.d/init.d/nginx start
 Now you can see 'hello world' top page when you access to your EC2 instance domain URL with web browser.
 
 ## Start APLaC Chat
+We use tmux here so that the web server keeps running after closing the ssh terminal.
+
 ### 1. Login with SSH and start a new session on tumx
 ```
 $ tmux new -s chat
@@ -153,24 +150,23 @@ $ gunicorn run_infer_web:app -b localhost:8000
 Type Ctrl+b and then d.
 
 
-Now you can exit from ssh terminal. We use tmux here so that the web server keeps running after closing the ssh terminal.
+Now you can exit from ssh terminal.
 
 ## Manage APLaC Chat
 The following commands are useful when you manage the web server process and tmux session.
 
 ### tmux
-List sessions: ```tmux list-sessions```
-Reattach to session: ```tmux attach -t chat```
+- List sessions: ```tmux list-sessions```
+- Reattach to session: ```tmux attach -t chat```
 
 ### gunicorn
-Check if gunicorn running: ```ps ax|grep gunicorn```
-Stop gunicorn: ```sudo pkill gunicorn```
-
+- Check if gunicorn running: ```ps ax|grep gunicorn```
+- Stop gunicorn: ```sudo pkill gunicorn```
 
 ## How to use Chat
 Send a POST http request to the following URL that returns the inferred text result.
 
-http://<your AWS EC2 Instance>/infer
+http://your_public_dnsname_here/infer
 
 ### The configurations for Postman
 

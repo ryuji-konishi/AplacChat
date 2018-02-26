@@ -1,6 +1,6 @@
 # AplacChat
 
-AplacChat is a deep learning project that focuses on Neural Machine Translation (NMT).
+AplacChat is a deep learning project that focuses on Neural Machine Translation (NMT). The final outcome is (here)[http://aplac-chat.koni4.net/].
 AplacChat consists of the following components.
 * HTML Parser
 * Chat
@@ -45,4 +45,4 @@ The final phase is inference. In this phase you upload the Chat component to Ama
 ## Front-End Web Page
 Front-End is a web page that accepts the text the user types in, sends the text to the Chat component and shows the translation that is the result of NMT Inference.
 
-[How to setup Front-End on Linux](<README%20Setup%20frontend%20on%20Linux.md>)
+[How to setup Front-End on MacOS](<README%20Setup%20frontend%20on%20MacOS.md>)

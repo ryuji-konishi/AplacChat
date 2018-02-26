@@ -1,8 +1,10 @@
-# Setup Front-End on Linux
-This document describes how to setup and run the APLaC Chat front-end web page. This web page accepts the text that the user types in, sends the text to the Chat component and shows the result.
+# Setup Front-End on MacOS
+This document describes how to setup and run the APLaC Chat front-end web page *locally on your Mac machine*. The final production deployment and publishment will be described in the future.
 
-## Setup Environment (MacOS X + .NET Core 2.0 + Linux)
-The front-end web page is develped with .NET Core 2.0 and MacOS X is used as the development machine. And finally it will be deployed on a Linux (Red Hat) web hosting server.
+This front-end web page accepts the text that the user types in, sends the text to the Chat component and shows the result.
+
+## Setup Environment (MacOS X + .NET Core 2.0)
+The front-end web page is develped with .NET Core 2.0 and MacOS X is used as the development machine. And finally it will be deployed on a web hosting server but it's not described in this document.
 
 ### Things required in advance
 * .NET Core 2.0 SDK for Mac
@@ -41,14 +43,15 @@ The launch URL for web browsers can also be set in `launchBrowser` element, for 
   },
 ```
 
-## Build and Deployment
+## Build and Deployment (TBD)
+*When you deploy the .NET Core project on Linux server, follow this section. As of Feb.2018, this section is not complete yet and left as a side node.*
+
 First we generate a publish package with ```dotnet``` command into a self-contained directory that can run on the server.
 ```
 dotnet publish -c Release --self-contained -r linux-x64
 ```
 Refer to [a list of Runtime Identifiers (RIDs)](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog#linux-rids) that is set as the runtime option (-r).
 The package folder ```publish``` is generated under bin folder. opy this folder to the server using SCP, FTP, or other file transfer method.
-
 
 ### Reference
 https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?tabs=aspnetcore2x
@@ -64,10 +67,6 @@ dotnet new razor -o frontend
 Add the bundler minifier NuGet package which is required to generate .min.css and .min.js files. Otherwise those files won't be updated when you build the project.
 ```
 dotnet add package BuildBundlerMinifier
-```
-Add the Kestrel NuGet package which is required to run on Linux server to serve as a web server.
-```
-dotnet add package Microsoft.AspNetCore.Server.Kestrel
 ```
 To set the build mode (Release/Debug), set an environment variable below but this is only eligible when you run the project with `dotnet run` command.
 ```
