@@ -16,20 +16,20 @@ $ tensor board --logdir=/tmp/aplac/model
 ```
 ### 'run_' files
 
-'run_infer_web.py'
+#### 'run_infer_web.py'
 A Python module 'infer_web' is executed.
 The entry point of inference to be continuously running on the web.
 
-'run_infer.py'
+#### 'run_infer.py'
 A Python module 'nmt' is executed.
 A tester script for inference. Read input from file and emit output into file.
 This script is mainly for local debugging with IDE.
 
-'run_train.py'
+#### 'run_train.py'
 A Python module 'nmt' is executed.
 A tester script for training. Read input from file and emit output into file.
 This script is mainly for local debugging with IDE.
 
-'run_train.sh'
+#### 'run_train.sh'
 Equivalant to 'run_train.py' but it's a shell script for Mac OS.
 
