@@ -10,7 +10,7 @@ Choose the following AMI from the list.
 
 | Field  | Value |
 | ------------- | ------------- |
-| Type  |  t2.micro  |
+| Type  |  t2.nano  |
 | vCPUs  | 1  |
 | Memory | 1GB |
 | Storage | EBS only |
@@ -39,25 +39,25 @@ ssh -i /path/to/your/keyfile ec2-user@your_public_dnsname_here
 
 ### 2. Install tools with root user
 ```
-$ sudo easy_install pip
-$ pip install --upgrade virtualenv
-$ sudo yum install nginx
-$ sudo yum install git
-$ sudo yum install tmux
+sudo easy_install pip
+pip install --upgrade virtualenv
+sudo yum install nginx
+sudo yum install git
+sudo yum install tmux
 ```
 ```tmux``` is used to run the web server in a separate session so that it keeps alive after exiting from ssh terminal.
 
 ### 3. Create a new user
 ```
-$ sudo /usr/sbin/useradd apps
-$ sudo su apps
+sudo /usr/sbin/useradd apps
+sudo su apps
 ```
 
 ### 4. Setup user's virtual environment
 
 #### 1. Create virtualenv environment
 ```
-$ virtualenv --system-site-packages ~/prg/virtualenv/tf140py2
+virtualenv --system-site-packages ~/prg/virtualenv/tf140py2
 ```
 
 #### 2. Activate the environment
@@ -66,42 +66,49 @@ Open ~/.bashrc and add the following line.
 ```
 alias activate_tf140py2="source /home/apps/prg/virtualenv/tf140py2/bin/activate"
 ```
-Re-open the terminal.
+Now activate the virtual environment before proceeding.
 ```
-$ activate_tf140py2
+activate_tf140py2
 ```
 
 #### 3. Install Tensorflow
 ```
-$ pip install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.4.0-cp27-none-linux_x86_64.whl
+pip install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.4.0-cp27-none-linux_x86_64.whl
+```
+If you got 'MemoryError', it is because the moemory is not enough to handle the file. Try not to use caching.
+```
+pip install --upgrade --no-cache-dir https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.4.0-cp27-none-linux_x86_64.whl
 ```
 
 #### 4. Install Flask and Gunicorn
 ```
-$ pip install flask
-$ pip install gunicorn
+pip install flask
+pip install gunicorn
 ```
 
 #### 5. Create the application directory
-Place ```~/prg/aplac``` folder either by directly downloading with ```git clone``` or uploading folder from your local machine to the instance.
+Create a folder ```~/prg``` where you place all your programs. Note this is apps user's folder, not ec2-user.
+
+Then create ```~/prg/aplac``` folder either by directly downloading with ```git clone```
 ```
-$ cd ~/prg
-$ git clone https://github.com/ryuji-konishi/AplacChat.git aplac
+cd ~/prg
+git clone https://github.com/ryuji-konishi/AplacChat.git aplac
 ```
+or uploading folder from your local machine to the instance.
 ```
 scp -i AWS/MacBookAir13.pem aplac.zip ec2-user@your_public_dnsname_here:~/prg
 ```
 
 #### 6. Get back to the root user
 ```
-$ exit
+exit
 ```
 
 ### 5. Setup web server
 
 #### 1. Forward HTTP requests from port 80 to our Flask app
 ```
-sudo vi /etc/nginx/nginx.conf
+sudo vim /etc/nginx/nginx.conf
 ```
 Replace this line ```user nginx;``` with ```user   apps;```
 
@@ -109,7 +116,7 @@ And in the http block, add this line ```server_names_hash_bucket_size 128;```
 
 #### 2. Define a server block for our site:
 ```
-$ sudo vi /etc/nginx/conf.d/virtual.conf
+sudo vim /etc/nginx/conf.d/virtual.conf
 ```
 
 Paste in the below:
@@ -126,27 +133,28 @@ server {
 
 #### 3. Start the web server
 ```
-$ sudo /etc/rc.d/init.d/nginx start
+sudo /etc/rc.d/init.d/nginx start
 ```
-Now you can see 'hello world' top page when you access to your EC2 instance domain URL with web browser.
+Now you can see '502 Bad Gateway' when you access to your EC2 instance domain URL with web browser. This is shown by nginx, and it is because currently no web page running for http://localhost:8000.
 
 ## Start APLaC Chat
 We use tmux here so that the web server keeps running after closing the ssh terminal.
 
 ### 1. Login with SSH and start a new session on tumx
 ```
-$ tmux new -s chat
+tmux new -s chat
 ```
 
 ### 2. Start aplac chat with gunicorn
 ```
-$ sudo su apps
-$ activate_tf140py2
-$ cd ~/prg/aplac/chat/
-$ gunicorn run_infer_web:app -b localhost:8000
+sudo su apps
+activate_tf140py2
+cd ~/prg/aplac/chat/
+gunicorn run_infer_web:app -b localhost:8000
 ```
+Now aplac chat is started and it should be accessible.
 
-### 4. Detach tmux
+### 3. Detach tmux
 Type Ctrl+b and then d.
 
 
