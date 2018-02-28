@@ -8,21 +8,6 @@
 #  $ chmod 700 this_file.sh
 
 python -m nmt.nmt \
-    --src=vi --tgt=en \
-    --vocab_prefix=/Users/ryuji/tmp/nmt_data/vocab  \
-    --train_prefix=/Users/ryuji/tmp/nmt_data/train \
-    --dev_prefix=/Users/ryuji/tmp/nmt_data/tst2012  \
-    --test_prefix=/Users/ryuji/tmp/nmt_data/tst2013 \
-    --out_dir=/Users/ryuji/tmp/nmt_model \
-    --num_train_steps=12000 \
-    --steps_per_stats=100 \
-    --num_layers=2 \
-    --num_units=128 \
-    --dropout=0.2 \
-    --metrics=bleu
-
-
-python -m nmt.nmt \
  --src="src" \
  --tgt="tgt" \
  --vocab_prefix="/Users/ryuji/tmp/aplac/data/vocab" \
