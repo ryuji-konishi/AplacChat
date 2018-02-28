@@ -7,18 +7,31 @@
     
     
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="./css/embed.min.css">
+        <link rel="stylesheet" href="./css/embed.css">
     
 </head>
-<body data-gr-c-s-loaded="true" data-feedly-mini="yes">
-    <div id="chat-scroll" style="height: 834px; max-height: 834px;">
-        <div id="chat-records"></div>
-    </div>
-
-    <div id="chat-form">
-        <input type="text" id="chat-input" autocomplete="off" maxlength="100" placeholder="こんにちは！">
-        <div><p class="small text-muted">上のボックスにメッセージを書いて、最後にエンターを押してください Type your message and press enter</p></div>
-        <div class="alert alert-warning" role="alert" id="show-message" style="display: none"></div>
+<body>
+    <div class="container-fluid">
+        <div class="row" id="chat-scroll" style="height: 834px; max-height: 834px;">
+            <div id="chat-records"></div>
+        </div>
+    
+        <div class="row" id="chat-form">
+            <textarea rows="1" cols="100" id="chat-input" placeholder="こんにちは！" style="resize: none;"></textarea>
+            <div class="row small text-muted">
+                <div class="col-10 col-sm-8 col-xs-8">
+                    <p>上のボックスにメッセージを書いて、最後にエンターを押してください<br />Type your message and press enter</p>
+                </div>
+                <div class="col-2 col-sm-4 col-xs-4">
+                    <p class="pull-right">
+                        <a href="http://aplac-chat.koni4.net" target="_blank">
+                            APLaC-Chat<img style="margin-left: 10px; height: 17px; width: 17px; opacity: 0.8;" src="./images/helcat_icon_64x64.png">
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <div class="alert alert-warning" role="alert" id="show-message" style="display: none"></div>
+        </div>
     </div>
 
     
