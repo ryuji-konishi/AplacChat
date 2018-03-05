@@ -226,9 +226,11 @@ tmux new -s frontend
 ```
 
 ### 2. Set environment variables
+```
 export ASPNETCORE_URLS=http://localhost:5051
-export CHAT_EMBED_URL=http://ec2-13-210-38-229.ap-southeast-2.compute.amazonaws.com/Embed/Index
+export CHAT_EMBED_URL=http://your_public_dnsname_here/Embed/Index
 export CHAT_INFER_URL=http://your_public_dnsname_here/infer
+```
 
 ### 3. Start aplac frontend with dotnet
 ```
