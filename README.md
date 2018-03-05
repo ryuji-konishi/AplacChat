@@ -40,9 +40,9 @@ The project phase moves on, when you want to train Chat, Google Cloud Platform (
 ### NMT Inference
 The final phase is inference. In this phase you upload the Chat component to Amazon Web Service (AWS) in which a Linux EC2 instance executes the inference part of Chat.
 
-If Chat and Front-End components are setup on a shared single Linux instance, follow the steps in [How to setup Chat/Frontend on AWS EC2](chat/README%20Setup%20chat-frontend%20on%20AWS%20EC2.md). Or if only Chat is setup, follow the steps in [How to setup Chat on AWS EC2](chat/README%20Setup%20chat%20on%20AWS%20EC2.md).
+If Chat and Front-End components are setup on a shared single Linux instance, follow the steps in [How to setup Chat/Frontend on AWS EC2](frontend/README%20Setup%20chat-frontend%20on%20AWS%20EC2.md). Or if only Chat is setup, follow the steps in [How to setup Chat on AWS EC2](chat/README%20Setup%20chat%20on%20AWS%20EC2.md).
 
 ## Front-End Web Page
 Front-End is a web page that accepts the text the user types in, sends the text to the Chat component and shows the translation that is the result of NMT Inference.
 
-To start a local debugging on your Mac with Visual Studio Code, read [How to setup Front-End on MacOS](frontend/README%20Setup%20frontend%20on%20MacOS.md). To deploy on to AWS EC2 Linux instance, refer to [How to setup Chat/Frontend on AWS EC2](chat/README%20Setup%20chat-frontend%20on%20AWS%20EC2.md).
+To start a local debugging on your Mac with Visual Studio Code, read [How to setup Front-End on MacOS](frontend/README%20Setup%20frontend%20on%20MacOS.md). To deploy on to AWS EC2 Linux instance, refer to [How to setup Chat/Frontend on AWS EC2](frontend/README%20Setup%20chat-frontend%20on%20AWS%20EC2.md).
