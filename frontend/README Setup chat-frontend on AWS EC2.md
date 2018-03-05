@@ -1,5 +1,5 @@
-# Setup Chat on Amazon Web Service EC2 Instance
-This section describes how to set up an EC2 instance on Amazon Web Service (AWS) and run the inference of Chat component.
+# Setup Chat/Frontend on Amazon Web Service EC2 Instance
+This section describes how to set up both Chat and Frontend components on to the same EC2 Linux instance on Amazon Web Service (AWS). 
 
 ## Create EC2 Instance
 Login to [AWS console](https://aws.amazon.com) and create an EC2 instance.
@@ -34,7 +34,6 @@ chmod 400 keypairfile.pem
 ```
 ssh -i /path/to/your/keyfile ec2-user@your_public_dnsname_here
 ```
-
 ## Setup Environment
 
 ### 1. Install tools with root user
@@ -45,7 +44,7 @@ sudo yum install nginx
 sudo yum install git
 sudo yum install tmux
 ```
-```tmux``` is used to run the web server in a separate session so that the web-server execution commands (gunicorn) keep alive after exiting from ssh terminal.
+```tmux``` is used to run the web server in a separate session so that the web-server execution commands (gunicorn/dotnet) keep alive after exiting from ssh terminal.
 
 ### 2. Setup web server
 
@@ -68,17 +67,22 @@ server {
     listen 80;
     server_name your_public_dnsname_here;
 
+    location /infer {
+        proxy_pass http://localhost:8000/infer;
+    }
     location / {
-        proxy_pass http://localhost:8000;
+        proxy_pass http://localhost:5051;
     }
 }
 ```
+
+ Since two different web internal servers will run, the proxy setting of nginx becomes a bit complicated. The 'infer' path is specifically assigned to the Chat component, and all the other paths go to the frontend.
 
 #### 3. Start the web server
 ```
 sudo /etc/rc.d/init.d/nginx start
 ```
-Now you can see '502 Bad Gateway' when you access to your EC2 instance domain URL with web browser. This is shown by nginx, and it is because currently no web page running for http://localhost:8000.
+Now you can see '502 Bad Gateway' when you access to your EC2 instance domain URL with web browser. This is shown by nginx, and it is because currently no web page running for http://localhost:5051.
 
 ### 3. Create a new user
 ```
@@ -129,22 +133,44 @@ pip install flask
 pip install gunicorn
 ```
 
-#### 5. Create the application directory
-Create a folder ```~/prg``` where you place all your programs. Note this is apps user's folder, not ec2-user.
+### 6. Setup .NET Core 2.0
+The installation steps are described in the [.NET Core 2.0 release note on github](
+https://github.com/dotnet/core/blob/master/release-notes). Refer to the latest release version before proceeding.
 
-Then create ```~/prg/aplac``` folder either by directly downloading with ```git clone```
+#### 1. Installation method
+Here we want to get the latest SDK. In the above site, there are also ‘runtime’ and ‘hosting’ installations, but what we want is SDK because we will build the frontend project on the machine.
+
+To install SDK, according to the document, a command ```sudo yum install dotnet-sdk-2.x.x``` is supposed to work.
+
+But, as of Mar.2018, this command didn’t work with an error saying ‘openssl-libs’ missing.
+So we will follow the binary archive installation method.
+
+#### 2. Download SDK
+Note the following work will be done within ```~/prg``` directory of ```apps``` user.
+
+Creat a directory ```~/prg/dotnet/sdk```
 ```
 cd ~/prg
-git clone https://github.com/ryuji-konishi/AplacChat.git aplac
-```
-or uploading folder from your local machine to the instance.
-```
-scp -i AWS/keypairfile.pem aplac.zip ec2-user@your_public_dnsname_here:~/prg
+mkdir dotnet && cd dotnet && mkdir sdk && cd sdk
 ```
 
-### 6. Get back to the root user
+In the release note web page, get the URL for Linux runtime binaries and download it. As of Mar.2018 the following file is the latest version of SDK.
 ```
-exit
+curl -o dotnet-sdk-2.1.4-linux-x64.tar.gz https://download.microsoft.com/download/1/1/5/115B762D-2B41-4AF3-9A63-92D9680B9409/dotnet-sdk-2.1.4-linux-x64.tar.gz
+```
+
+#### 3. Extract archive
+Extract the archive and set path to ‘dotnet’ command inside.
+```
+tar zxf ./dotnet-sdk-2.1.4-linux-x64.tar.gz
+export PATH=$PATH:$HOME/prg/dotnet/sdk
+```
+
+
+Now .NET Core 2.0 SDK is installed. Check if the frontend project is able to build successfully.
+```
+cd ~/prg/aplac/frontend/src
+dotnet build
 ```
 
 ## Start APLaC Chat
@@ -157,7 +183,6 @@ tmux new -s chat
 
 ### 2. Start aplac chat with gunicorn
 ```
-sudo su apps
 activate_tf140py2
 cd ~/prg/aplac/chat/
 gunicorn run_infer_web:app -b localhost:8000
@@ -190,6 +215,31 @@ _Body_
 Choose 'raw' and 'Text' as data type, and then type in the inference data text into the text box.
 
 ### 4. Detach tmux
+Type Ctrl+b and then d.
+
+## Start APLaC Frontend
+We use tmux here so that the web server keeps running after closing the ssh terminal.
+
+### 1. Start a new session on tumx
+```
+tmux new -s frontend
+```
+
+### 2. Set environment variables
+export ASPNETCORE_URLS=http://localhost:5051
+export CHAT_EMBED_URL=http://ec2-13-210-38-229.ap-southeast-2.compute.amazonaws.com/Embed/Index
+export CHAT_INFER_URL=http://your_public_dnsname_here/infer
+
+### 3. Start aplac frontend with dotnet
+```
+cd ~/prg/aplac/frontend/src
+dotnet build
+dotnet run
+```
+
+Now you can see the front end top page when you access to your EC2 instance domain URL with web browser.
+
+### 3. Detach tmux
 Type Ctrl+b and then d.
 
 

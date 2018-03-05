@@ -1,5 +1,5 @@
 # Setup Front-End on MacOS
-This document describes how to setup and run the APLaC Chat front-end web page *locally on your Mac machine*. The final production deployment and publishment will be described in the future.
+This document describes how to setup and run the APLaC Chat front-end web page locally on your Mac machine.
 
 This front-end web page accepts the text that the user types in, sends the text to the Chat component and shows the result.
 
