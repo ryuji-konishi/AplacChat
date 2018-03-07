@@ -73,7 +73,7 @@ def api_infer():
 	if 'text/plain' in contentType:
 		input = request.data.decode('utf-8')
 		output = nmt_inter(input)
-                print(output)
+		print(output.encode('utf-8'))
 		resp = jsonify(output)
 		resp.headers.add('Access-Control-Allow-Origin', '*')
 		return resp

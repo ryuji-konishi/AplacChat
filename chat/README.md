@@ -14,7 +14,7 @@ This module calls the custom inference methods in nmt module. Those customized m
 ```
 $ tensor board --logdir=/tmp/aplac/model
 ```
-### 'run_' files
+### Files
 
 #### 'run_infer_web.py'
 A Python module 'infer_web' is executed.
@@ -33,3 +33,5 @@ This script is mainly for local debugging with IDE.
 #### 'run_train.sh'
 Equivalant to 'run_train.py' but it's a shell script for Mac OS.
 
+#### 'chat.service'
+This is a Linux SystemD daemon service definition file, used when a daemon is registered.

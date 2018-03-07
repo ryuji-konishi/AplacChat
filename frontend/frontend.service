@@ -1,0 +1,15 @@
+[Unit]
+Description=APLaC-Chat Frontend  Web App
+After=network.target
+
+[Service]
+ExecStart=/home/apps/prg/dotnet/sdk/dotnet frontend.dll
+WorkingDirectory=/home/apps/prg/aplac/frontend/src/bin/
+User=apps
+Restart=on-failure
+Environment="ASPNETCORE_URLS=http://localhost:5051"
+Environment="CHAT_EMBED_URL=http://aplac-chat.koni4.net/Embed/Index"
+Environment="CHAT_INFER_URL=http://aplac-chat.koni4.net/infer"
+
+[Install]
+WantedBy=multi-user.target
