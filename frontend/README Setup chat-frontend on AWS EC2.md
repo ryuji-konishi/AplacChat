@@ -38,6 +38,7 @@ sudo pip install --upgrade virtualenv
 sudo yum update
 sudo amazon-linux-extras install nginx1.12
 sudo yum install git
+```
 
 ### 2. Create a new user
 ```
@@ -75,7 +76,7 @@ server {
 }
 ```
 
- Since two different web internal servers will run, the proxy setting of nginx becomes a bit complicated. The 'infer' path is specifically assigned to the Chat component, and all the other paths go to the frontend.
+Since two different web internal servers will run, the proxy setting of nginx becomes a bit complicated. The 'infer' path is specifically assigned to the Chat component, and all the other paths go to the frontend.
 
 Check the configuration.
 ```
