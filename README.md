@@ -38,9 +38,9 @@ The project phase moves on, when you want to train Chat, Google Cloud Platform (
 [How to setup Chat on GCP](chat/README%20Setup%20chat%20on%20GCP.md)
 
 ### NMT Inference
-The final phase is inference. In this phase you upload the Chat component to Amazon Web Service (AWS) in which a Linux EC2 instance executes the inference part of Chat.
+The final phase is inference. In this phase you run the Chat component on the production Linux server.
 
-If Chat and Front-End components are setup on a shared single Linux instance, follow the steps in [How to setup Chat/Frontend on AWS EC2](frontend/README%20Setup%20chat-frontend%20on%20AWS%20EC2.md). Or if only Chat is setup, follow the steps in [How to setup Chat on AWS EC2](chat/README%20Setup%20chat%20on%20AWS%20EC2.md).
+The Chat component can be separatelly setup, but here we set it up together with the Front-End component on the same Linux instance on Amazon Web Service (AWS). Follow the steps in [How to setup Chat/Frontend on AWS EC2](frontend/README%20Setup%20chat-frontend%20on%20AWS%20EC2.md).
 
 ## Front-End Web Page
 Front-End is a web page that accepts the text the user types in, sends the text to the Chat component and shows the translation that is the result of NMT Inference.

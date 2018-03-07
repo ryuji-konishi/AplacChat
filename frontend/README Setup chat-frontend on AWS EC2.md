@@ -6,14 +6,9 @@ Login to [AWS console](https://aws.amazon.com) and create an EC2 instance.
 ### 1. Choose AMI
 Choose the following AMI from the list.
 
-**Amazon Linux AMI 2017.09.1 (HVM), SSD Volume Type, 64 bit**
+**Amazon Linux 2 LTS Candidate AMI 2017.12.0 (HVM), SSD Volume Type - ami-38708c5a**
 
-| Field  | Value |
-| ------------- | ------------- |
-| Type  |  t2.nano  |
-| vCPUs  | 1  |
-| Memory | 1GB |
-| Storage | EBS only |
+Note **Amazon Linux AMI 2017.09.1 (HVM), SSD Volume Type - ami-942dd1f6** is not suitable as it doesn't have ```systemd``` command. [Reference](https://serverfault.com/questions/889248/how-to-enable-systemd-on-amazon-linux-ami)
 
 ### 2. Security Group
 Add a new inbound rule for HTTP type as below:
@@ -39,16 +34,20 @@ ssh -i /path/to/your/keyfile ec2-user@your_public_dnsname_here
 ### 1. Install tools with root user
 ```
 sudo easy_install pip
-pip install --upgrade virtualenv
-sudo yum install nginx
+sudo pip install --upgrade virtualenv
+sudo yum update
+sudo amazon-linux-extras install nginx1.12
 sudo yum install git
-sudo yum install tmux
+
+### 2. Create a new user
 ```
-```tmux``` is used to run the web server in a separate session so that the web-server execution commands (gunicorn/dotnet) keep alive after exiting from ssh terminal.
+sudo /usr/sbin/useradd apps
+```
+This user will be later used to run the web apps. This user has to exist before starting web server.
 
-### 2. Setup web server
+### 3. Setup web server
 
-#### 1. Forward HTTP requests from port 80 to our Flask app
+#### 1. Change the user
 ```
 sudo vim /etc/nginx/nginx.conf
 ```
@@ -56,7 +55,7 @@ Replace this line ```user nginx;``` with ```user   apps;```
 
 And in the http block, add this line ```server_names_hash_bucket_size 128;```
 
-#### 2. Define a server block for our site:
+#### 2. Define a server block for the site:
 ```
 sudo vim /etc/nginx/conf.d/virtual.conf
 ```
@@ -78,18 +77,25 @@ server {
 
  Since two different web internal servers will run, the proxy setting of nginx becomes a bit complicated. The 'infer' path is specifically assigned to the Chat component, and all the other paths go to the frontend.
 
-#### 3. Start the web server
+Check the configuration.
 ```
-sudo /etc/rc.d/init.d/nginx start
+sudo nginx -t -c /etc/nginx/nginx.conf
 ```
-Now you can see '502 Bad Gateway' when you access to your EC2 instance domain URL with web browser. This is shown by nginx, and it is because currently no web page running for http://localhost:5051.
 
-### 3. Create a new user
+#### 3. Start NGINX
 ```
-sudo /usr/sbin/useradd apps
+sudo systemctl enable nginx
+sudo systemctl start nginx
+# Check the status
+systemctl status nginx
+```
+Now you can see '502 Bad Gateway' when you access to your EC2 instance domain URL with web browser. This means the web server is running.
+
+### 3. Change user
+```
 sudo su apps
 ```
-This user is used to run web-server apps. The following steps are done with this user.
+The following steps are done with this user.
 
 ### 4. Create the application directory
 Create a folder ```~/prg``` where you place all your programs. Note this is apps user's folder, not ec2-user.
@@ -108,7 +114,9 @@ virtualenv --system-site-packages ~/prg/virtualenv/tf140py2
 ```
 
 #### 2. Activate the environment
-Create an alias that activates the virtual environment.
+Create an alias that activates the virtual environment. This is only useful when you run Python on terminal for testing and checking. Since we use Linux daemon to run the app, we don't actually need this.
+
+
 Open ~/.bashrc and add the following line.
 ```
 alias activate_tf140py2="source /home/apps/prg/virtualenv/tf140py2/bin/activate"
@@ -163,9 +171,12 @@ curl -o dotnet-sdk-2.1.4-linux-x64.tar.gz https://download.microsoft.com/downloa
 Extract the archive and set path to ‘dotnet’ command inside.
 ```
 tar zxf ./dotnet-sdk-2.1.4-linux-x64.tar.gz
-export PATH=$PATH:$HOME/prg/dotnet/sdk
 ```
 
+Open ~/.bashrc and add the following line.
+```
+export PATH=$PATH:$HOME/prg/dotnet/sdk
+```
 
 Now .NET Core 2.0 SDK is installed. Check if the frontend project is able to build successfully.
 ```
@@ -173,20 +184,38 @@ cd ~/prg/aplac/frontend/src
 dotnet build
 ```
 
-## Start APLaC Chat
-We use tmux here so that the web server keeps running after closing the ssh terminal.
+#### 4. Build .NET Core deployment package
+```
+dotnet publish --configuration Release --output bin
+```
+The published outcome is generated under ```~/prg/aplac/frontend/src/bin``` directory. This is referenced in frontend.service file and will be later used when you start Linux daemon.
 
-### 1. Start a new session on tumx
+## Start APLaC Chat Service
+We use SystemD to run the Chat component as a Linux daemon. Get back to the root user before proceeding.
+
+### 1. Register SystemD service file
+
+Copy the service file ```chat.service``` to system location.
 ```
-tmux new -s chat
+sudo cp /home/apps/prg/aplac/chat/chat.service /lib/systemd/system
 ```
 
-### 2. Start aplac chat with gunicorn
+Reload SystemD and enable the service, so it will restart on reboots.
 ```
-activate_tf140py2
-cd ~/prg/aplac/chat/
-gunicorn run_infer_web:app -b localhost:8000
+sudo systemctl daemon-reload
+sudo systemctl enable chat
 ```
+
+### 2. Start the service manually
+This is only required when you want to run yourself. The service is supposed to start automatically after reboot.
+```
+sudo systemctl start chat
+# Check the status
+systemctl status chat
+# Check the output log
+journalctl --unit chat --follow
+```
+
 Now aplac chat is started and it should be accessible.
 
 ### 3. Test Chat
@@ -194,7 +223,7 @@ Send a POST http request to the following URL that returns the inferred text res
 
 http://your_public_dnsname_here/infer
 
-### The configurations for Postman
+If you use Postman, set the configurations as below.
 
 _Authorization_
 
@@ -214,62 +243,48 @@ _Body_
 
 Choose 'raw' and 'Text' as data type, and then type in the inference data text into the text box.
 
-### 4. Detach tmux
-Type Ctrl+b and then d.
+## Start APLaC Frontend Service
+Same as Chat service described above, we use SystemD to run the Chat component as a Linux daemon. Get back to the root user before proceeding.
 
-## Start APLaC Frontend
-We use tmux here so that the web server keeps running after closing the ssh terminal.
+### 1. Set environment variables
+Before starting frontend, you need to set the environment variables that are defined in the service definition file.
 
-### 1. Start a new session on tumx
-```
-tmux new -s frontend
-```
+Open the service file ```/home/apps/prg/aplac/frontend/frontend.service``` and modify the following environment variables.
 
-### 2. Set environment variables
 ```
-export ASPNETCORE_URLS=http://localhost:5051
-export CHAT_EMBED_URL=http://your_public_dnsname_here/Embed/Index
-export CHAT_INFER_URL=http://your_public_dnsname_here/infer
+Environment="ASPNETCORE_URLS=http://localhost:5051"
+Environment="CHAT_EMBED_URL=http://your_public_dnsname_here/Embed/Index"
+Environment="CHAT_INFER_URL=http://your_public_dnsname_here/infer"
 ```
 
-### 3. Start aplac frontend with dotnet
+### 2. Register SystemD service file
+
+Copy the service file to system location.
 ```
-cd ~/prg/aplac/frontend/src
-dotnet build
-dotnet run
+sudo cp /home/apps/prg/aplac/frontend/frontend.service /lib/systemd/system
+```
+
+Reload SystemD and enable the service, so it will restart on reboots.
+```
+sudo systemctl daemon-reload
+sudo systemctl enable frontend
+```
+
+### 2. Start the service manually
+This is only required when you want to run hands-on. The service is supposed to start automatically after reboot.
+```
+sudo systemctl start frontend
+# Check the status
+systemctl status frontend
+# Check the output log
+journalctl --unit frontend --follow
 ```
 
 Now you can see the front end top page when you access to your EC2 instance domain URL with web browser.
 
-### 3. Detach tmux
-Type Ctrl+b and then d.
 
-
-Now you can exit from ssh terminal.
-
-## Manage Apps
-The following commands are useful when you manage the web server process and tmux session.
-
-### tmux
-- List sessions: ```tmux list-sessions```
-- Reattach to session: ```tmux attach -t chat```
-
-### gunicorn
-- Check if gunicorn running: ```ps ax|grep gunicorn```
-- Stop gunicorn: ```sudo pkill gunicorn```
-
-## Trouble Shooting
-### When the EC2 instance Public DNS is changed:
-Replace the DNS in the following file:
-```
-$ sudo vi /etc/nginx/conf.d/virtual.conf
-```
-(if nginx is already started) Restart nginx
-```
-$ sudo /etc/rc.d/init.d/nginx restart
-```
-
-Note you also need to change the URL in the front-end web page.
+Done!
 
 ## Reference
 https://www.matthealy.com.au/blog/post/deploying-flask-to-amazon-web-services-ec2/
+http://pmcgrath.net/running-a-simple-dotnet-core-linux-daemon

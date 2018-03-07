@@ -8,8 +8,8 @@ WorkingDirectory=/home/apps/prg/aplac/frontend/src/bin/
 User=apps
 Restart=on-failure
 Environment="ASPNETCORE_URLS=http://localhost:5051"
-Environment="CHAT_EMBED_URL=http://aplac-chat.koni4.net/Embed/Index"
-Environment="CHAT_INFER_URL=http://aplac-chat.koni4.net/infer"
+Environment="CHAT_EMBED_URL=http://your_public_dnsname_here/Embed/Index"
+Environment="CHAT_INFER_URL=http://your_public_dnsname_here/infer"
 
 [Install]
 WantedBy=multi-user.target
