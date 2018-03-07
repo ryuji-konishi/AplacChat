@@ -208,7 +208,7 @@ sudo systemctl enable chat
 ```
 
 ### 2. Start the service manually
-This is only required when you want to run yourself. The service is supposed to start automatically after reboot.
+This is only required when you want to run hands-on. The service is supposed to start automatically after reboot.
 ```
 sudo systemctl start chat
 # Check the status
@@ -287,5 +287,5 @@ Now you can see the front end top page when you access to your EC2 instance doma
 Done!
 
 ## Reference
-https://www.matthealy.com.au/blog/post/deploying-flask-to-amazon-web-services-ec2/
-http://pmcgrath.net/running-a-simple-dotnet-core-linux-daemon
+* https://www.matthealy.com.au/blog/post/deploying-flask-to-amazon-web-services-ec2/
+* http://pmcgrath.net/running-a-simple-dotnet-core-linux-daemon
