@@ -165,20 +165,40 @@ class TreeParser(object):
                 node_pointer.add_child(leaf)
         elif isinstance(tag, element.Tag):
             if header_utils.is_header_tag(tag.name):
-                data = tag.contents[0]
-                node = NodeHeader(node_pointer, tag.name, data)
-                if node_pointer.is_same_level(node) or node_pointer.is_lower_than(node):
-                    node.parent_node = self._trace_up_to_parent(node_pointer, node)
-                    node.parent_node.add_child(node)
-                elif node_pointer.is_upper_than(node):
-                    node_pointer.add_child(node)
-                else:
-                    node_pointer.add_child(node)
-                node_pointer = node
+                # Concatenate all the texts within the header, even if they are within elements
+                data = self._extract_text_recursive(tag.contents)
+                if len(data) > 0:
+                    node = NodeHeader(node_pointer, tag.name, data)
+                    if node_pointer.is_same_level(node) or node_pointer.is_lower_than(node):
+                        node.parent_node = self._trace_up_to_parent(node_pointer, node)
+                        node.parent_node.add_child(node)
+                    elif node_pointer.is_upper_than(node):
+                        node_pointer.add_child(node)
+                    else:
+                        node_pointer.add_child(node)
+                    node_pointer = node
             elif utils.is_literal_tag(tag.name):
                 for c in tag.contents:
                     node_pointer = self._parse_tag(node_pointer, c)
         return node_pointer
+
+    def _extract_text_recursive(self, contents):
+        """ Extract and concatenate all the texts within the tag. """
+        result = ''
+        for c in contents:
+            text = ''
+            if isinstance(c, element.NavigableString):
+                if utils.is_valid_text(c):
+                    text = utils.trim_structural_char(c)
+            elif isinstance(c, element.Tag):
+                text = self._extract_text_recursive(c.contents)
+            
+            if (len(result) > 0):
+                result += ' '
+            if (len(text) > 0):
+                result += text
+
+        return result
 
     def _trace_up_to_parent(self, start_node, my_node):
         """ Trace up the tree and look for the parent node for my_node and return it."""

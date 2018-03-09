@@ -22,7 +22,7 @@ vocab = ds.VocabStore(vocab_file)
 result_store = ds.ParseResultStore(vocab)
 
 print ("Searching HTML files in the input directory...")
-files = file_utils.get_filelist_in_path("html", html_folder, False)
+files = file_utils.get_filelist_in_path("html", html_folder, True)
 # Parse the files and store the result into data store
 for f in files:
     print ("Processing file", f)

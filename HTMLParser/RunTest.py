@@ -31,7 +31,7 @@ class TestAtomicParser(unittest.TestCase):
 
 class TestAtomicHeaderBodyParser(unittest.TestCase):
     def setUp(self):
-        self.html = ('<html><head><title>Test</title></head>'
+        self.htmlStruct = ('<html><head><title>Test</title></head>'
             '<body>'
             '<h4>H4-A</h4>'
             '<p>Body H4-A-1</p>'
@@ -44,11 +44,18 @@ class TestAtomicHeaderBodyParser(unittest.TestCase):
             '<h1>H1-B</h1>'
             '<p>Body H1-B-1</p>'
             '</body></html>')
+        self.htmlHNest = ('<html><head><title>Test</title></head>'
+            '<body>'
+            '<h1><span>Span1 within H1</span><span>Span2 within H1</span> and some text</h1>'
+            '<p>Body H1</p>'
+            '</body></html>')
         
     def test_TreeParser(self):
         """Test the base class of admic parser. Dump the constructed tree into text and check it."""
+
+        # Basic structure
         parser = pah.TreeParser()
-        parser.feed(self.html)
+        parser.feed(self.htmlStruct)
         expected = (
             'Root\n'
             ' h4 H4-A\n'
@@ -64,12 +71,22 @@ class TestAtomicHeaderBodyParser(unittest.TestCase):
         )
         self.assertTrue(expected == parser.dump())
 
+        # Nested elements in header
+        parser = pah.TreeParser()
+        parser.feed(self.htmlHNest)
+        expected = (
+            'Root\n'
+            ' h1 Span1 within H1 Span2 within H1 and some text\n'
+            '  Body H1\n'
+        )
+        self.assertTrue(expected == parser.dump())
+
     def test_AtomicHeaderBodyParser(self):
         """Test the targetted atomic parser which is going to be in the actual use."""
         vocab = ds.VocabStore()
         result_store = ds.ParseResultStore(vocab)
         parser = pah.Parser(result_store)
-        parser.parse(self.html)
+        parser.parse(self.htmlStruct)
 
         expected = [[
             'H4-A\nH1-A\nH1-A\nH1-A\nH3-A\nH2-A\nH1-B\n',
