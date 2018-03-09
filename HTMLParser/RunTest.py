@@ -58,6 +58,7 @@ class TestAtomicHeaderBodyParser(unittest.TestCase):
         parser.feed(self.htmlStruct)
         expected = (
             'Root\n'
+            ' Test\n'
             ' h4 H4-A\n'
             '  Body H4-A-1\n'
             ' h1 H1-A\n'
@@ -76,6 +77,7 @@ class TestAtomicHeaderBodyParser(unittest.TestCase):
         parser.feed(self.htmlHNest)
         expected = (
             'Root\n'
+            ' Test\n'
             ' h1 Span1 within H1 Span2 within H1 and some text\n'
             '  Body H1\n'
         )

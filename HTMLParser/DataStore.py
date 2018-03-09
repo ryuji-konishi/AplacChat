@@ -69,7 +69,7 @@ class ParseResultStore(object):
         Also those charactger/word is added into the vocabulary.
         """
         if len(source) == 0 or len(target) == 0:
-            pass
+            return
         if isinstance(source, str):
             source = [source]
         if isinstance(target, str):

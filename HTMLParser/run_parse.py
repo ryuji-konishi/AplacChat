@@ -23,6 +23,7 @@ result_store = ds.ParseResultStore(vocab)
 
 print ("Searching HTML files in the input directory...")
 files = file_utils.get_filelist_in_path("html", html_folder, True)
+# files = ["C:\\Tmp\\aplac\\html\\aplac.net\\1996update.html"]
 # Parse the files and store the result into data store
 for f in files:
     print ("Processing file", f)

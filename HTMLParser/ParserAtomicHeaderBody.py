@@ -148,7 +148,8 @@ class TreeParser(object):
         # from node to node, points to a node which is the current processing parent node, 
         # and collects its child nodes.
         node_pointer = self.root_node
-        for t in soup.body.contents:
+
+        for t in soup.contents:
             node_pointer = self._parse_tag(node_pointer, t)
 
     def dump(self):
