@@ -1,6 +1,8 @@
 import sys
 sys.path.insert(0, '..\\')  # This is required to import common
 
+sys.setrecursionlimit(2000) # This is to allow bigger sized HTML files. The default is 1000 for Windows.
+
 import os
 import utils.file_utils as file_utils
 import ParserAtomic as pat
@@ -23,11 +25,13 @@ result_store = ds.ParseResultStore(vocab)
 
 print ("Searching HTML files in the input directory...")
 files = file_utils.get_filelist_in_path("html", html_folder, True)
-# files = ["C:\\Tmp\\aplac\\html\\aplac.net\\1996update.html"]
+# files = ["C:\\Tmp\\aplac\\html\\aplac.net\\wh\\miyoplus02.html"]
 # Parse the files and store the result into data store
 for f in files:
     print ("Processing file", f)
     file_content = file_utils.read_file_any_encoding(f)
+    if (len(file_content) == 0):
+        continue
 
     # 1st, process the data with Atomic Parser
     parser = pat.Parser(result_store)
