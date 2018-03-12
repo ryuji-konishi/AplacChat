@@ -19,6 +19,7 @@ class Parser(object):
             # self.delegate = BS_HeaderBodyParser(target_tag, self.result_store)
             self.delegate = HTML_HeaderBodyParser(target_tag, self.result_store)
             self.delegate.feed(html)
+            self.delegate.flash_into_file()
 
 # BeautifulSoup version
 class BS_AbstractHeaderBodyParser(ABC):
@@ -87,8 +88,10 @@ class BS_HeaderBodyParser(BS_AbstractHeaderBodyParser):
         self.body = ''
         self.is_waiting_target_endtag = False
         self.is_processing_header_tag = False
+        self.processing_tag = ''
 
     def handle_starttag(self, tag):
+        self.processing_tag = tag
         self.is_processing_header_tag = header_utils.is_header_tag(tag.name)
         if not self.is_processing_header_tag:
             return
@@ -105,15 +108,12 @@ class BS_HeaderBodyParser(BS_AbstractHeaderBodyParser):
             self.flash_into_file()
             # Then start the next data process.
             self.current = BS_HeaderTag(tag)
-            self.body = ''
             self.is_waiting_target_endtag = True
         elif self.current.is_lower_than(tag):
             # If we encounter the upper level tags (ex H1 is upper than H2),
             # export the currently processed data.
             self.flash_into_file()
             # Clear the current state. Then wait for the next data process.
-            self.current = None
-            self.body = ''
             self.is_waiting_target_endtag = False
 
     def handle_endtag(self, tag):
@@ -130,6 +130,8 @@ class BS_HeaderBodyParser(BS_AbstractHeaderBodyParser):
             if self.is_processing_header_tag:
                 if self.is_waiting_target_endtag:
                     self.current.data += data
+            elif not utils.is_literal_tag(self.processing_tag.name):
+                return
             elif self.body:
                 self.body += '\n' + data
             else:
@@ -142,6 +144,8 @@ class BS_HeaderBodyParser(BS_AbstractHeaderBodyParser):
     def flash_into_file(self):
         if self.current and self.body:
             self.result_store.store_result(self.current.data, self.body)
+            self.current = None
+            self.body = ''
 
 # HTML Parser version
 class HTML_HeaderTag(object):
@@ -172,8 +176,10 @@ class HTML_HeaderBodyParser(HTMLParser):
         self.body = ''
         self.is_waiting_target_endtag = False
         self.is_processing_header_tag = False
+        self.processing_tag = ''
 
     def handle_starttag(self, tag, attrs):
+        self.processing_tag = tag
         self.is_processing_header_tag = header_utils.is_header_tag(tag)
         if not self.is_processing_header_tag:
             return
@@ -190,15 +196,12 @@ class HTML_HeaderBodyParser(HTMLParser):
             self.flash_into_file()
             # Then start the next data process.
             self.current = HTML_HeaderTag(tag)
-            self.body = ''
             self.is_waiting_target_endtag = True
         elif self.current.is_lower_than(tag):
             # If we encounter the upper level tags (ex H1 is upper than H2),
             # export the currently processed data.
             self.flash_into_file()
             # Clear the current state. Then wait for the next data process.
-            self.current = None
-            self.body = ''
             self.is_waiting_target_endtag = False
 
     def handle_endtag(self, tag):
@@ -219,6 +222,8 @@ class HTML_HeaderBodyParser(HTMLParser):
             if self.is_processing_header_tag:
                 if self.is_waiting_target_endtag:
                     self.current.data += data
+            elif not utils.is_literal_tag(self.processing_tag):
+                return
             elif self.body:
                 self.body += '\n' + data
             else:
@@ -227,4 +232,6 @@ class HTML_HeaderBodyParser(HTMLParser):
     def flash_into_file(self):
         if self.current and self.body:
             self.result_store.store_result(self.current.data, self.body)
+            self.current = None
+            self.body = ''
 
