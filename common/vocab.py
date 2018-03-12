@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from io import StringIO
 
 # Special tokens that are used in the vocaburary file. These are required to represent to 
 # indicate special directions to the seq2seq RNN.
@@ -48,9 +49,9 @@ def delimit_multi_char_text(sentense):
 
     words = _delimit_texts_by_space(texts)
 
-    words = _delimit_words_by_quote(words)
-
     words = _delimit_words_by_char_code(words)
+
+    words = _delimit_words_by_quote(words)
 
     words = _delimit_words_by_terminator(words)
 
@@ -69,17 +70,18 @@ def _delimit_texts_by_brackets(_open, _close, texts):
             result.append(text)
         else:
             # Now we know that the text contains both open and close. But we don't know how many and their order.
-            # Devide the text by close bracket, and loop through it. The open bracket has to appear first.
-            for words in text.split(_close):
-                if len(words) == 0: # This is the case if the close bracket is either the first or the last character in the text.
-                    continue
-                words += _close     # Append the close because split() function removes it.
+            s = StringIO(text)
+            # The result is temporary collected in this list. If the brackets are correctly found, this list will become the result.
+            tempResult = []
+            while True:
                 resultText = ''
                 openFound = False
                 closeFound = False
-                # The result is temporary collected in this list. If the brackets are correctly found, this list will become the result.
-                tempResult = []
-                for char in words:
+
+                while True:
+                    char = s.read(1)
+                    if char == '':
+                        break;
                     # First look for the open bracket
                     if openFound == False and char == _open:
                         openFound = True
@@ -92,19 +94,33 @@ def _delimit_texts_by_brackets(_open, _close, texts):
                         closeFound = True
                         if len(resultText) > 0:
                             tempResult.append(resultText)
-                        tempResult.append(char)
                         resultText = ''
+                        tempResult.append(char)
+                        break;
                     else:
                         resultText += char
-                if  len(resultText) > 0:
-                    tempResult.append(resultText)
+
                 # Check if the close bracket is found.
-                if closeFound:
-                    # Push the temporary list as the result.
-                    result.extend(tempResult)
-                else:
+                if openFound and closeFound:
+                    if  len(resultText) > 0:
+                        tempResult.append(resultText)
+                elif len(resultText) > 0:
                     # If not, that means the bracket order is not right, and the text is not delimited.
-                    result.append(words)
+                    tempResult.append(resultText)
+                elif openFound:
+                    # The stream reached to the end while the brackets are in a wrong order.
+                    tempResult = []
+                    break;
+                else:
+                    # The stream reached to the end
+                    break;
+
+            if len(tempResult) > 0:
+                # Push the temporary list as the result.
+                result.extend(tempResult)
+            else:
+                # This means the brackets are in a wrong order.
+                result.append(text)
 
     return result
 

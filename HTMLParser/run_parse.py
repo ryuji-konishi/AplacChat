@@ -27,8 +27,10 @@ print ("Searching HTML files in the input directory...")
 files = file_utils.get_filelist_in_path("html", html_folder, True)
 # files = ["C:\\Tmp\\aplac\\html\\aplac.net\\wh\\miyoplus02.html"]
 # Parse the files and store the result into data store
-for f in files:
-    print ("Processing file", f)
+fileCount = len(files)
+print (fileCount, "files to process.")
+for idx, f in enumerate(files):
+    print ("(", idx, "of", fileCount, ") Processing file", f)
     file_content = file_utils.read_file_any_encoding(f)
     if (len(file_content) == 0):
         continue

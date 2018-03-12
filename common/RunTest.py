@@ -37,9 +37,12 @@ class TestVocabUtils(unittest.TestCase):
         self.assertListEqual(
             vocab.delimit_multi_char_text("abc def)."),     # open bracket is missing
             ['abc', 'def)', '.'])
-        # self.assertListEqual(
-        #     vocab.delimit_multi_char_text(")("),            # empty in brackets
-        #     [')('])
+        self.assertListEqual(
+            vocab.delimit_multi_char_text(")("),            # wrong order
+            [')('])
+        self.assertListEqual(
+            vocab.delimit_multi_char_text(")(abc)"),
+            [')', '(', 'abc', ')'])
         self.assertListEqual(
             vocab.delimit_multi_char_text("\"abc\""), 
             ['"', 'abc', '"'])
