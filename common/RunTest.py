@@ -14,10 +14,10 @@ class TestVocabUtils(unittest.TestCase):
             vocab.delimit_multi_char_text("That isn't cat. That is a dog."), 
             ['That', "isn't", 'cat', '.', 'That', 'is', 'a', 'dog', '.'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text(unicode("abcあいうdef")), 
+            vocab.delimit_multi_char_text("abcあいうdef"), 
             ['abc', 'あ', 'い', 'う', 'def'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text(unicode("abc defあい　うえお")), 
+            vocab.delimit_multi_char_text("abc defあい　うえお"), 
             ['abc', 'def', 'あ', 'い', '　', 'う', 'え', 'お'])
         self.assertListEqual(
             vocab.delimit_multi_char_text("abc\ndef"), 
@@ -25,6 +25,24 @@ class TestVocabUtils(unittest.TestCase):
         self.assertListEqual(
             vocab.delimit_multi_char_text("abc  def"), 
             ['abc', '<sp>', 'def'])
+        self.assertListEqual(
+            vocab.delimit_multi_char_text("(abc def)"), 
+            ['(', 'abc', 'def', ')'])
+        self.assertListEqual(
+            vocab.delimit_multi_char_text("()"),            # empty in brackets
+            ['(', ')'])
+        self.assertListEqual(
+            vocab.delimit_multi_char_text("(abc def."),     # close bracket is missing
+            ['(abc', 'def', '.'])
+        self.assertListEqual(
+            vocab.delimit_multi_char_text("abc def)."),     # open bracket is missing
+            ['abc', 'def)', '.'])
+        # self.assertListEqual(
+        #     vocab.delimit_multi_char_text(")("),            # empty in brackets
+        #     [')('])
+        self.assertListEqual(
+            vocab.delimit_multi_char_text("\"abc\""), 
+            ['"', 'abc', '"'])
 
     def test_concatenate_multi_char_list(self):
         self.assertTrue(
