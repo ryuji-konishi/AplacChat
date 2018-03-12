@@ -5,11 +5,15 @@ from io import StringIO
 # indicate special directions to the seq2seq RNN.
 special_tokens = ['<unk>', '<s>', '</s>', '<br>', '<sp>']
 
-# Define terminating characters that are specifically handled as a 'single word'. 
-# For example, "A car." is devided into "A", "car" and ".".
-special_terminators = ['.', ',']
+# Define special characters that are handled as a 'single word' in the vocaburary no matter
+# what context it's being used. 
+special_atoms = [',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '+', '=', ':', ';', '/', '?', '`', '~']
 
-# Define quoting characters that are specifically handled as a 'single word'. 
+# Define terminating characters that are specifically handled as a 'single word' in the vocaburary. 
+# For example, "A car." is devided into "A", "car" and ".".
+special_terminators = ['.']
+
+# Define quoting characters that are specifically handled as a 'single word' in the vocaburary. 
 # For example, '"car"' is devided into '"', "car" and '"'.
 special_quoates = ['"']
 
@@ -20,6 +24,7 @@ special_quoates = ['"']
 # For example, "(Hello World)" is correct but "(Hello World]" is not. Also ")Hello World(" is not correct.
 special_brackets = [
     ['(', ')'],
+    ['{', '}'],
     ['[', ']'],
     ['“', '”'],
     ['（', '）'],
@@ -48,6 +53,9 @@ def delimit_multi_char_text(sentense):
         texts = _delimit_texts_by_brackets(pair[0], pair[1], texts)
 
     words = _delimit_texts_by_space(texts)
+
+    for atom in special_atoms:
+        words = _delimit_words_by_atomic(atom, words)
 
     words = _delimit_words_by_char_code(words)
 
@@ -169,17 +177,39 @@ def _delimit_texts_by_space(texts):
                 result.append(word)
     return result
 
+def _delimit_words_by_atomic(atom, words):
+    """ Take a list of word, devide by atomic character into list, and return all words in a single list.
+        For example, 'abc,def' -> ['abc', ',', 'def']
+    """
+    result = []
+    for word in words:
+        buf = ''
+        for char in word:
+            if char == atom:
+                if len(buf):
+                    result.append(buf)
+                    buf = ''
+                result.append(atom)
+            else:
+                buf += char
+
+        if len(buf):
+            result.append(buf)
+
+    return result
+
 def _delimit_words_by_terminator(words):
     """ Loop throught the word list, and if the word ends with a terminator(ex period), separte it.
     """
     result = []
     for word in words:
-        lastChar = word[-1]
-        if lastChar in special_terminators:
-            result.append(word[:-1])  # remove the last character
-            result.append(lastChar)
-        else:
-            result.append(word)
+        if len(word):
+            lastChar = word[-1]
+            if lastChar in special_terminators:
+                result.append(word[:-1])  # remove the last character
+                result.append(lastChar)
+            else:
+                result.append(word)
     return result
 
 def _delimit_words_by_quote(words):

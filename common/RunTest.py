@@ -11,6 +11,12 @@ class TestVocabUtils(unittest.TestCase):
             vocab.delimit_multi_char_text("abc def"), 
             ['abc', 'def'])
         self.assertListEqual(
+            vocab.delimit_multi_char_text("abc,def"), 
+            ['abc', ',', 'def'])
+        self.assertListEqual(
+            vocab.delimit_multi_char_text("01234 56789"), 
+            ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+        self.assertListEqual(
             vocab.delimit_multi_char_text("That isn't cat. That is a dog."), 
             ['That', "isn't", 'cat', '.', 'That', 'is', 'a', 'dog', '.'])
         self.assertListEqual(
