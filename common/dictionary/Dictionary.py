@@ -2,9 +2,9 @@ import json
 import os, sys
 
 class Dictionary(object):
-    ENG = "english"
+    ENG = 1
     def __init__(self, lang = ENG):
-        if lang.lower() == self.ENG:
+        if lang == self.ENG:
             self.delegate = English()
         else:
             raise ValueError("Invalid languate type " + lang)

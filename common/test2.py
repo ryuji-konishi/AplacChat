@@ -1,14 +1,7 @@
 # -*- coding: utf-8 -*-
 
-def test(word):
-    buf = ''
-    for char in word:
-        c = ord(char)
-        if c < 128:
-            print str(c)
-        else:
-            print str(c)
+import SentenseResolver as sr
 
+resolver = sr.SentenseResolver()
 
-test('あ')
-
+resolver.split("abc def")

@@ -64,8 +64,8 @@ class ParseResultStore(object):
 
     def store_result(self, source, target):
         """ source/target is either a line of text or a list of text.
-        Store the source/target text line after splitted in character/word
-        level and then concatenated by space ' '.
+        This function stores the source/target text line after splitting in 
+        character/word level and then concatenated by space ' '.
         Also those charactger/word is added into the vocabulary.
         """
         if len(source) == 0 or len(target) == 0:
