@@ -163,7 +163,7 @@ cd ~/prg
 mkdir dotnet && cd dotnet && mkdir sdk && cd sdk
 ```
 
-In the release note web page, get the URL for Linux runtime binaries and download it. As of Mar.2018 the following file is the latest version of SDK.
+In the release note web page, get the URL for Linux SDK binaries and download it. As of Mar.2018 the following file is the latest version of SDK.
 ```
 curl -o dotnet-sdk-2.1.4-linux-x64.tar.gz https://download.microsoft.com/download/1/1/5/115B762D-2B41-4AF3-9A63-92D9680B9409/dotnet-sdk-2.1.4-linux-x64.tar.gz
 ```
