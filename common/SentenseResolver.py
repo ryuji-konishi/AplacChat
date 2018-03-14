@@ -3,19 +3,19 @@ from io import StringIO
 
 # Special tokens that are used in the vocaburary file. These are required to represent to 
 # indicate special directions to the seq2seq RNN.
-special_tokens = ['<unk>', '<s>', '</s>', '<br>', '<sp>']
+special_tokens = [u'<unk>', u'<s>', u'</s>', u'<br>', u'<sp>']
 
 # Define special characters that are handled as a 'single word' in the vocaburary no matter
 # what context it's being used. 
-special_atoms = [',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '+', '=', ':', ';', '/', '?', '`', '~']
+special_atoms = [u',', u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', u'!', u'@', u'#', u'$', u'%', u'^', u'&', u'*', u'-', u'_', u'+', u'=', u':', u';', u'/', u'?', u'`', u'~']
 
 # Define terminating characters that are specifically handled as a 'single word' in the vocaburary. 
 # For example, "A car." is devided into "A", "car" and ".".
-special_terminators = ['.']
+special_terminators = [u'.']
 
 # Define quoting characters that are specifically handled as a 'single word' in the vocaburary. 
 # For example, '"car"' is devided into '"', "car" and '"'.
-special_quoates = ['"']
+special_quoates = [u'"']
 
 # Define bracket characters that are specifically handled as a 'single word' in the vocaburary. 
 # For example, if you have a sentense "(Hello world)", you don't want it be devided into two words "(Hello" and "World)". 
@@ -23,17 +23,17 @@ special_quoates = ['"']
 # It's important that they have to appear as a pair in a sentense and also in a right order. 
 # For example, "(Hello World)" is correct but "(Hello World]" is not. Also ")Hello World(" is not correct.
 special_brackets = [
-    ['(', ')'],
-    ['{', '}'],
-    ['[', ']'],
-    ['“', '”'],
-    ['（', '）'],
-    ['(', '）'],
-    ['（', ')'],
-    ['「', '」'],
-    ['【', '】'],
-    ['『', '』'],
-    ['＜', '＞']
+    [u'(', ')'],
+    [u'{', '}'],
+    [u'[u', ']'],
+    [u'“', '”'],
+    [u'（', '）'],
+    [u'(', '）'],
+    [u'（', ')'],
+    [u'「', '」'],
+    [u'【', '】'],
+    [u'『', '』'],
+    [u'＜', '＞']
 ]
 
 class SentenseResolver(object):
@@ -54,7 +54,7 @@ class SentenseResolver(object):
             F) 'abc  def' -> ['abc', '<sp>', 'def']
             G) 'He said "What's up?"' -> ['He', 'said', '"', What's", 'up?', '"']
         """
-        texts = [sentense.replace('\n', ' <br> ')]
+        texts = [sentense.replace(u'\n', u' <br> ')]
 
         for pair in special_brackets:
             texts = self._delimit_texts_by_brackets(pair[0], pair[1], texts)
@@ -83,25 +83,25 @@ class SentenseResolver(object):
             E) ['abc', '<br>', 'def'] -> 'abc\ndef'
             F) ['abc', '<sp>', 'def'] -> 'abc  def'
         """
-        result = ''
+        result = u''
         prev_ascii = False
         for word in words:
-            if word == '<sp>':
-                result += ' '
+            if word == u'<sp>':
+                result += u' '
                 continue
-            if word == '<br>':
-                result += '\n'
+            if word == u'<br>':
+                result += u'\n'
                 prev_ascii = False
                 continue
-            if word == '.':
-                result += '.'
+            if word == u'.':
+                result += u'.'
                 continue
             
             # Check the word is all in ASCII. If the previous word is also in ASCII,
             # insert space in between.
             if self._is_ascii(word):
                 if prev_ascii:
-                    result += ' ' + word
+                    result += u' ' + word
                 else:
                     result += word
                 prev_ascii = True
@@ -128,13 +128,13 @@ class SentenseResolver(object):
                 # The result is temporary collected in this list. If the brackets are correctly found, this list will become the result.
                 tempResult = []
                 while True:
-                    resultText = ''
+                    resultText = u''
                     openFound = False
                     closeFound = False
 
                     while True:
                         char = s.read(1)
-                        if char == '':
+                        if char == u'':
                             break;
                         # First look for the open bracket
                         if openFound == False and char == _open:
@@ -142,13 +142,13 @@ class SentenseResolver(object):
                             if len(resultText) > 0:
                                 tempResult.append(resultText)
                             tempResult.append(char)
-                            resultText = ''
+                            resultText = u''
                         # If open bracket is found, look for close bracket
                         elif openFound == True and char == _close:
                             closeFound = True
                             if len(resultText) > 0:
                                 tempResult.append(resultText)
-                            resultText = ''
+                            resultText = u''
                             tempResult.append(char)
                             break;
                         else:
@@ -199,7 +199,7 @@ class SentenseResolver(object):
                         if len(resultText) > 0:
                             result.append(resultText)
                         result.append(char)
-                        resultText = ''
+                        resultText = u''
                     else:
                         resultText += char
                 if  len(resultText) > 0:
@@ -214,9 +214,9 @@ class SentenseResolver(object):
         """
         result = []
         for text in texts:
-            for word in text.split(' '):
+            for word in text.split(u' '):
                 if len(word) == 0:
-                    result.append('<sp>')
+                    result.append(u'<sp>')
                     continue
                 
                 if (len(word)):
@@ -229,12 +229,12 @@ class SentenseResolver(object):
         """
         result = []
         for word in words:
-            buf = ''
+            buf = u''
             for char in word:
                 if char == atom:
                     if len(buf):
                         result.append(buf)
-                        buf = ''
+                        buf = u''
                     result.append(atom)
                 else:
                     buf += char
@@ -293,7 +293,7 @@ class SentenseResolver(object):
             else:
                 code_change = 1
 
-            buf = ''
+            buf = u''
             for char in word:
                 if ord(char) < 128:     # check if ASCII
                     buf += char
@@ -301,7 +301,7 @@ class SentenseResolver(object):
                 else:
                     if code_change ^ 1 and len(buf) > 0:
                         result.append(buf)
-                        buf = ''
+                        buf = u''
                     result.append(char)
                     code_change = 1
             

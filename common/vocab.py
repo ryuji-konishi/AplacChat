@@ -306,7 +306,7 @@ def concatenate_multi_char_list(words):
     return result
 
 def join_list_by_space(str_list):
-    return ' '.join(str_list)
+    return u' '.join(str_list)
 
 def is_ascii(s):
     return all(ord(c) < 128 for c in s)
