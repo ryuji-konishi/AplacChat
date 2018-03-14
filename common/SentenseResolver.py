@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from dictionary import Dictionary as dic
 from io import StringIO
 

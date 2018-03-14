@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 import os, sys
 
@@ -22,13 +23,10 @@ class English(object):
     def __init__(self):
         self.words_map = None
         # Load dictionary file
-        try:
-            current_dir = os.path.dirname(os.path.realpath(__file__))
-            filename = current_dir + "\\English\\words_dictionary.json"
-            with open(filename, "r") as english_dictionary:
-                self.words_map = json.load(english_dictionary)
-        except Exception as e:
-            return str(e)
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        filename = os.path.join(current_dir, "English", "words_dictionary.json")
+        with open(filename, "r") as english_dictionary:
+            self.words_map = json.load(english_dictionary)
 
     def Check(self, word):
         word = word.lower()

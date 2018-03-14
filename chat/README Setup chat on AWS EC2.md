@@ -1,3 +1,5 @@
+**Note this file is deprecated and left as a reference**
+
 # Setup Chat on Amazon Web Service EC2 Instance
 This section describes how to set up an EC2 instance on Amazon Web Service (AWS) and run the inference of Chat component.
 
