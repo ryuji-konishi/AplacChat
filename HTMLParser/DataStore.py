@@ -1,10 +1,10 @@
 import os
 import uuid
 import utils.file_utils as file_utils
-from common import vocab
+from common import SentenseResolver as sr
 from common import utils
 
-special_tokens = vocab.special_tokens
+special_tokens = sr.special_tokens
 
 class VocabStore(object):
     def __init__(self, vocab_file = None):
@@ -56,6 +56,7 @@ class ParseResultStore(object):
     def __init__(self, vocab_store):
         self.data = []
         self.vocab_store = vocab_store
+        self.resolver = sr.SentenseResolver()
 
     # def store_result(self, source_text, target_text):
     #     self.data.append([source_text, target_text])
@@ -79,12 +80,12 @@ class ParseResultStore(object):
         for result in zip(source, target):
             source_text_line, target_text_line = result[0], result[1]
 
-            buf_list = vocab.delimit_multi_char_text(source_text_line)
+            buf_list = self.resolver.split(source_text_line)
             self.vocab_store.add_vocab_words(buf_list)
             buf_str = utils.join_list_by_space(buf_list)
             src += buf_str + '\n'
 
-            buf_list = vocab.delimit_multi_char_text(target_text_line)
+            buf_list = self.resolver.split(target_text_line)
             self.vocab_store.add_vocab_words(buf_list)
             buf_str = utils.join_list_by_space(buf_list)
             tgt += buf_str + '\n'

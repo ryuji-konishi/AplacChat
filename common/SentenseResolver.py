@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from dictionary import Dictionary as dic
+from common.dictionary import Dictionary as dic
 from io import StringIO
 
 # Special tokens that are used in the vocaburary file. These are required to represent to 
@@ -75,7 +75,7 @@ class SentenseResolver(object):
 
     def concatenate(self, words):
         """ Combine the given list into a single text. This function works oppoisite
-            from delimit_multi_char_text. The special tokens are decoded into the
+            from split. The special tokens are decoded into the
             actual character for example '<br>' tag is converted into line-break.
             A) ['abc', 'def'] -> 'abc def'
             B) ['That', "isn't", 'cat', '.', 'That', 'is', 'a', 'dog', '.'] -> 'That isn't cat. That is a dog.'

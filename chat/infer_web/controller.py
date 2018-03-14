@@ -1,4 +1,4 @@
-from common import vocab
+from common import SentenseResolver as sr
 from common import utils
 from infer_web import app
 from flask import request, json, jsonify
@@ -7,31 +7,10 @@ from nmt import inference
 import argparse
 import tensorflow as tf
 
-# FLAGS = None
-
-# nmt_parser = argparse.ArgumentParser()
-# nmt.add_arguments(nmt_parser)
-# FLAGS, unparsed = nmt_parser.parse_known_args()
-
-# FLAGS.out_dir="/Users/ryuji/tmp/aplac/model"
-# FLAGS.num_units=128
-# FLAGS.share_vocab=True
-
-# default_hparams = nmt.create_hparams(FLAGS)
-
-# # Load hparams.
-# hparams = nmt.create_or_load_hparams(
-# 	FLAGS.out_dir, default_hparams, FLAGS.hparams_path, save_hparams=False)
-
-# ckpt = tf.train.latest_checkpoint(FLAGS.out_dir)
-
-# infer_model = inference.inference_m(ckpt,
-# 	hparams,
-# 	scope=None)
-
 hparams = None
 ckpt = None
 infer_model = None
+resolver = sr.SentenseResolver()
 
 def init(FLAGS):
 	global hparams, ckpt, infer_model
@@ -50,7 +29,7 @@ def init(FLAGS):
 		scope=None)
 
 def nmt_inter(inference_input):
-	buf_list = vocab.delimit_multi_char_text(inference_input)
+	buf_list = resolver.split(inference_input)
 	inference_input = utils.join_list_by_space(buf_list)
 	outputs = inference.single_worker_inference_m(
 		infer_model,
@@ -60,7 +39,7 @@ def nmt_inter(inference_input):
 	result = ''
 	for o in outputs:
 		buf_list = o.split()
-		result += vocab.concatenate_multi_char_list(buf_list) + '\n'
+		result += resolver.concatenate(buf_list) + '\n'
 	return result.strip()		# remove the last line-break
 
 @app.route('/')
