@@ -4,4 +4,4 @@ import SentenseResolver as sr
 
 resolver = sr.SentenseResolver()
 
-resolver.split("abc def")
+resolver.split(u"abc def")

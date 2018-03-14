@@ -1,4 +1,5 @@
 from dictionary import Dictionary as dic
+from io import StringIO
 
 # Special tokens that are used in the vocaburary file. These are required to represent to 
 # indicate special directions to the seq2seq RNN.

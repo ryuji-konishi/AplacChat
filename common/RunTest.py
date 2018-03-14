@@ -1,77 +1,82 @@
 # -*- coding: utf-8 -*-
 import vocab
 import unittest
+import SentenseResolver as sr
 
-class TestVocabUtils(unittest.TestCase):
+class TestSentenseResulver(unittest.TestCase):
     def setUp(self):
-        pass
+        self.r = sr.SentenseResolver()
 
     def test_delimit_multi_char_text(self):
         self.assertListEqual(
-            vocab.delimit_multi_char_text("abc def"), 
+            self.r.split("abc def"), 
             ['abc', 'def'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("abc,def"), 
+            self.r.split("abc,def"), 
             ['abc', ',', 'def'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("01234 56789"), 
+            self.r.split("01234 56789"), 
             ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("That isn't cat. That is a dog."), 
+            self.r.split("That isn't cat. That is a dog."), 
             ['That', "isn't", 'cat', '.', 'That', 'is', 'a', 'dog', '.'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("abcあいうdef"), 
+            self.r.split("abcあいうdef"), 
             ['abc', 'あ', 'い', 'う', 'def'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("abc defあい　うえお"), 
+            self.r.split("abc defあい　うえお"), 
             ['abc', 'def', 'あ', 'い', '　', 'う', 'え', 'お'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("abc\ndef"), 
+            self.r.split("abc\ndef"), 
             ['abc', '<br>', 'def'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("abc  def"), 
+            self.r.split("abc  def"), 
             ['abc', '<sp>', 'def'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("(abc def)"), 
+            self.r.split("(abc def)"), 
             ['(', 'abc', 'def', ')'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("()"),            # empty in brackets
+            self.r.split("()"),            # empty in brackets
             ['(', ')'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("(abc def."),     # close bracket is missing
+            self.r.split("(abc def."),     # close bracket is missing
             ['(abc', 'def', '.'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("abc def)."),     # open bracket is missing
+            self.r.split("abc def)."),     # open bracket is missing
             ['abc', 'def)', '.'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text(")("),            # wrong order
+            self.r.split(")("),            # wrong order
             [')('])
         self.assertListEqual(
-            vocab.delimit_multi_char_text(")(abc)"),
+            self.r.split(")(abc)"),
             [')', '(', 'abc', ')'])
         self.assertListEqual(
-            vocab.delimit_multi_char_text("\"abc\""), 
+            self.r.split("\"abc\""), 
             ['"', 'abc', '"'])
 
     def test_concatenate_multi_char_list(self):
         self.assertTrue(
-            vocab.concatenate_multi_char_list(['abc', 'def']) == 
+            self.r.concatenate(['abc', 'def']) == 
             "abc def")
         self.assertTrue(
-            vocab.concatenate_multi_char_list(['That', "isn't", 'cat', '.', 'That', 'is', 'a', 'dog', '.']) ==
+            self.r.concatenate(['That', "isn't", 'cat', '.', 'That', 'is', 'a', 'dog', '.']) ==
             "That isn't cat. That is a dog.")
         self.assertTrue(
-            vocab.concatenate_multi_char_list(['abc', 'あ', 'い', 'う', 'def']) ==
+            self.r.concatenate(['abc', 'あ', 'い', 'う', 'def']) ==
             "abcあいうdef")
         self.assertTrue(
-            vocab.concatenate_multi_char_list(['abc', 'def', 'あ', 'い', '　', 'う', 'え', 'お']) ==
+            self.r.concatenate(['abc', 'def', 'あ', 'い', '　', 'う', 'え', 'お']) ==
             "abc defあい　うえお")
         self.assertTrue(
-            vocab.concatenate_multi_char_list(['abc', '<br>', 'def']) ==
+            self.r.concatenate(['abc', '<br>', 'def']) ==
             "abc\ndef")
         self.assertTrue(
-            vocab.concatenate_multi_char_list(['abc', '<sp>', 'def']) ==
+            self.r.concatenate(['abc', '<sp>', 'def']) ==
             "abc  def")
+
+class TestVocabUtils(unittest.TestCase):
+    def setUp(self):
+        pass
 
 if __name__ == "__main__":
     unittest.main()
