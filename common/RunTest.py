@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
+import sys
+sys.path.insert(0, '..\\')  # This is required to import common
+# If importing common doesn't go well, check the Python interpreter's current working directory.
+# This has to be 'common' folder.
+# import os
+# print(os.getcwd())  # print current working directory
+
+
 import unittest
-import SentenseResolver as sr
+from common import SentenseResolver as sr
 
 class TestSentenseResulver(unittest.TestCase):
     def setUp(self):
@@ -39,13 +47,13 @@ class TestSentenseResulver(unittest.TestCase):
             [u'(', u')'])
         self.assertListEqual(
             self.resolver.split(u"(abc def."),     # close bracket is missing
-            [u'(abc', u'def', u'.'])
+            [u'(', u'abc', u'def', u'.'])
         self.assertListEqual(
             self.resolver.split(u"abc def)."),     # open bracket is missing
-            [u'abc', u'def)', u'.'])
+            [u'abc', u'def', u')', u'.'])
         self.assertListEqual(
             self.resolver.split(u")("),            # wrong order
-            [u')('])
+            [u')', u'('])
         self.assertListEqual(
             self.resolver.split(u")(abc)"),
             [u')', u'(', u'abc', u')'])

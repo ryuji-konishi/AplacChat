@@ -8,34 +8,38 @@ special_tokens = [u'<unk>', u'<s>', u'</s>', u'<br>', u'<sp>']
 
 # Define special characters that are handled as a 'single word' in the vocaburary no matter
 # what context it's being used. 
-special_atoms = [u',', u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', u'!', u'@', u'#', u'$', u'%', u'^', u'&', u'*', u'-', u'_', u'+', u'=', u':', u';', u'/', u'?', u'`', u'~']
+special_atoms = [u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', 
+    u',', u'!', u'@', u'#', u'$', u'%', u'^', u'&', u'*', u'-', u'_', u'+', u'=', u':', u';', u'/', u'?', u'`', u'~',
+    u'"', 
+    u'(', u')', u'{', u'}', u'[', u']', u'“', u'”', u'（', u'）', u'(', u'）', u'（', u')', u'「', u'」', u'【', u'】', u'『', u'』', u'＜', u'＞'
+    ]
 
 # Define terminating characters that are specifically handled as a 'single word' in the vocaburary. 
 # For example, "A car." is devided into "A", "car" and ".".
 special_terminators = [u'.']
-
+  
 # Define quoting characters that are specifically handled as a 'single word' in the vocaburary. 
 # For example, '"car"' is devided into '"', "car" and '"'.
-special_quoates = [u'"']
+# special_quoates = [u'"']
 
 # Define bracket characters that are specifically handled as a 'single word' in the vocaburary. 
 # For example, if you have a sentense "(Hello world)", you don't want it be devided into two words "(Hello" and "World)". 
 # Instead, get four words "(", "Hellow", "World" and ")".
 # It's important that they have to appear as a pair in a sentense and also in a right order. 
 # For example, "(Hello World)" is correct but "(Hello World]" is not. Also ")Hello World(" is not correct.
-special_brackets = [
-    [u'(', ')'],
-    [u'{', '}'],
-    [u'[u', ']'],
-    [u'“', '”'],
-    [u'（', '）'],
-    [u'(', '）'],
-    [u'（', ')'],
-    [u'「', '」'],
-    [u'【', '】'],
-    [u'『', '』'],
-    [u'＜', '＞']
-]
+# special_brackets = [
+#     [u'(', ')'],
+#     [u'{', '}'],
+#     [u'[u', ']'],
+#     [u'“', '”'],
+#     [u'（', '）'],
+#     [u'(', '）'],
+#     [u'（', ')'],
+#     [u'「', '」'],
+#     [u'【', '】'],
+#     [u'『', '』'],
+#     [u'＜', '＞']
+# ]
 
 class SentenseResolver(object):
 
@@ -57,21 +61,23 @@ class SentenseResolver(object):
         """
         texts = [sentense.replace(u'\n', u' <br> ')]
 
-        for pair in special_brackets:
-            texts = self._delimit_texts_by_brackets(pair[0], pair[1], texts)
+        # for pair in special_brackets:
+        #     texts = self._split_by_brackets(pair[0], pair[1], texts)
 
-        words = self._delimit_texts_by_space(texts)
+        words = self._split_by_space(texts)
 
         for atom in special_atoms:
-            words = self._delimit_words_by_atomic(atom, words)
+            words = self._split_by_atomic(atom, words)
 
-        words = self._delimit_words_by_char_code(words)
+        words = self._split_by_char_code(words)
 
-        words = self._delimit_words_by_quote(words)
+        # words = self._split_by_quote(words)
 
-        words = self._delimit_words_by_terminator(words)
+        words = self._split_by_terminator(words)
 
-        return words
+        result = self._breakdown(words)
+
+        return result
 
     def concatenate(self, words):
         """ Combine the given list into a single text. This function works oppoisite
@@ -112,7 +118,7 @@ class SentenseResolver(object):
 
         return result
 
-    def _delimit_texts_by_brackets(self, _open, _close, texts):
+    def _split_by_brackets(self, _open, _close, texts):
         """ Take a list of text, devide by brackets, and return all words in a single list.
             Brackets are handled as a single word. Brackets have to be a pair of open bracket and close bracket.
             For example, '(abc)' -> ['(', 'abc', ')']
@@ -179,10 +185,10 @@ class SentenseResolver(object):
 
         return result
 
-    # Below is unused because it collides with _delimit_texts_by_brackets() above. They can't be used at the same time
+    # Below is unused because it collides with _split_by_brackets() above. They can't be used at the same time
     # because when brackets and quotes are nested, once a sentense is chopped off into snipets of words, 
     # you can't tell which of bracktes and quotes are in the upper layer of nesting.
-    def _delimit_texts_by_quote(self, quote, texts):
+    def _split_by_quote(self, quote, texts):
         """ Take a list of text, devide by quote, and return all words in a single list.
             Quotes are handled as a single word. Quotes have to be a pair.
             For example, '"car"' -> ['"', "car", '"']
@@ -207,7 +213,7 @@ class SentenseResolver(object):
                     result.append(resultText)
         return result
 
-    def _delimit_texts_by_space(self, texts):
+    def _split_by_space(self, texts):
         """ Take a list of text, devide by ' ' into list, and return all words in a single list.
             By splitting with ' ', if several ' ' appears in the given sentense continuously,
             they result in the empty text in the result list. In that case, put the special
@@ -224,7 +230,7 @@ class SentenseResolver(object):
                     result.append(word)
         return result
 
-    def _delimit_words_by_atomic(self, atom, words):
+    def _split_by_atomic(self, atom, words):
         """ Take a list of word, devide by atomic character into list, and return all words in a single list.
             For example, 'abc,def' -> ['abc', ',', 'def']
         """
@@ -245,12 +251,14 @@ class SentenseResolver(object):
 
         return result
 
-    def _delimit_words_by_terminator(self, words):
+    def _split_by_terminator(self, words):
         """ Loop throught the word list, and if the word ends with a terminator(ex period), separte it.
         """
         result = []
         for word in words:
-            if len(word):
+            if len(word) == 1:
+                result.append(word)
+            elif len(word) > 1:                
                 lastChar = word[-1]
                 if lastChar in special_terminators:
                     result.append(word[:-1])  # remove the last character
@@ -259,7 +267,24 @@ class SentenseResolver(object):
                     result.append(word)
         return result
 
-    def _delimit_words_by_quote(self, words):
+    def _breakdown(self, words):
+        """ Loop throught the word list, and if the word is not in language dictionary
+            break the word into characters.
+        """
+        result = []
+        for word in words:
+            if len(word) > 1 and word not in special_tokens:
+                exists = self.dic.Check(word)
+                if exists:
+                    result.append(word)
+                else:
+                    for char in word:
+                        result.append(char)
+            else:
+                result.append(word)
+        return result
+
+    def _split_by_quote(self, words):
         """ Loop throught the word list, and if the word starts or ends with quote, separte it.
         """
         result = []
@@ -280,7 +305,7 @@ class SentenseResolver(object):
                 result.append(word)
         return result
 
-    def _delimit_words_by_char_code(self, words):
+    def _split_by_char_code(self, words):
         """ Take a word and devide it into a list to return. The word is devided by character code type.
             For example, 'abcあいうdef' -> ['abc', 'あ', 'い', 'う', 'def']
         """
