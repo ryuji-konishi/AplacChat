@@ -2,6 +2,7 @@ import os
 import uuid
 import utils.file_utils as file_utils
 from common import vocab
+from common import utils
 
 special_tokens = vocab.special_tokens
 
@@ -80,12 +81,12 @@ class ParseResultStore(object):
 
             buf_list = vocab.delimit_multi_char_text(source_text_line)
             self.vocab_store.add_vocab_words(buf_list)
-            buf_str = vocab.join_list_by_space(buf_list)
+            buf_str = utils.join_list_by_space(buf_list)
             src += buf_str + '\n'
 
             buf_list = vocab.delimit_multi_char_text(target_text_line)
             self.vocab_store.add_vocab_words(buf_list)
-            buf_str = vocab.join_list_by_space(buf_list)
+            buf_str = utils.join_list_by_space(buf_list)
             tgt += buf_str + '\n'
 
         # src = trim_structural_char(src)

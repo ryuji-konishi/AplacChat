@@ -1,4 +1,5 @@
 from common import vocab
+from common import utils
 from infer_web import app
 from flask import request, json, jsonify
 import nmt.nmt as nmt
@@ -50,7 +51,7 @@ def init(FLAGS):
 
 def nmt_inter(inference_input):
 	buf_list = vocab.delimit_multi_char_text(inference_input)
-	inference_input = vocab.join_list_by_space(buf_list)
+	inference_input = utils.join_list_by_space(buf_list)
 	outputs = inference.single_worker_inference_m(
 		infer_model,
 		ckpt,
