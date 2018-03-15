@@ -49,13 +49,38 @@ In this bucket, the following two folders will be created in the end.
 * 'data' - The folder containing input files. The files are placed directly under this folder and no sub-folders will be created.
 * 'model' - The folder containing the output. At every run a sub-folder with job name is created, and the all output is placed here.
 
+### Local directory
+```
+    chat
+        generated
+            $DATA_NAME
+                data
+                    train.src
+                    train.tgt
+                    vocab.src
+                    vocab.tgt
+```
+### GCP Storage
+```
+    Buckets/$PROJECT_ID-mlengine
+        $DATA_NAME
+            data
+                train.src
+                train.tgt
+                vocab.src
+                vocab.tgt
+            model
+                $JOB_NAME
+                    hparams
+```
+
 ## Upload the Input Files
 
 Upload the input files which you prepaired in advance and are located in ```generated/$DATA_NAME``` under the current directory.
 The remote directory in GCS is ```gs://$BUCKET_NAME/data``` constant.
 ```
 LOCAL_DATA_PATH="generated/$DATA_NAME"
-REMOTE_DATA_PATH=gs://$BUCKET_NAME/data
+REMOTE_DATA_PATH=gs://$BUCKET_NAME/$DATA_NAME/data
 gsutil -m cp -r "$LOCAL_DATA_PATH/data/*" "$REMOTE_DATA_PATH"
 ```
 
@@ -64,8 +89,8 @@ After running the command, you can check the storage contents [here](https://con
 ## Run the Training Job
 The job is named after the current date and time.
 ```
-JOB_NAME=job_$(date +"%y%m%d_%H%M%S")_$DATA_NAME
-OUTPUT_PATH=gs://$BUCKET_NAME/model/$JOB_NAME
+JOB_NAME=job_$(date +"%y%m%d_%H%M%S")
+OUTPUT_PATH=gs://$BUCKET_NAME/$DATA_NAME/model/$JOB_NAME
 ```
 
 A file 'log' has to exist in storage otherwise the NMT program fails at train.py line 192. Create an empty file and upload it to storage in advance.
@@ -74,7 +99,7 @@ touch log
 gsutil cp ./log "$OUTPUT_PATH/"
 ```
 
-Now run the job.
+Now run the job. Notice GPU is used.
 ```
 gcloud ml-engine jobs submit training $JOB_NAME \
  --job-dir $OUTPUT_PATH \
@@ -82,6 +107,7 @@ gcloud ml-engine jobs submit training $JOB_NAME \
  --package-path nmt \
  --module-name nmt.nmt \
  --region $REGION \
+ --scale-tier=basic-gpu \
  -- \
  --src="src" \
  --tgt="tgt" \
