@@ -11,11 +11,15 @@ import ParserAtomicHeaderBody as pah
 import ParserHeaderBody as phb
 import DataStore as ds
 
-html_folder = "C:\\Tmp\\aplac\\html\\aplac.net"
-# html_folder = "C:\\Tmp\\aplac\\test"
+# Parse the files and store the result into data store
 
-current_dir = os.path.dirname(os.path.realpath(__file__))
-export_dir = os.path.join(current_dir, 'export')
+
+html_folder = "C:\\Tmp\\aplac\\html\\aplac.net"
+# html_folder = "C:\\Tmp\\aplac\\html\\test"
+
+# current_dir = os.path.dirname(os.path.realpath(__file__))
+# export_dir = os.path.join(current_dir, 'export')
+export_dir = "C:\\Tmp\\aplac\\html\\export"
 vocab_file = os.path.join(export_dir, 'vocab.src')
 if not os.path.exists(export_dir): os.makedirs(export_dir)
 
@@ -26,14 +30,12 @@ vocab = ds.VocabStore(vocab_file)
 
 print ("Searching HTML files in the input directory...")
 files = file_utils.get_filelist_in_path("html", html_folder, True)
-# files = ["C:\\Tmp\\aplac\\html\\aplac.net\\life\\life53.html"]
-# Parse the files and store the result into data store
-fileCount = len(files)
-print (fileCount, "files to process.")
-
 # Distribute the list of files randomly into 3 lists - train, dev and test.
 # The distribution ratio is train 80%, dev 10% and test 10%.
 trains, devs, tests = utils.distribute_rnd(files, (0.8, 0.1, 0.1))
+
+# trains = ["C:\\Tmp\\aplac\\html\\aplac.net\\life\\life53.html", "life\\life53.html"]
+
 
 def process(files, subject, vocab_store):
     result_store = ds.ParseResultStore(vocab_store)
@@ -41,7 +43,7 @@ def process(files, subject, vocab_store):
     for idx, file in enumerate(files):
         f_abst = file[0]    # absolute path
         f_rel = file[1]     # relative path
-        print (subject, "(", idx, "of", fileCount, ") file", f_rel)
+        print (subject, "(", idx, "of", len(files), ") file", f_rel)
         file_content = file_utils.read_file_any_encoding(f_abst)
         if (len(file_content) == 0):
             continue
@@ -63,6 +65,7 @@ def process(files, subject, vocab_store):
     result_store.export_to_file(export_dir, subject)
 
 # Generate each file set
+print ("Total", len(files), "files to process.")
 process(trains, "train", vocab)
 process(devs, "dev", vocab)
 process(tests, "test", vocab)

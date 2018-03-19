@@ -6,6 +6,10 @@ from io import StringIO
 # indicate special directions to the seq2seq RNN.
 special_tokens = [u'<unk>', u'<s>', u'</s>', u'<br>', u'<sp>']
 
+# Special tokens that are used for letter case upper/lower patterns.
+letter_case_tokens = [u'<c1>', u'<c2>']
+special_tokens.extend(letter_case_tokens)       # Combine special tokens so that they are stored in to vocab file together.
+
 # Define special characters that are handled as a 'single word' in the vocaburary no matter
 # what context it's being used. 
 special_atoms = [u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', 
@@ -45,6 +49,7 @@ class SentenseResolver(object):
 
     def __init__(self):
         self.dic = dic.Dictionary()
+        self.tagger = LetterCaseTagger()
 
     def split(self, sentense):
         """ Split the given sentense into a list at each character/word level
@@ -75,9 +80,11 @@ class SentenseResolver(object):
 
         words = self._split_by_terminator(words)
 
-        result = self._breakdown(words)
+        words = self._breakdown(words)
 
-        return result
+        words = self._letter_case(words)
+
+        return words
 
     def concatenate(self, words):
         """ Combine the given list into a single text. This function works oppoisite
@@ -92,18 +99,28 @@ class SentenseResolver(object):
         """
         result = u''
         prev_ascii = False
+        case_tag = ''
         for word in words:
-            if word == u'<sp>':
-                result += u' '
+            if self.tagger.isCaseTag(word):
+                case_tag = word
                 continue
-            if word == u'<br>':
-                result += u'\n'
-                prev_ascii = False
-                continue
-            if word == u'.':
-                result += u'.'
-                continue
+            else:
+                if word == u'<sp>':
+                    result += u' '
+                    continue
+                elif word == u'<br>':
+                    result += u'\n'
+                    prev_ascii = False
+                    continue
+                elif word == u'.':
+                    result += u'.'
+                    continue
             
+            # If you get here with case_tag value, change the case of word accordingly.
+            if case_tag:
+                word = self.tagger.untag([case_tag, word])
+            case_tag = ''
+
             # Check the word is all in ASCII. If the previous word is also in ASCII,
             # insert space in between.
             if self._is_ascii(word):
@@ -284,6 +301,18 @@ class SentenseResolver(object):
                 result.append(word)
         return result
 
+    def _letter_case(self, words):
+        """ Loop throught the word list, and describe each word for the letter case patterns with tag.
+        """
+        result = []
+        for word in words:
+            if len(word) > 1 and self._is_ascii(word):
+                tagged = self.tagger.tag(word)
+                result.extend(tagged)
+            else:
+                result.append(word)
+        return result
+
     def _split_by_quote(self, words):
         """ Loop throught the word list, and if the word starts or ends with quote, separte it.
         """
@@ -336,5 +365,52 @@ class SentenseResolver(object):
 
         return result
 
-    def _is_ascii(self, s):
-        return all(ord(c) < 128 for c in s)
+    def _is_ascii(self, word):
+        return all(ord(c) < 128 for c in word)
+
+class LetterCaseTagger(object):
+
+    def __init__(self):
+        pass
+
+    def isCaseTag(self, word):
+        """ Return if the given word is a reserved tag token text for this class object."""
+        return word in letter_case_tokens
+
+    def tag(self, word):
+        """ Check the given word in each letter and return the description of the case patterns.
+            For example;
+            'apple' -> ['apple']
+            'Apple' -> ['<c1>', 'apple']
+            'APPLE' -> ['<c2>', 'apple']
+            'aPple' -> ['aPple']
+
+            Thus the given word has to be in latin language (English, French etc).
+            The returning value is a list of texts. 
+        """
+        result = []
+        if word[0].isupper():
+            if all(c.isupper() for c in word):
+                result.append(u'<c2>')
+            else:
+                result.append(u'<c1>')
+            result.append(word.lower())
+        else:
+            result.append(word)
+        return result
+
+    def untag(self, words):
+        """ Return the untagged text of given word.
+            For example;
+            ['<c1>', 'apple'] -> 'Apple'
+            ['<c2>', 'apple'] -> 'APPLE'
+            ['apple'] -> 'apple'
+            ['aPple'] -> 'aPple'
+        """
+        if words[0] == '<c1>':
+            result = words[1].title()
+        elif words[0] == '<c2>':
+            result = words[1].upper()
+        else:
+            result = words[0]
+        return result

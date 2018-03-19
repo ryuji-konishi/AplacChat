@@ -10,6 +10,40 @@ sys.path.insert(0, '..\\')  # This is required to import common
 import unittest
 from common import SentenseResolver as sr
 
+class TestLetterCaseTagger(unittest.TestCase):
+    def setUp(self):
+        self.tagger = sr.LetterCaseTagger()
+
+    def test_tag(self):
+        self.assertListEqual(
+            self.tagger.tag('Apple'),
+            [u'<c1>', u'apple'])
+        self.assertListEqual(
+            self.tagger.tag('APPLE'),
+            [u'<c2>', u'apple'])
+        self.assertListEqual(
+            self.tagger.tag('apple'),
+            [u'apple'])
+        self.assertListEqual(
+            self.tagger.tag('aPple'),
+            [u'aPple'])
+        
+    def test_untag(self):
+        self.assertEqual(
+            self.tagger.untag([u'<c1>', u'apple']),
+            'Apple')
+        self.assertEqual(
+            self.tagger.untag([u'<c2>', u'apple']),
+            'APPLE')
+        self.assertEqual(
+            self.tagger.untag([u'apple']),
+            'apple')
+        self.assertEqual(
+            self.tagger.untag([u'aPple']),
+            'aPple')
+        
+
+
 class TestSentenseResulver(unittest.TestCase):
     def setUp(self):
         self.resolver = sr.SentenseResolver()
@@ -26,7 +60,7 @@ class TestSentenseResulver(unittest.TestCase):
             [u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9'])
         self.assertListEqual(
             self.resolver.split(u"That isn't cat. That is a dog."), 
-            [u'That', "isn't", 'cat', u'.', u'That', u'is', u'a', u'dog', u'.'])
+            [u'<c1>', u'that', "isn't", 'cat', u'.', u'<c1>', u'that', u'is', u'a', u'dog', u'.'])
         self.assertListEqual(
             self.resolver.split(u"abcあいうdef"), 
             [u'abc', u'あ', u'い', u'う', u'def'])
@@ -66,7 +100,7 @@ class TestSentenseResulver(unittest.TestCase):
             self.resolver.concatenate([u'abc', u'def']) == 
             "abc def")
         self.assertTrue(
-            self.resolver.concatenate([u'That', "isn't", 'cat', u'.', u'That', u'is', u'a', u'dog', u'.']) ==
+            self.resolver.concatenate([u'<c1>', u'that', "isn't", 'cat', u'.', u'<c1>', u'that', u'is', u'a', u'dog', u'.']) ==
             "That isn't cat. That is a dog.")
         self.assertTrue(
             self.resolver.concatenate([u'abc', u'あ', u'い', u'う', u'def']) ==
