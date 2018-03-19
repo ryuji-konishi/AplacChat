@@ -3,19 +3,24 @@ import sys
 from chardet.universaldetector import UniversalDetector
 
 def get_filelist_in_path(extension, path, sub_directory=True):
-    """Return the list of files under the specified path. The list contains the absolute path to the files."""
+    """Return the list of files under the specified path. The list contains both the absolute path and relative path to the files."""
     ext = ".%s" % extension.lower()
     result = []
     if sub_directory:
         for root, dirs, files in os.walk(path):
             for f in files:
                 if f.lower().endswith(ext):
-                    result.append(os.path.join(root, f))
+                    abst = os.path.join(root, f)
+                    path_diff = root.replace(path, "")
+                    if path_diff.startswith('\\'):      # remove the leading '\' to make it a relative path
+                        path_diff = path_diff[1:]
+                    rel = os.path.join(path_diff, f)
+                    result.append((abst, rel))
     else:
         for f in os.listdir(path):
-            f = os.path.join(path, f)
-            if os.path.isfile(f) and f.lower().endswith(ext):
-                result.append(f)
+            abst = os.path.join(path, f)
+            if os.path.isfile(abst) and f.lower().endswith(ext):
+                result.append((abst, f))
     return result
 
 def read_file_any_encoding(path):

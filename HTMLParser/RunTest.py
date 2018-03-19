@@ -264,6 +264,36 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(utils.trim_structural_char('\t\t') == '')
         self.assertTrue(utils.trim_structural_char('\ta\t') == 'a')
 
+    def test_distribute(self):
+        lst = ['a', 'b', 'c', 'd']
+
+        ratio = (0.5, 0.5)
+        actual = utils.distribute(lst, ratio)
+        expected = [
+            ['a', 'b'],
+            ['c', 'd']
+            ]
+        self.assertCountEqual(expected, actual)
+
+        ratio = (0.5, 0.25, 0.25)
+        actual = utils.distribute(lst, ratio)
+        expected = [
+            ['a', 'b'],
+            ['c'],
+            ['d']
+            ]
+        self.assertCountEqual(expected, actual)
+
+        lst = [i for i in range(10)]
+
+        ratio = (0.5, 0.2, 0.3)
+        actual = utils.distribute(lst, ratio)
+        expected = [
+            [0, 1, 2, 3, 4],
+            [5, 6],
+            [7, 8, 9]
+            ]
+        self.assertCountEqual(expected, actual)
 
 if __name__ == "__main__":
     unittest.main()

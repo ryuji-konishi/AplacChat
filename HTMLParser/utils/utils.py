@@ -1,3 +1,5 @@
+import collections
+import random
 
 def split_jpn_sentence(sentence):
     """ Split a Japanese sentence into a list and return it"""
@@ -51,3 +53,26 @@ def is_literal_tag(tag_str):
     else:
         return True
 
+def distribute(lst, ratio):
+    """ Divide the list into multiple lists with ratio.
+        The ratio is a tuple containing the distribution ratios in float totaling 1.
+    """
+    if sum(ratio) != 1:
+        raise ValueError("The ratio has to add up to 1.")
+
+    result_lists = []
+
+    ratio_len = [int(len(lst) * r) for r in ratio]
+    st = 0
+    for l in ratio_len:
+        result_lists.append(lst[st:st + l])
+        st += l
+
+    return tuple(result_lists)
+
+def distribute_rnd(lst, ratio):
+    """ Distribute the list randomly into multiple lists.
+        The ratio is a tuple containing the distribution ratios in float totaling 1.
+    """
+    random.shuffle(lst)
+    return distribute(lst, ratio)

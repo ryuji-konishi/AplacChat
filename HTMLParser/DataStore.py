@@ -94,28 +94,20 @@ class ParseResultStore(object):
         # tgt = trim_structural_char(tgt)
         self.data.append([src, tgt])
 
-    def export_to_file(self, out_dir):
-        basename = str(uuid.uuid4())
+    def export_to_file(self, out_dir, basename = None):
+        """ Write out the stored source/target data into a pair of src/tgt files.
+            basename is the file name exclude extension. If omitted, ramdom name is generated.
+        """
+        if not basename:
+            basename = str(uuid.uuid4())
         src_file = basename + '.src'
         tgt_file = basename + '.tgt'
         sf = open(os.path.join(out_dir, src_file), 'w', encoding='utf8')
         tf = open(os.path.join(out_dir, tgt_file), 'w', encoding='utf8')
         for d in self.data:
             source_lines, target_lines = d[0], d[1]
-            # self.export_src_tgt_file(out_dir, d[0], d[1])
             sf.write(source_lines)
             tf.write(target_lines)
         sf.close()
         tf.close()
-
-    def export_src_tgt_file(self, out_dir, source_lines, target_lines):
-        basename = str(uuid.uuid4())
-        src_file = basename + '.src'
-        tgt_file = basename + '.tgt'
-        f = open(os.path.join(out_dir, src_file), 'w', encoding='utf8')
-        f.write(source_lines)
-        f.close()
-        f = open(os.path.join(out_dir, tgt_file), 'w', encoding='utf8')
-        f.write(target_lines)
-        f.close()
 

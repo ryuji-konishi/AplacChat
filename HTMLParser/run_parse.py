@@ -5,12 +5,14 @@ sys.setrecursionlimit(2000) # This is to allow bigger sized HTML files. The defa
 
 import os
 import utils.file_utils as file_utils
+import utils.utils as utils
 import ParserAtomic as pat
 import ParserAtomicHeaderBody as pah
 import ParserHeaderBody as phb
 import DataStore as ds
 
-html_folder = "C:\\Tmp\\aplac\\html"
+html_folder = "C:\\Tmp\\aplac\\html\\aplac.net"
+# html_folder = "C:\\Tmp\\aplac\\test"
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 export_dir = os.path.join(current_dir, 'export')
@@ -21,7 +23,6 @@ print ("The input directory is", html_folder)
 print ("The output directory is", export_dir)
 
 vocab = ds.VocabStore(vocab_file)
-result_store = ds.ParseResultStore(vocab)
 
 print ("Searching HTML files in the input directory...")
 files = file_utils.get_filelist_in_path("html", html_folder, True)
@@ -30,27 +31,43 @@ files = file_utils.get_filelist_in_path("html", html_folder, True)
 fileCount = len(files)
 print (fileCount, "files to process.")
 
-for idx, f in enumerate(files):
-    print ("(", idx, "of", fileCount, ") Processing file", f)
-    file_content = file_utils.read_file_any_encoding(f)
-    if (len(file_content) == 0):
-        continue
+# Distribute the list of files randomly into 3 lists - train, dev and test.
+# The distribution ratio is train 80%, dev 10% and test 10%.
+trains, devs, tests = utils.distribute_rnd(files, (0.8, 0.1, 0.1))
 
-    # 1st, process the data with Atomic Parser
-    parser = pat.Parser(result_store)
-    parser.parse(file_content)
+def process(files, subject, vocab_store):
+    result_store = ds.ParseResultStore(vocab_store)
 
-    # Process the same data with Atomic HeaderBody Parser
-    parser = pah.Parser(result_store)
-    parser.parse(file_content)
+    for idx, file in enumerate(files):
+        f_abst = file[0]    # absolute path
+        f_rel = file[1]     # relative path
+        print (subject, "(", idx, "of", fileCount, ") file", f_rel)
+        file_content = file_utils.read_file_any_encoding(f_abst)
+        if (len(file_content) == 0):
+            continue
 
-    # Process the same data with HeaderBody Parser
-    parser = phb.Parser(result_store)
-    parser.parse(file_content)
+        # 1st, process the data with Atomic Parser
+        parser = pat.Parser(result_store)
+        parser.parse(file_content)
 
-# Export the parsed data into file
-print ("Exporting the result...")
-result_store.export_to_file(export_dir)
+        # Process the same data with Atomic HeaderBody Parser
+        parser = pah.Parser(result_store)
+        parser.parse(file_content)
+
+        # Process the same data with HeaderBody Parser
+        parser = phb.Parser(result_store)
+        parser.parse(file_content)
+
+    # Export the parsed data into file
+    print ("Exporting the result...")
+    result_store.export_to_file(export_dir, subject)
+
+# Generate each file set
+process(trains, "train", vocab)
+process(devs, "dev", vocab)
+process(tests, "test", vocab)
+
+# Generate vocaburary file that contains words detected in all 3 file lists.
 vocab.save_to_file()
 
 print ("Finished.")
