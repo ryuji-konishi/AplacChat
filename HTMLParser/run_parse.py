@@ -15,11 +15,11 @@ import DataStore as ds
 
 
 html_folder = "C:\\Tmp\\aplac\\html\\aplac.net"
-# html_folder = "C:\\Tmp\\aplac\\html\\test"
+# html_folder = "C:\\Tmp\\aplac\\html\\xs"
 
 # current_dir = os.path.dirname(os.path.realpath(__file__))
 # export_dir = os.path.join(current_dir, 'export')
-export_dir = "C:\\Tmp\\aplac\\html\\export"
+export_dir = "C:\\Tmp\\aplac\\data\\xs"
 vocab_file = os.path.join(export_dir, 'vocab.src')
 if not os.path.exists(export_dir): os.makedirs(export_dir)
 
@@ -31,13 +31,19 @@ vocab = ds.VocabStore(vocab_file)
 print ("Searching HTML files in the input directory...")
 files = file_utils.get_filelist_in_path("html", html_folder, True)
 # Distribute the list of files randomly into 3 lists - train, dev and test.
-# The distribution ratio is train 80%, dev 10% and test 10%.
-trains, devs, tests = utils.distribute_rnd(files, (0.8, 0.1, 0.1))
+# The distribution ratio is train 98%, dev 1% and test 1%.
+# Be careful not to make dev and test files too big otherwise Tensorflow training
+# fails with out-of-memory (even with GPU machine).
+trains, devs, tests = utils.distribute_rnd(files, (0.98, 0.01, 0.01))
 
-# trains = ["C:\\Tmp\\aplac\\html\\aplac.net\\life\\life53.html", "life\\life53.html"]
+# trains = [("C:\\Tmp\\aplac\\html\\aplac.net\\life\\life53.html", "life\\life53.html")]
+# devs = [("C:\\Tmp\\aplac\\html\\aplac.net\\life\\life53.html", "life\\life53.html")]
+# tests = [("C:\\Tmp\\aplac\\html\\aplac.net\\life\\life53.html", "life\\life53.html")]
 
 
-def process(files, subject, vocab_store):
+def process(files, subject, vocab_store, size_limit_KB = None):
+    """ size_limit_KB is the limit of file size to be written. The size is in Kilo bite (1024 bytes)
+    """
     result_store = ds.ParseResultStore(vocab_store)
 
     for idx, file in enumerate(files):
@@ -62,13 +68,13 @@ def process(files, subject, vocab_store):
 
     # Export the parsed data into file
     print ("Exporting the result...")
-    result_store.export_to_file(export_dir, subject)
+    result_store.export_to_file(export_dir, subject, size_limit_KB)
 
 # Generate each file set
 print ("Total", len(files), "files to process.")
 process(trains, "train", vocab)
-process(devs, "dev", vocab)
-process(tests, "test", vocab)
+process(devs, "dev", vocab, 100)
+process(tests, "test", vocab, 100)
 
 # Generate vocaburary file that contains words detected in all 3 file lists.
 vocab.save_to_file()
