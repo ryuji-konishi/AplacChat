@@ -442,16 +442,19 @@ def compute_perplexity(model, sess, name):
   total_loss = 0
   total_predict_count = 0
   start_time = time.time()
+  loop_cnt = 1
 
   while True:
     try:
+      utils.print_out("  compute_perplexity loop %d" % loop_cnt)
       loss, predict_count, batch_size = model.eval(sess)
       total_loss += loss * batch_size
       total_predict_count += predict_count
-    except tf.errors.OutOfRangeError:
+      loop_cnt += 1
+    except tf.errors.OutOfRangeError as ex:
       break
 
   perplexity = utils.safe_exp(total_loss / total_predict_count)
-  utils.print_time("  eval %s: perplexity %.2f" % (name, perplexity),
+  utils.print_time("  eval %s: perplexity %.2f cnt %d" % (name, perplexity, loop_cnt),
                    start_time)
   return perplexity

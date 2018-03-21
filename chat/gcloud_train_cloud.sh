@@ -17,7 +17,7 @@
 PROJECT_ID=ryuji-test1
 BUCKET_NAME=${PROJECT_ID}-mlengine
 REGION=asia-east1
-DATA_NAME="5_0319"
+DATA_NAME="7_5812"
 
 # Local directory
 #    chat
@@ -51,14 +51,14 @@ gsutil -m cp -r "$LOCAL_DATA_PATH/data/*" "$REMOTE_DATA_PATH"
 #
 # Run the Training Job
 #
-JOB_NAME=job_$(date +"%y%m%d_%H%M%S")_standard_p100_tf15
+JOB_NAME=job_$(date +"%y%m%d_%H%M%S")_${DATA_NAME}_standard_gpu
 OUTPUT_PATH=gs://$BUCKET_NAME/$DATA_NAME/model/$JOB_NAME
 touch log
 gsutil cp ./log "$OUTPUT_PATH/"
 
 gcloud ml-engine jobs submit training $JOB_NAME \
  --job-dir $OUTPUT_PATH \
- --runtime-version 1.5 \
+ --runtime-version 1.4 \
  --package-path nmt \
  --module-name nmt.nmt \
  --region $REGION \
