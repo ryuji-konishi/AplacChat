@@ -7,6 +7,9 @@
 #  $ chmod 700 this_file.sh
 
 
+# Work under 'chat' directory.
+# /Users/ryuji/prg/aplac/chat
+
 #
 # Preparation
 #
@@ -14,7 +17,7 @@
 PROJECT_ID=ryuji-test1
 BUCKET_NAME=${PROJECT_ID}-mlengine
 REGION=asia-east1
-DATA_NAME="4_2316"
+DATA_NAME="7_5812"
 
 # Local directory
 #    chat
@@ -48,7 +51,7 @@ gsutil -m cp -r "$LOCAL_DATA_PATH/data/*" "$REMOTE_DATA_PATH"
 #
 # Run the Training Job
 #
-JOB_NAME=job_$(date +"%y%m%d_%H%M%S")
+JOB_NAME=job_$(date +"%y%m%d_%H%M%S")_${DATA_NAME}_standard_gpu
 OUTPUT_PATH=gs://$BUCKET_NAME/$DATA_NAME/model/$JOB_NAME
 touch log
 gsutil cp ./log "$OUTPUT_PATH/"
@@ -59,7 +62,7 @@ gcloud ml-engine jobs submit training $JOB_NAME \
  --package-path nmt \
  --module-name nmt.nmt \
  --region $REGION \
- --scale-tier=basic-gpu \
+ --config config.yaml \
  -- \
  --src="src" \
  --tgt="tgt" \
@@ -68,8 +71,8 @@ gcloud ml-engine jobs submit training $JOB_NAME \
  --dev_prefix="$REMOTE_DATA_PATH/dev" \
  --test_prefix="$REMOTE_DATA_PATH/test" \
  --out_dir="$OUTPUT_PATH" \
- --num_train_steps=12000 \
- --steps_per_stats=100 \
+ --num_train_steps=100 \
+ --steps_per_stats=20 \
  --num_layers=2 \
  --num_units=128 \
  --dropout=0.2 \

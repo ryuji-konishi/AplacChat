@@ -182,7 +182,7 @@ def train(hparams, scope=None, target_session=""):
   model_dir = hparams.out_dir
 
   # Log and output files
-  log_file = os.path.join(out_dir, "log_%d" % time.time())
+  log_file = os.path.join(out_dir, "log")
   log_f = tf.gfile.GFile(log_file, mode="a")
   utils.print_out("# log_file=%s" % log_file, log_f)
 
