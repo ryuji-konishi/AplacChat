@@ -23,7 +23,8 @@ namespace frontend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-
+            // This is required to accept AJAX post requests with anti cross site request forgery token in the header.
+            services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
             services.AddDbContext<ApplicationDbContext>();
         }
 

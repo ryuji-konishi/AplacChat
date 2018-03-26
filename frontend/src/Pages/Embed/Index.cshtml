@@ -27,6 +27,9 @@
         </div>
     
         <div id="chat-form" class="row">
+            <!-- You need anti forgery token when you submit post request. This tag is
+                referenced as with name '__RequestVerificationToken' -->
+            @Html.AntiForgeryToken()
             <textarea rows="1" cols="100" id="chat-input" placeholder="こんにちは！" style="resize: none;"></textarea>
             <div class="row small text-muted">
                 <div class="col-11 col-sm-10 col-xs-10">
@@ -67,7 +70,8 @@
     <script type="text/javascript">
         $(window).load(function () {
             initLayout($('body'), $('#chat-form'), $('#chat-scroll'));
-            init("@Model.ChatInferURL", $('#chat-form'), $('#chat-scroll'), $('#chat-records'));
+            init("@Model.ChatInferURL", $("#chat-form input[name='__RequestVerificationToken']").val(),
+                $('#chat-form'), $('#chat-scroll'), $('#chat-records'));
         });
     </script>
 </body>

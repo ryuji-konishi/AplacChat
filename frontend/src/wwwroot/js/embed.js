@@ -1,7 +1,9 @@
 var urlChatInferAddress;		// Chat inference request URL given by environment configuration.
+var strAntiForgeryToken;		// Anti forgery token is required for AJAX post requests.
 
-var init = function(chatInferAddress, divForm, divScroll, divRecords) {
+var init = function(chatInferAddress, antiForgeryToken, divForm, divScroll, divRecords) {
 	urlChatInferAddress = chatInferAddress;
+	strAntiForgeryToken = antiForgeryToken;
 	var input = divForm.find('#chat-input')
 	input.keypress(function(e) {
 		var code = (e.keyCode ? e.keyCode : e.which);
@@ -48,10 +50,13 @@ var submitChat = function(divForm, divScroll, divRecords) {
 	showBusyImage(divForm);
 	$.ajax({
 		url : urlChatInferAddress,
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader("XSRF-TOKEN", strAntiForgeryToken);
+		},
 		type : "POST",
 		dataType : "json",
-		contentType : "text/plain",
-		data : text,
+		contentType : "application/json; charset=utf-8",
+		data : JSON.stringify({ text: text }),
 		success : function(resp) {
 			if (resp != null) {
 				hideMessage(divForm);
