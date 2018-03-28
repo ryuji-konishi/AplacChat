@@ -17,7 +17,7 @@
 PROJECT_ID=ryuji-test1
 BUCKET_NAME=${PROJECT_ID}-mlengine
 REGION=asia-east1
-DATA_NAME="8_16012"
+DATA_NAME="tf_nmt"
 
 # Local directory
 #    chat
@@ -44,14 +44,14 @@ DATA_NAME="8_16012"
 #
 # Upload the Input Files
 #
-LOCAL_DATA_PATH="generated/$DATA_NAME"
+LOCAL_DATA_PATH=/Users/ryuji/tmp/tensorflow/tf_nmt
 REMOTE_DATA_PATH=gs://$BUCKET_NAME/$DATA_NAME/data
 gsutil -m cp -r "$LOCAL_DATA_PATH/data/*" "$REMOTE_DATA_PATH"
 
 #
 # Run the Training Job
 #
-JOB_NAME=job_$(date +"%y%m%d_%H%M%S")_${DATA_NAME}_standard_gpu
+JOB_NAME=job_$(date +"%y%m%d_%H%M%S")_tf_nmt_standard_gpu
 OUTPUT_PATH=gs://$BUCKET_NAME/$DATA_NAME/model/$JOB_NAME
 touch log
 gsutil cp ./log "$OUTPUT_PATH/"
@@ -64,22 +64,22 @@ gcloud ml-engine jobs submit training $JOB_NAME \
  --region $REGION \
  --config config.yaml \
  -- \
- --src="src" \
- --tgt="tgt" \
+ --src="vi" \
+ --tgt="en" \
  --vocab_prefix="$REMOTE_DATA_PATH/vocab" \
  --train_prefix="$REMOTE_DATA_PATH/train" \
- --dev_prefix="$REMOTE_DATA_PATH/dev" \
- --test_prefix="$REMOTE_DATA_PATH/test" \
+ --dev_prefix="$REMOTE_DATA_PATH/tst2012" \
+ --test_prefix="$REMOTE_DATA_PATH/tst2013" \
  --out_dir="$OUTPUT_PATH" \
- --num_train_steps=12000 \
- --steps_per_stats=100 \
+ --num_train_steps=100 \
+ --steps_per_stats=20 \
  --num_layers=2 \
- --num_units=256 \
+ --num_units=128 \
  --dropout=0.2 \
  --metrics="bleu" \
  --share_vocab=True \
- --src_max_len=300 \
- --tgt_max_len=300
+ --src_max_len=200 \
+ --tgt_max_len=200
 
 
 #
