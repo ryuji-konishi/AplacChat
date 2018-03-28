@@ -67,16 +67,11 @@ server {
     listen 80;
     server_name your_public_dnsname_here;
 
-    location /infer {
-        proxy_pass http://localhost:8000/infer;
-    }
     location / {
         proxy_pass http://localhost:5051;
     }
 }
 ```
-
-Since two different web internal servers will run, the proxy setting of nginx becomes a bit complicated. The 'infer' path is specifically assigned to the Chat component, and all the other paths go to the frontend.
 
 Check the configuration.
 ```
@@ -92,13 +87,16 @@ systemctl status nginx
 ```
 Now you can see '502 Bad Gateway' when you access to your EC2 instance domain URL with web browser. This means the web server is running.
 
-### 3. Change user
+### 3. Setup Database
+Currently we use MariaDB as the main database of the app. Follow the instructions in (this document)(README%20Setup%20MariaDB%20on%20AWS%20EC2.md) to set up MariaDB.
+
+### 4. Change user
 ```
 sudo su apps
 ```
 The following steps are done with this user.
 
-### 4. Create the application directory
+### 5. Create the application directory
 Create a folder ```~/prg``` where you place all your programs. Note this is apps user's folder, not ec2-user.
 
 Then create ```~/prg/aplac``` folder by cloning the git repository.
@@ -107,7 +105,7 @@ cd ~/prg
 git clone https://github.com/ryuji-konishi/AplacChat.git aplac
 ```
 
-### 5. Setup Python virtual environment
+### 6. Setup Python virtual environment
 This virtual environment is used for running the Chat component because it is a Python program.
 #### 1. Create virtualenv environment
 ```
@@ -142,7 +140,7 @@ pip install flask
 pip install gunicorn
 ```
 
-### 6. Setup .NET Core 2.0
+### 7. Setup .NET Core 2.0
 The installation steps are described in the [.NET Core 2.0 release note on github](
 https://github.com/dotnet/core/blob/master/release-notes). Refer to the latest release version before proceeding.
 
@@ -185,7 +183,21 @@ cd ~/prg/aplac/frontend/src
 dotnet build
 ```
 
-#### 4. Build .NET Core deployment package
+#### 4. Create Database
+Run Entity Framework Core commands for the initial creation and the migrations of database.
+Before proceeding, the database connection string has to be set as environment variable.
+```
+export MYSQL_CONNECTION_APPDB="server=localhost;database=aplacchat;userid=apps;password=yourpassword;"
+```
+
+Note the above user 'apps' is created during MariaDB installation described in the earlier section. This user is supposed to have access to database 'aplacchat' and local access is only granted.
+
+Enter the following command to execute the migration that creates a new schema 'aplacchat' in DB if doesn't exist.
+```
+dotnet ef database update
+```
+
+#### 5. Build .NET Core deployment package
 ```
 dotnet publish --configuration Release --output bin
 ```
@@ -220,42 +232,29 @@ journalctl --unit chat --follow
 Now aplac chat is started and it should be accessible.
 
 ### 3. Test Chat
-Send a POST http request to the following URL that returns the inferred text result.
-
-http://your_public_dnsname_here/infer
-
-If you use Postman, set the configurations as below.
-
-_Authorization_
-
-| Field  | Value |
-| ------------- | ------------- |
-| Type | No Auth |
-
-_Headers_
-
-| Field  | Value |
-| ------------- | ------------- |
-| Key | Content-Type |
-| Value | text/plain |
-| Description | (empty) |
-
-_Body_
-
-Choose 'raw' and 'Text' as data type, and then type in the inference data text into the text box.
+Send a POST http request to the chat infer URL that returns the inferred text result.
+```
+curl -d 'aaa' -H "Content-Type: text/plain" -X POST http://localhost:8000/infer
+```
 
 ## Start APLaC Frontend Service
 Same as Chat service described above, we use SystemD to run the Chat component as a Linux daemon. Get back to the root user before proceeding.
 
 ### 1. Set environment variables
-Before starting frontend, you need to set the environment variables that are defined in the service definition file.
+Before starting frontend, you need to set the environment variables that are stored in ```frontend.env``` file, and this file is reference in the service definition file.
 
-Open the service file ```/home/apps/prg/aplac/frontend/frontend.service``` and modify the following environment variables.
+Open the file ```/home/apps/prg/aplac/frontend/frontend.env``` and modify the following environment variables.
 
 ```
-Environment="ASPNETCORE_URLS=http://localhost:5051"
-Environment="CHAT_EMBED_URL=http://your_public_dnsname_here/Embed/Index"
-Environment="CHAT_INFER_URL=http://your_public_dnsname_here/infer"
+ASPNETCORE_URLS=http://localhost:5051
+CHAT_EMBED_URL=http://your_public_dnsname_here/Embed/Index
+CHAT_INFER_URL=http://your_public_dnsname_here/infer
+MYSQL_CONNECTION_APPDB="server=localhost;database=aplacchat;userid=apps;password=yourpassword;"
+```
+
+And copy the file to /etc/sysconfig directory.
+```
+sudo cp /home/apps/prg/aplac/frontend/frontend.env /etc/sysconfig
 ```
 
 ### 2. Register SystemD service file
