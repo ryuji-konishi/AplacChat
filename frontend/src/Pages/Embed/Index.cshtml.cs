@@ -39,34 +39,46 @@ namespace frontend.Pages.Embed
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var msg = getRequestParameter<PostMessage>();
+            // Get the request text sent from the front-end
+            var msg = getAjaxPostParameter<PostMessage>();
             if (msg == null)
                 return new StatusCodeResult(500);
 
-            string text = msg.text;
+            // Transfer the request to the Chat inference component and receive the result.
+            var response = await sendPostChatInferAsync(msg.text);
 
-            HttpClient client = new HttpClient();
-            var content = new StringContent(text, Encoding.UTF8, "text/plain");
-            var response = await client.PostAsync(_chatInferURL, content);
-            var responseString = response.Content.ReadAsStringAsync().Result;
-            var res = JsonConvert.DeserializeObject<string>(responseString);
+            // Store the chat conversation.
+            await saveChatRecordAsync(msg.text, response);
 
+            return new JsonResult(response);
+        }
+
+        private async Task saveChatRecordAsync(string input, string output)
+        {
             var record = new Model.ChatRecord
             {
                 UTC = DateTime.UtcNow,
-                Input = text,
-                Output = res
+                Input = input,
+                Output = output
             };
             _db.ChatRecords.Add(record);
-            _db.SaveChanges();
-            return new JsonResult(res);
+            await _db.SaveChangesAsync();
+        }
+
+        private async Task<string> sendPostChatInferAsync(string send)
+        {
+            HttpClient client = new HttpClient();
+            var content = new StringContent(send, Encoding.UTF8, "text/plain");
+            var response = await client.PostAsync(_chatInferURL, content);
+            var responseString = response.Content.ReadAsStringAsync().Result;
+            return JsonConvert.DeserializeObject<string>(responseString);
         }
 
         /**
             This method returns the argument parameter value that is sent via AJAX POST request.
             If it's not via AJAX, but the Razor Pages forms submit, you can use the BindProperty attribute instead.
          */
-        private T getRequestParameter<T>()
+        private T getAjaxPostParameter<T>()
         {
             T result = default(T);
             MemoryStream stream = new MemoryStream();
