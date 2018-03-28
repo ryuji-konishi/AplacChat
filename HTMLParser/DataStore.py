@@ -94,12 +94,18 @@ class ParseResultStore(object):
         # tgt = trim_structural_char(tgt)
         self.data.append([src, tgt])
 
-    def export_to_file(self, out_dir, basename = None):
+    def export_to_file(self, out_dir, basename = None, size_limit_KB = None):
         """ Write out the stored source/target data into a pair of src/tgt files.
             basename is the file name exclude extension. If omitted, ramdom name is generated.
+            size_limit_KB is the limit of file size to be written. The size is in Kilo bite (1024 bytes)
         """
         if not basename:
             basename = str(uuid.uuid4())
+        if size_limit_KB:
+            size_limit = size_limit_KB * 1024
+        else:
+            size_limit = None
+
         src_file = basename + '.src'
         tgt_file = basename + '.tgt'
         sf = open(os.path.join(out_dir, src_file), 'w', encoding='utf8')
@@ -108,6 +114,9 @@ class ParseResultStore(object):
             source_lines, target_lines = d[0], d[1]
             sf.write(source_lines)
             tf.write(target_lines)
+            if size_limit:
+                if sf.tell() > size_limit or tf.tell() > size_limit:
+                    break
         sf.close()
         tf.close()
 

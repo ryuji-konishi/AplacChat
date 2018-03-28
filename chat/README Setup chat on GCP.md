@@ -130,11 +130,20 @@ gcloud ml-engine jobs submit training $JOB_NAME \
 You can check the jobs [here](https://console.cloud.google.com/mlengine/jobs)
 
 ## Get the Result
-Download files from GCS to the local folder.
+
+Download the generated files (model folder) from GCS to local.
 ```
 mkdir $LOCAL_DATA_PATH/model
-gsutil -m cp -r dir $OUTPUT_PATH/* $LOCAL_DATA_PATH/model/
+gsutil -m cp -r $OUTPUT_PATH/* $LOCAL_DATA_PATH/model/
 ```
+
+If data folder download is required:
+```
+mkdir $LOCAL_DATA_PATH/data
+gsutil -m cp -r $OUTPUT_PATH/* $LOCAL_DATA_PATH/model/
+```
+
+### Modify HParams Paths
 The ```hparams``` file downloaded from storage contains the file path for Cloud Storage which is different from the local directory settings. This means that you can't run Chat locally to see the result of training. Replace the directory path from GCS to local.
 ```
 HPARAMS=$LOCAL_DATA_PATH/model/hparams
