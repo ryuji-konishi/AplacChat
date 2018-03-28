@@ -27,6 +27,8 @@ namespace frontend.Model
             modelBuilder.Entity<ChatRecord>(b =>
             {
                 b.Metadata.Relational().TableName = "ChatRecords";
+                b.Property(p => p.Input).HasColumnType("text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+                b.Property(p => p.Output).HasColumnType("text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
             });
         }
     }

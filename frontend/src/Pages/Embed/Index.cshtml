@@ -70,7 +70,7 @@
     <script type="text/javascript">
         $(window).load(function () {
             initLayout($('body'), $('#chat-form'), $('#chat-scroll'));
-            init("@Model.ChatInferURL", $("#chat-form input[name='__RequestVerificationToken']").val(),
+            init($("#chat-form input[name='__RequestVerificationToken']").val(),
                 $('#chat-form'), $('#chat-scroll'), $('#chat-records'));
         });
     </script>

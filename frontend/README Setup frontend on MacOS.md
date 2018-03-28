@@ -14,12 +14,17 @@ The front-end web page is developed with .NET Core 2.0 + MySQL and MacOS is used
 Install MySQL to your Mac by [downloading the installer](https://dev.mysql.com/downloads/mysql/), following the [installation guide](https://dev.mysql.com/doc/mysql-osx-excerpt/5.5/en/osx-installation-pkg.html).
 Also get [MySQL Workbench](https://dev.mysql.com/downloads/workbench/.)
 
-The installation configurations were all set to default. In the end a dialogue appears with a root username and password.
+During the installation the configurations were all set to default. In the end a dialogue appears with a root username and password.
 root@localhost: fxRpOWPx0h?f
 
 MySQL server is now installed, but it is not loaded (started) by default. Use either launchctl from the command line, or start MySQL by clicking "Start" using the MySQL preference pane.
 
 The initial password needs to be changed before you start using MySQL in the application. Open up MySQL Workbench and select the localhost server. Then it will ask for update.
+
+#### Default Character Set
+The default character set of MySQL v5.7 is latin1, the collation is latin1_swedish_ci. This causes error when UTF8 is entered. Since we want to store Japanese text and other international languages, we want to make sure 4 byte UTF8 is used. Note 3 byte UTF8, which is pretty much standard in general, is not good to store EMOJIs. So we will set 'utf8mb4' as character set configuration of MySQL.
+
+This workaround is done in Entity Framework Core. Refer to [Text Character Set] section below.
 
 ### Application Configuration
 You need different configuration whether you are debugging locally or the package is deployed on producion. In APLaC Chat front-end, it is done by environment variables.
@@ -27,6 +32,7 @@ You need different configuration whether you are debugging locally or the packag
 There are following environment variables that are specific to APLaC Chat front-end application.
 * CHAT_EMBED_URL - The URL which points to the chat frame page that is designed to be embedded into the parent page using iframe HTML tag.
 * CHAT_INFER_URL - The URL which plays a role of APLaC Chat inference API. This URL receives POST requests with text, and returns the resulted text which is the result of NMT Inference.
+* MYSQL_CONNECTION_APPDB - The DB connection string to access to the application DB on MySQL.
 
 The above environment variables are set by Visual Studio Code when you debug locally, and set in command terminal when it goes on production.
 
@@ -119,6 +125,61 @@ Enter the following command to execute the migration that creates a new schema '
 ```
 dotnet ef database update
 ```
+
+If the command fails make sure the environment variable is correctly set.
+
+#### Text Character Set
+There is a requirement that MySQL tables can contain text characters in UTF8 codec, primarily for Japanese language. To do this, text columns in MySQL tables have to be set 'utf8mb4' in character set property, and SQL query below shows an example.
+```
+CREATE TABLE t1
+(
+    col1 CHAR(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+)
+```
+The above ```CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci``` part is required.
+
+We expect data annotation attribute classes in ```MySQL.Data.EntityFrameworkCore``` do this job. However as of Mar.2018 this isn't going well. Version 6.10.6. and 8.0.10-rc are tested but both didn't work.
+Instead, it ended up with ```ColumnType``` attribute using fluent API of the original entity framework core. Both workarounds are described below.
+
+##### MySQL.Data.EntityFrameworkCore (failed)
+Add MySQL.Data.EntityFrameworkCore package with command below.
+```
+dotnet add package MySql.Data.EntityFrameworkCore
+```
+This package is required for detailed data annotations for EF Core.
+
+The MySQL data annotation is for specifying MySQL text character set and collation. ```MySqlCharsetAttribute``` and ```MySqlCollationAttribute``` are related. This time, since we want to focus on Japanese lanagueage and MySQL 'utf8' character set is not enough to contain EMOJIs, 'utf8mb4' is used instead.
+
+The code below add both character set and collation to ```Input``` column of ```ChatRecord``` table.
+```
+  modelBuilder.Entity<ChatRecord>(b =>
+  {
+      b.Property(p => p.Input).ForMySQLHasCharset("utf8mb4");
+      b.Property(p => p.Input).ForMySQLHasCollation("utf8mb4_general_ci");
+  });
+```
+
+For more information, [here](https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core-charset.html).
+
+##### ColumnType Attribute (success)
+Both data type and character set parameters are set together with HasColumnType method as below.
+```
+  modelBuilder.Entity<ChatRecord>(b =>
+  {
+      b.Metadata.Relational().TableName = "ChatRecords";
+      b.Property(p => p.Input).HasColumnType("text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+  });
+```
+The above code generate SQL query below.
+```
+CREATE TABLE `ChatRecords` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `Input` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    CONSTRAINT `PK_ChatRecords` PRIMARY KEY (`Id`)
+);
+```
+
+
 
 ### Test Run on Windows
 .NET Core is cross-platform. You can run frontend on a Windows machine.

@@ -15,8 +15,8 @@ namespace frontend.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Input = table.Column<string>(nullable: true),
-                    Output = table.Column<string>(nullable: true),
+                    Input = table.Column<string>(type: "text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci", nullable: true),
+                    Output = table.Column<string>(type: "text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci", nullable: true),
                     UTC = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<int>(nullable: false)
                 },

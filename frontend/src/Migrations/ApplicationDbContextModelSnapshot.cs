@@ -25,9 +25,11 @@ namespace frontend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Input");
+                    b.Property<string>("Input")
+                        .HasColumnType("text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 
-                    b.Property<string>("Output");
+                    b.Property<string>("Output")
+                        .HasColumnType("text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 
                     b.Property<DateTime>("UTC");
 
