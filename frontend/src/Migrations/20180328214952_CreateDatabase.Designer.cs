@@ -11,14 +11,13 @@ using System;
 namespace frontend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180328034357_CreateDatabase")]
+    [Migration("20180328214952_CreateDatabase")]
     partial class CreateDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011");
 
             modelBuilder.Entity("frontend.Model.ChatRecord", b =>
@@ -26,11 +25,9 @@ namespace frontend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Input")
-                        .HasColumnType("text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+                    b.Property<string>("Input");
 
-                    b.Property<string>("Output")
-                        .HasColumnType("text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+                    b.Property<string>("Output");
 
                     b.Property<DateTime>("UTC");
 

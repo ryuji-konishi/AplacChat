@@ -4,13 +4,16 @@ This document describes how to setup and run the APLaC Chat front-end web page l
 This front-end web page accepts the text that the user types in, sends the text to the Chat component and shows the result.
 
 ## Setup Environment (MacOS X + .NET Core 2.0)
-The front-end web page is developed with .NET Core 2.0 + MySQL and MacOS is used as the development machine. And finally it will be deployed on a web hosting server but it's not described in this document.
+The front-end web page is developed with .NET Core 2.0 + MySQL|SQLite and MacOS is used as the development machine. And finally it will be deployed on a web hosting server but it's not described in this document.
 
 ### Things required in advance
 * .NET Core 2.0 SDK for Mac
 * Visual Studio Code for Mac
 
-### MySQL Installation
+### Database Installation
+You can choose either MySQL or SQLite for the application database. Here we have the option for SQLite because MySQL(MariaDB) requires middle-high CPU resource and it is too much for AWS EC2 t2.nano instance.
+
+### MySQL
 Install MySQL to your Mac by [downloading the installer](https://dev.mysql.com/downloads/mysql/), following the [installation guide](https://dev.mysql.com/doc/mysql-osx-excerpt/5.5/en/osx-installation-pkg.html).
 Also get [MySQL Workbench](https://dev.mysql.com/downloads/workbench/.)
 
@@ -26,13 +29,19 @@ The default character set of MySQL v5.7 is latin1, the collation is latin1_swedi
 
 This workaround is done in Entity Framework Core. Refer to [Text Character Set] section below.
 
+### SQLite
+We assume SQLite is preinstalled on your MacOS X. Type the command below to confirm.
+```
+sqlite3 -version
+```
+
 ### Application Configuration
 You need different configuration whether you are debugging locally or the package is deployed on producion. In APLaC Chat front-end, it is done by environment variables.
 
 There are following environment variables that are specific to APLaC Chat front-end application.
 * CHAT_EMBED_URL - The URL which points to the chat frame page that is designed to be embedded into the parent page using iframe HTML tag.
 * CHAT_INFER_URL - The URL which plays a role of APLaC Chat inference API. This URL receives POST requests with text, and returns the resulted text which is the result of NMT Inference.
-* MYSQL_CONNECTION_APPDB - The DB connection string to access to the application DB on MySQL.
+* CONNECTION_APPDB - The DB connection string to access to the application DB on MySQL.
 
 The above environment variables are set by Visual Studio Code when you debug locally, and set in command terminal when it goes on production.
 
@@ -91,9 +100,14 @@ dotnet add package BuildBundlerMinifier
 ```
 
 #### Add Entity Framework Core
-Add Entity Framework Core with MySQL data provider.
+Add Entity Framework Core with data provider of either MySQL or SQLite.
+Choose either of below.
 ```
-dotnet add package Pomelo.EntityFrameworkCore.MySql
+dotnet add package Pomelo.EntityFrameworkCore.MySql     # for MySQL
+dotnet add package Microsoft.EntityFrameworkCore.Sqlite # for SQLite
+```
+And then run below.
+```
 dotnet add package Microsoft.EntityFrameworkCore.Tools
 dotnet add package Microsoft.EntityFrameworkCore.Design
 ```
@@ -105,15 +119,16 @@ To use the command in Visual Studio Code integrated terminal, add the following 
 </ItemGroup>
 ```
 
-In ```ApplicationDbContext``` class the following lines configure MySQL as the database provider. Note the connection string is set as environment variable ```MYSQL_CONNECTION_APPDB```.
+In ```ApplicationDbContext``` class the following lines configure the database provider. Note the connection string is set as environment variable ```CONNECTION_APPDB```.
 ```
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
       IConfigurationRoot configuration = new ConfigurationBuilder()
           .AddEnvironmentVariables()
           .Build();
-      var sqlConnection = configuration.GetSection("MYSQL_CONNECTION_APPDB").Value;
-      optionsBuilder.UseMySql(sqlConnection);
+      var sqlConnection = configuration.GetSection("CONNECTION_APPDB").Value;
+      optionsBuilder.UseMySql(sqlConnection);   // for MySQL
+      optionsBuilder.UseSqlite(sqlConnection);  // for SQLite
   }
 ```
 
@@ -121,14 +136,14 @@ After declaring ApplicationDbContext class, run EF commands for migrations. The 
 ```
 dotnet ef migrations add CreateDatabase
 ```
-Enter the following command to execute the migration that creates a new schema 'aplacchat' in DB if doesn't exist.
+Enter the following command to execute the migration that updates the database according to the model design. Also it creates database if doesn't exit.
 ```
 dotnet ef database update
 ```
 
 If the command fails make sure the environment variable is correctly set.
 
-#### Text Character Set
+### Text Character Set (MySQL specific)
 There is a requirement that MySQL tables can contain text characters in UTF8 codec, primarily for Japanese language. To do this, text columns in MySQL tables have to be set 'utf8mb4' in character set property, and SQL query below shows an example.
 ```
 CREATE TABLE t1
@@ -141,7 +156,7 @@ The above ```CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci``` part is require
 We expect data annotation attribute classes in ```MySQL.Data.EntityFrameworkCore``` do this job. However as of Mar.2018 this isn't going well. Version 6.10.6. and 8.0.10-rc are tested but both didn't work.
 Instead, it ended up with ```ColumnType``` attribute using fluent API of the original entity framework core. Both workarounds are described below.
 
-##### MySQL.Data.EntityFrameworkCore (failed)
+#### MySQL.Data.EntityFrameworkCore (failed)
 Add MySQL.Data.EntityFrameworkCore package with command below.
 ```
 dotnet add package MySql.Data.EntityFrameworkCore
@@ -161,7 +176,7 @@ The code below add both character set and collation to ```Input``` column of ```
 
 For more information, [here](https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core-charset.html).
 
-##### ColumnType Attribute (success)
+#### ColumnType Attribute (success)
 Both data type and character set parameters are set together with HasColumnType method as below.
 ```
   modelBuilder.Entity<ChatRecord>(b =>

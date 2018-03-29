@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
 
@@ -14,9 +13,9 @@ namespace frontend.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Input = table.Column<string>(type: "text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci", nullable: true),
-                    Output = table.Column<string>(type: "text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci", nullable: true),
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Input = table.Column<string>(nullable: true),
+                    Output = table.Column<string>(nullable: true),
                     UTC = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<int>(nullable: false)
                 },
