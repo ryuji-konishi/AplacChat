@@ -44,7 +44,7 @@ DATA_NAME="tf_nmt"
 #
 # Upload the Input Files
 #
-LOCAL_DATA_PATH=/Users/ryuji/tmp/tensorflow/tf_nmt
+LOCAL_DATA_PATH=/Users/ryuji/tmp/tensorflow/$DATA_NAME
 REMOTE_DATA_PATH=gs://$BUCKET_NAME/$DATA_NAME/data
 gsutil -m cp -r "$LOCAL_DATA_PATH/data/*" "$REMOTE_DATA_PATH"
 
