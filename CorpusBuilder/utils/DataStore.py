@@ -64,9 +64,9 @@ class CorpusStore(object):
     def _copy_data(self, data):
         self.data = data
 
-    def _store_data(self, source_text_line, target_text_line):
+    def _store_data(self, source_text_line, target_text_line, store_vocab = True):
         self.data.append([source_text_line, target_text_line])
-        if self.vocab_store:
+        if self.vocab_store and store_vocab:
             buf_list = self.resolver.split(source_text_line)
             self.vocab_store.add_vocab_words(buf_list)
             buf_list = self.resolver.split(target_text_line)
@@ -114,11 +114,14 @@ class CorpusStore(object):
             source_text_line, target_text_line = data[0], data[1]
             self._store_data(source_text_line, target_text_line)
 
-    def export_to_file(self, out_dir, basename = None, size_limit_KB = None):
+    def export_to_file(self, out_dir, basename = None, size_limit_KB = None, store_vocab = False):
         """ Write out the stored source/target data into a pair of src/tgt files.
             The text is splitted into character/word level and then concatenated by space ' '.
             basename is the file name exclude extension. If omitted, ramdom name is generated.
             size_limit_KB is the limit of file size to be written. The size is in Kilo bite (1024 bytes)
+            When store_vacab is True, the splitted text is stored into vocaburary store. This is useful
+            if you want to do the two things, exporting into file and storing into vocaburary, at the 
+            same time and improve performance.
         """
         if not basename:
             basename = str(uuid.uuid4())
@@ -133,13 +136,17 @@ class CorpusStore(object):
             for d in self.data:
                 source_text_line, target_text_line = d[0], d[1]
 
-                buf_list = self.resolver.split(source_text_line)
-                buf_str = utils.join_list_by_space(buf_list)
+                src_list = self.resolver.split(source_text_line)
+                buf_str = utils.join_list_by_space(src_list)
                 sf.write(buf_str + '\n')
 
-                buf_list = self.resolver.split(target_text_line)
-                buf_str = utils.join_list_by_space(buf_list)
+                tgt_list = self.resolver.split(target_text_line)
+                buf_str = utils.join_list_by_space(tgt_list)
                 tf.write(buf_str + '\n')
+
+                if self.vocab_store and store_vocab:
+                    self.vocab_store.add_vocab_words(src_list)
+                    self.vocab_store.add_vocab_words(tgt_list)
 
                 if size_limit:
                     if sf.tell() > size_limit or tf.tell() > size_limit:
@@ -164,11 +171,12 @@ class CorpusStore(object):
 
         return file_path
 
-    def import_corpus(self, file_path):
-        """ Read the corpus file and restore the data. Vocaburary is also restored.
+    def import_corpus(self, file_path, restore_vocab):
+        """ Read the corpus file and restore the data.
+            When restore_vacab is True, the vocaburary is also restored.
         """
         with open(file_path, 'r', encoding='utf8') as fp:
             lines = json.load(fp)
             for data in lines:
                 source_text_line, target_text_line = data[0], data[1]
-                self._store_data(source_text_line, target_text_line)
+                self._store_data(source_text_line, target_text_line, restore_vocab)

@@ -36,7 +36,9 @@ def corpus(input_path, export_dir):
         f_abst = file[0]    # absolute path
         f_rel = file[1]     # relative path
         print ("(", idx, "of", len(files), ") file", f_rel)
-        corpus_store.import_corpus(f_abst)
+        # Import and restore corpus store.
+        # Don't restore vocaburary here. It's time consuming. It'll be restored during export later on.
+        corpus_store.import_corpus(f_abst, False)
 
     # Split the corpus data randomly into 3 blocks - train, dev and test.
     # The distribution ratio is train 98%, dev 1% and test 1%.
@@ -47,9 +49,9 @@ def corpus(input_path, export_dir):
     def process(corpus_store, subject, size_limit_KB = None):
         """ size_limit_KB is the limit of file size to be written. The size is in Kilo bite (1024 bytes)
         """
-        # Export the corpus data into file
+        # Export the corpus data into file. Also vocaburary is restored here.
         print ("Exporting the", subject, "data into file...")
-        corpus_store.export_to_file(export_dir, subject, size_limit_KB)
+        corpus_store.export_to_file(export_dir, subject, size_limit_KB, True)
 
     # Generate each file set
     process(train, "train")
@@ -132,7 +134,7 @@ if __name__ == "__main__":
         corpus(input_dir, export_dir)
     elif args.mode == 'parse':
         # input_dir = "C:\\Tmp\\aplac\\html\\aplac.net"
-        input_dir = "C:\\Tmp\\aplac\\html\\xs\\gogaku\\kamata.html"
+        input_dir = "C:\\Tmp\\aplac\\html\\xs"
         # current_dir = os.path.dirname(os.path.realpath(__file__))
         # export_dir = os.path.join(current_dir, 'export')
         export_dir = "C:\\Tmp\\aplac\\data\\xs"
