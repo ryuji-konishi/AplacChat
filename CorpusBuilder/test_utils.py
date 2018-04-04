@@ -20,20 +20,21 @@ class TestResultStore(unittest.TestCase):
         result_store.store_result('source text', 'target text')
         self.assertTrue(
             result_store.data, 
-            ['source text\n', 'target text\n'])
+            ['source text', 'target text'])
         result_store.clear()
 
         result_store.store_result(['source text'], ['target text'])
         self.assertTrue(
             result_store.data, 
-            ['source text\n', 'target text\n'])
+            ['source text', 'target text'])
         result_store.clear()
 
         # The result is broken into multiple lines if multiple inputs are stored.
         result_store.store_result(['source text1', 'source text2'], ['target text1', 'target text2'])
         self.assertTrue(
             result_store.data, 
-            ['source text1\nsource text2\n', 'target text1\ntarget text2\n'])
+            [['source text1', 'target text1'],
+            ['source text2', 'target text2']])
         result_store.clear()
 
         # The result is broken into words space ' ' separated.
@@ -41,16 +42,16 @@ class TestResultStore(unittest.TestCase):
         result_store.store_result(['source text', 'ソース'], ['target text', 'ターゲット'])
         self.assertTrue(
             result_store.data, 
-            ['source text\nソ ー ス\n', 'target text\nタ ー ゲ ッ ト\n'])
+            [['source text', 'target text'],
+            ['ソ ー ス', 'ターゲット']])
         result_store.clear()
 
         # The input is single line of source and multi lines of target.
         result_store.store_result('source line', 'target line1\ntarget line2')
         self.assertTrue(
             result_store.data, 
-            ['source line\n', 'target line <br> target line2\n'])
+            ['source line', 'target line <br> target line2'])
         result_store.clear()
-
 
 class TestUtils(unittest.TestCase):
     def setUp(self):

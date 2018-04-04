@@ -11,8 +11,8 @@ import parsers.ParserAtomic as pat
 import parsers.ParserAtomicHeaderBody as pah
 import parsers.ParserHeaderBody as phb
 
-def corpuse(input_path, export_dir):
-    """ Compile the corpuse files and generate a set of NMT data files (train/dev/test).
+def corpus(input_path, export_dir):
+    """ Compile the corpus files and generate a set of NMT data files (train/dev/test).
         input_path is either a folder path or file path, both in absolute path.
     """
     vocab_file = os.path.join(export_dir, 'vocab.src')
@@ -27,47 +27,44 @@ def corpuse(input_path, export_dir):
         for idx, file in enumerate(files):
             f_abst = file[0]    # absolute path
             f_rel = file[1]     # relative path
-            print (subject, "(", idx, "of", len(files), ") file", f_rel)
-            file_content = file_utils.read_file_any_encoding(f_abst)
-            if (len(file_content) == 0):
-                continue
+            print ("(", idx, "of", len(files), ") file", f_rel)
+            result_store.import_corpus(f_abst)
 
-        # Export the corpuse data into file
+        # Export the corpus data into file
         print ("Exporting the result...")
-        result_store.export_corpus(export_dir, subject, size_limit_KB)
+        result_store.export_to_file(export_dir, subject, size_limit_KB)
 
     if os.path.isfile(input_path):
         print ("The input file is", input_path)
         print ("The output directory is", export_dir)
-
         files = [[input_path, os.path.basename(input_path)]]
-        process(files, "train", vocab)
-
     else:
         input_dir = input_path
         print ("The input directory is", input_dir)
         print ("The output directory is", export_dir)
-        print ("Searching corpuse files in the input directory...")
+        print ("Searching corpus files in the input directory...")
         files = file_utils.get_filelist_in_path("cor", input_dir, True)
 
         # Distribute the list of files randomly into 3 lists - train, dev and test.
         # The distribution ratio is train 98%, dev 1% and test 1%.
         # Be careful not to make dev and test files too big otherwise Tensorflow training
         # fails with out-of-memory (even with GPU machine).
-        trains, devs, tests = utils.distribute_rnd(files, (0.98, 0.01, 0.01))
+        # trains, devs, tests = utils.distribute_rnd(files, (0.98, 0.01, 0.01))
 
         # Generate each file set
-        print ("Total", len(files), "files to process.")
-        process(trains, "train", vocab)
-        process(devs, "dev", vocab, 100)
-        process(tests, "test", vocab, 100)
+        # print ("Total", len(files), "files to process.")
+        # process(trains, "train", vocab)
+        # process(devs, "dev", vocab, 100)
+        # process(tests, "test", vocab, 100)
 
+    print ("Total", len(files), "files to process.")
+    process(files, "train", vocab)
     # Generate vocaburary file that contains words detected in all 3 file lists.
     vocab.save_to_file()
 
 
 def parse_html(input_path, export_dir):
-    """ Parse the HTML files and generate a corpuse file.
+    """ Parse the HTML files and generate a corpus file.
         input_path is either a folder path or file path, both in absolute path.
     """
 
@@ -130,6 +127,10 @@ if __name__ == "__main__":
     args = arg_parser.parse_args()
     
     if args.mode == 'debug':
+        input_dir = "C:\\Tmp\\aplac\\data\\xs"
+        export_dir = "C:\\Tmp\\aplac\\data\\xs"
+        corpus(input_dir, export_dir)
+    elif args.mode == 'parse':
         # input_dir = "C:\\Tmp\\aplac\\html\\aplac.net"
         input_dir = "C:\\Tmp\\aplac\\html\\xs\\gogaku\\kamata.html"
         # current_dir = os.path.dirname(os.path.realpath(__file__))

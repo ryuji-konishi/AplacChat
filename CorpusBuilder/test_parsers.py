@@ -23,11 +23,15 @@ class TestAtomicParser(unittest.TestCase):
         parser = pat.Parser(result_store)
         parser.parse(self.html)
 
-        expected = [[
-            'test\nヘ ッ ダ ー 1\nこ ん に ち は 。\n',
-            'ヘ ッ ダ ー 1\nこ ん に ち は 。\nさ よ う な ら 。\n'
-            ]]
+        expected = [
+            ['test', 'ヘッダー1'],
+            ['ヘッダー1', 'こんにちは。'],
+            ['こんにちは。', 'さようなら。'],
+        ]
         self.assertCountEqual(expected, result_store.data)
+
+        expected = ['<unk>', '<s>', '</s>', '<br>', '<sp>', '<c1>', '<c2>', 'test', 'ヘ', 'ッ', 'ダ', 'ー', '1', 'こ', 'ん', 'に', 'ち', 'は', '。', 'さ', 'よ', 'う', 'な', 'ら']
+        self.assertCountEqual(expected, vocab.data_new)
 
 class TestAtomicHeaderBodyParser(unittest.TestCase):
     def setUp(self):
@@ -90,10 +94,15 @@ class TestAtomicHeaderBodyParser(unittest.TestCase):
         parser = pah.Parser(result_store)
         parser.parse(self.htmlStruct)
 
-        expected = [[
-            'H 4 - A\nH 1 - A\nH 1 - A\nH 1 - A\nH 3 - A\nH 2 - A\nH 1 - B\n',
-            'body H 4 - A - 1\nbody H 1 - A - 1\nH 3 - A\nH 2 - A\nbody H 3 - A - 1\nbody H 2 - A - 1\nbody H 1 - B - 1\n'
-            ]]
+        expected = [
+            ['H4-A', 'body H4-A-1'],
+            ['H1-A', 'body H1-A-1'],
+            ['H1-A', 'H3-A'],
+            ['H1-A', 'H2-A'],
+            ['H3-A', 'body H3-A-1'],
+            ['H2-A', 'body H2-A-1'],
+            ['H1-B', 'body H1-B-1']
+        ]
         self.assertCountEqual(expected, result_store.data)
 
     def test_AtomicHeaderBodyParserJpn(self):
@@ -108,10 +117,10 @@ class TestAtomicHeaderBodyParser(unittest.TestCase):
             '</body></html>')
         parser.parse(html)
 
-        expected = [[
-            'ヘ ッ ダ ー 1\nヘ ッ ダ ー 1\n',
-            'こ ん に ち は 。\nさ よ う な ら 。\n'
-            ]]
+        expected = [
+            ['ヘッダー1','こんにちは。'],
+            ['ヘッダー1','さようなら。']
+        ]
         self.assertCountEqual(expected, result_store.data)
 
 class TestHeaderBodyParser(unittest.TestCase):
@@ -144,9 +153,9 @@ class TestHeaderBodyParser(unittest.TestCase):
         parser.parse(self.htmlStruct)
 
         expected = [
-            ['H 1 - A\n', 'body H 1 - A - 1 <br> body H 2 - A - 1 <br> body H 2 - B - 1 <br> body H 2 - B - 2 <br> body H 3 - A - 1 <br> body H 2 - C - 1\n'],
-            ['H 1 - B\n', 'body H 3 - A - 1 <br> body H 2 - A - 1\n']
-            ]
+            ['H1-A', 'body H1-A-1\nbody H2-A-1\nbody H2-B-1\nbody H2-B-2\nbody H3-A-1\nbody H2-C-1'],
+            ['H1-B', 'body H3-A-1\nbody H2-A-1']
+        ]
         self.assertCountEqual(expected, result_store.data)
 
     def test_parse_h2(self):
@@ -157,11 +166,11 @@ class TestHeaderBodyParser(unittest.TestCase):
         parser.parse(self.htmlStruct)
 
         expected = [
-            ['H 2 - A\n', 'body H 2 - A - 1\n'],
-            ['H 2 - B\n', 'body H 2 - B - 1 <br> body H 2 - B - 2 <br> body H 3 - A - 1\n'],
-            ['H 2 - C\n', 'body H 2 - C - 1\n'],
-            ['H 2 - A\n', 'body H 2 - A - 1\n']
-            ]
+            ['H2-A', 'body H2-A-1'],
+            ['H2-B', 'body H2-B-1\nbody H2-B-2\nbody H3-A-1'],
+            ['H2-C', 'body H2-C-1'],
+            ['H2-A', 'body H2-A-1']
+        ]
         self.assertCountEqual(expected, result_store.data)
 
     def test_parse_h3(self):
@@ -172,9 +181,9 @@ class TestHeaderBodyParser(unittest.TestCase):
         parser.parse(self.htmlStruct)
 
         expected = [
-            ['H 3 - A\n', 'body H 3 - A - 1\n'],
-            ['H 3 - A\n', 'body H 3 - A - 1\n']
-            ]
+            ['H3-A', 'body H3-A-1'],
+            ['H3-A', 'body H3-A-1']
+        ]
         self.assertCountEqual(expected, result_store.data)
 
     def test_parse_script(self):
@@ -194,8 +203,8 @@ class TestHeaderBodyParser(unittest.TestCase):
         parser.parse(html)
 
         expected = [
-            ['H 1 - A\n', 'font element body\n'],
-            ]
+            ['H1-A', 'font element body'],
+        ]
         self.assertCountEqual(expected, result_store.data)
 
 

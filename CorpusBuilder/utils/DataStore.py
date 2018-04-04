@@ -51,25 +51,26 @@ class VocabStore(object):
                 f.close()
 
 class ParseResultStore(object):
-    # def __init__(self):
-    #     self.data = []
-
     def __init__(self, vocab_store = None):
         self.data = []
         self.vocab_store = vocab_store
         self.resolver = sr.SentenseResolver()
 
-    # def store_result(self, source_text, target_text):
-    #     self.data.append([source_text, target_text])
+    def _store_text(self, source_text_line, target_text_line):
+        self.data.append([source_text_line, target_text_line])
+        if self.vocab_store:
+            buf_list = self.resolver.split(source_text_line)
+            self.vocab_store.add_vocab_words(buf_list)
+            buf_list = self.resolver.split(target_text_line)
+            self.vocab_store.add_vocab_words(buf_list)
 
     def clear(self):
         del self.data[:]
 
     def store_result(self, source, target):
         """ source/target is either a line of text or a list of text.
-        This function stores the source/target text line after splitting in 
-        character/word level and then concatenated by space ' '.
-        Also those charactger/word is added into the vocabulary.
+        This function stores the source/target text line into the list
+        while splitting the text into character/word level and adding into the vocabulary.
         """
         if len(source) == 0 or len(target) == 0:
             return
@@ -77,28 +78,13 @@ class ParseResultStore(object):
             source = [source]
         if isinstance(target, str):
             target = [target]
-        src, tgt = '', ''
         for result in zip(source, target):
             source_text_line, target_text_line = result[0], result[1]
-
-            src_list = self.resolver.split(source_text_line)
-            buf_str = utils.join_list_by_space(src_list)
-            src += buf_str + '\n'
-
-            tgt_list = self.resolver.split(target_text_line)
-            buf_str = utils.join_list_by_space(tgt_list)
-            tgt += buf_str + '\n'
-
-            if self.vocab_store:
-                self.vocab_store.add_vocab_words(src_list)
-                self.vocab_store.add_vocab_words(tgt_list)
-
-        # src = trim_structural_char(src)
-        # tgt = trim_structural_char(tgt)
-        self.data.append([src, tgt])
+            self._store_text(source_text_line, target_text_line)
 
     def export_to_file(self, out_dir, basename = None, size_limit_KB = None):
         """ Write out the stored source/target data into a pair of src/tgt files.
+            The text is splitted into character/word level and then concatenated by space ' '.
             basename is the file name exclude extension. If omitted, ramdom name is generated.
             size_limit_KB is the limit of file size to be written. The size is in Kilo bite (1024 bytes)
         """
@@ -113,9 +99,16 @@ class ParseResultStore(object):
         tgt_path = os.path.join(out_dir, basename + '.tgt')
         with open(src_path, 'w', encoding='utf8') as sf, open(tgt_path, 'w', encoding='utf8') as tf:
             for d in self.data:
-                source_lines, target_lines = d[0], d[1]
-                sf.write(source_lines)
-                tf.write(target_lines)
+                source_text_line, target_text_line = d[0], d[1]
+
+                buf_list = self.resolver.split(source_text_line)
+                buf_str = utils.join_list_by_space(buf_list)
+                sf.write(buf_str + '\n')
+
+                buf_list = self.resolver.split(target_text_line)
+                buf_str = utils.join_list_by_space(buf_list)
+                tf.write(buf_str + '\n')
+
                 if size_limit:
                     if sf.tell() > size_limit or tf.tell() > size_limit:
                         break
@@ -134,7 +127,17 @@ class ParseResultStore(object):
             size_limit = None
 
         file_path = os.path.join(out_dir, basename + '.cor')
-        with open(file_path, 'w', encoding='utf8') as fn:
-            json.dump(self.data, fn, ensure_ascii=False)
+        with open(file_path, 'w', encoding='utf8') as fp:
+            json.dump(self.data, fp, ensure_ascii=False)
 
         return file_path
+
+    def import_corpus(self, file_path):
+        """ Read the corpus file and restore the data. Vocaburary is also restored.
+        """
+        with open(file_path, 'r', encoding='utf8') as fp:
+            data = json.load(fp)
+            for result in data:
+                source_text_line, target_text_line = result[0], result[1]
+                self._store_text(source_text_line, target_text_line)
+            
