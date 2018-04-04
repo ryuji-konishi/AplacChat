@@ -19,8 +19,8 @@ class TestAtomicParser(unittest.TestCase):
     def test_AtomicParserJpn(self):
         """Test the targetted atomic parser with Japanese sentence."""
         vocab = ds.VocabStore()
-        result_store = ds.ParseResultStore(vocab)
-        parser = pat.Parser(result_store)
+        corpus_store = ds.CorpusStore(vocab)
+        parser = pat.Parser(corpus_store)
         parser.parse(self.html)
 
         expected = [
@@ -28,7 +28,7 @@ class TestAtomicParser(unittest.TestCase):
             ['ヘッダー1', 'こんにちは。'],
             ['こんにちは。', 'さようなら。'],
         ]
-        self.assertCountEqual(expected, result_store.data)
+        self.assertCountEqual(expected, corpus_store.data)
 
         expected = ['<unk>', '<s>', '</s>', '<br>', '<sp>', '<c1>', '<c2>', 'test', 'ヘ', 'ッ', 'ダ', 'ー', '1', 'こ', 'ん', 'に', 'ち', 'は', '。', 'さ', 'よ', 'う', 'な', 'ら']
         self.assertCountEqual(expected, vocab.data_new)
@@ -90,8 +90,8 @@ class TestAtomicHeaderBodyParser(unittest.TestCase):
     def test_AtomicHeaderBodyParser(self):
         """Test the targetted atomic parser which is going to be in the actual use."""
         vocab = ds.VocabStore()
-        result_store = ds.ParseResultStore(vocab)
-        parser = pah.Parser(result_store)
+        corpus_store = ds.CorpusStore(vocab)
+        parser = pah.Parser(corpus_store)
         parser.parse(self.htmlStruct)
 
         expected = [
@@ -103,13 +103,13 @@ class TestAtomicHeaderBodyParser(unittest.TestCase):
             ['H2-A', 'body H2-A-1'],
             ['H1-B', 'body H1-B-1']
         ]
-        self.assertCountEqual(expected, result_store.data)
+        self.assertCountEqual(expected, corpus_store.data)
 
     def test_AtomicHeaderBodyParserJpn(self):
         """Test the targetted atomic parser with Japanese sentence."""
         vocab = ds.VocabStore()
-        result_store = ds.ParseResultStore(vocab)
-        parser = pah.Parser(result_store)
+        corpus_store = ds.CorpusStore(vocab)
+        parser = pah.Parser(corpus_store)
         html = ('<html><head><title>test</title></head>'
             '<body>'
             '<h1>ヘッダー1</h1>'
@@ -121,7 +121,7 @@ class TestAtomicHeaderBodyParser(unittest.TestCase):
             ['ヘッダー1','こんにちは。'],
             ['ヘッダー1','さようなら。']
         ]
-        self.assertCountEqual(expected, result_store.data)
+        self.assertCountEqual(expected, corpus_store.data)
 
 class TestHeaderBodyParser(unittest.TestCase):
     def setUp(self):
@@ -148,21 +148,21 @@ class TestHeaderBodyParser(unittest.TestCase):
     def test_parse_h1(self):
         """Test H1"""
         vocab = ds.VocabStore()
-        result_store = ds.ParseResultStore(vocab)
-        parser = phb.Parser(result_store, 'h1')
+        corpus_store = ds.CorpusStore(vocab)
+        parser = phb.Parser(corpus_store, 'h1')
         parser.parse(self.htmlStruct)
 
         expected = [
             ['H1-A', 'body H1-A-1\nbody H2-A-1\nbody H2-B-1\nbody H2-B-2\nbody H3-A-1\nbody H2-C-1'],
             ['H1-B', 'body H3-A-1\nbody H2-A-1']
         ]
-        self.assertCountEqual(expected, result_store.data)
+        self.assertCountEqual(expected, corpus_store.data)
 
     def test_parse_h2(self):
         """Test H2"""
         vocab = ds.VocabStore()
-        result_store = ds.ParseResultStore(vocab)
-        parser = phb.Parser(result_store, 'h2')
+        corpus_store = ds.CorpusStore(vocab)
+        parser = phb.Parser(corpus_store, 'h2')
         parser.parse(self.htmlStruct)
 
         expected = [
@@ -171,26 +171,26 @@ class TestHeaderBodyParser(unittest.TestCase):
             ['H2-C', 'body H2-C-1'],
             ['H2-A', 'body H2-A-1']
         ]
-        self.assertCountEqual(expected, result_store.data)
+        self.assertCountEqual(expected, corpus_store.data)
 
     def test_parse_h3(self):
         """Test H3"""
         vocab = ds.VocabStore()
-        result_store = ds.ParseResultStore(vocab)
-        parser = phb.Parser(result_store, 'h3')
+        corpus_store = ds.CorpusStore(vocab)
+        parser = phb.Parser(corpus_store, 'h3')
         parser.parse(self.htmlStruct)
 
         expected = [
             ['H3-A', 'body H3-A-1'],
             ['H3-A', 'body H3-A-1']
         ]
-        self.assertCountEqual(expected, result_store.data)
+        self.assertCountEqual(expected, corpus_store.data)
 
     def test_parse_script(self):
         """Test script element within a font element"""
         vocab = ds.VocabStore()
-        result_store = ds.ParseResultStore(vocab)
-        parser = phb.Parser(result_store)
+        corpus_store = ds.CorpusStore(vocab)
+        parser = phb.Parser(corpus_store)
 
         html = ('<html><head><title>test</title></head>'
             '<body>'
@@ -205,7 +205,7 @@ class TestHeaderBodyParser(unittest.TestCase):
         expected = [
             ['H1-A', 'font element body'],
         ]
-        self.assertCountEqual(expected, result_store.data)
+        self.assertCountEqual(expected, corpus_store.data)
 
 
 if __name__ == "__main__":

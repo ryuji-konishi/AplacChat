@@ -7,8 +7,8 @@ import utils.utils as utils
 
 
 class Parser(object):
-    def __init__(self, result_store):
-        self.delegate = TreeAtomicParser(result_store)
+    def __init__(self, corpus_store):
+        self.delegate = TreeAtomicParser(corpus_store)
 
     def parse(self, html):
         self.delegate.feed(html)
@@ -209,11 +209,11 @@ class TreeParser(object):
         return n
 
 class TreeAtomicParser(TreeParser):
-    def __init__(self, result_store):
+    def __init__(self, corpus_store):
         TreeParser.__init__(self)
-        self.result_store = result_store
+        self.corpus_store = corpus_store
 
     def feed(self, html_doc):
         TreeParser.feed(self, html_doc)
         source, target = self.root_node.traverse_export()
-        self.result_store.store_result(source, target)
+        self.corpus_store.store_data(source, target)

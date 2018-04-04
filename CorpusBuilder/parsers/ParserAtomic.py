@@ -5,18 +5,18 @@ import utils.header_utils as header_utils
 import utils.utils as utils
 
 class Parser(object):
-    def __init__(self, result_store):
-        self.result_store = result_store
+    def __init__(self, corpus_store):
+        self.corpus_store = corpus_store
 
     def parse(self, html):
-        self.delegate = _MyParser(self.result_store)
+        self.delegate = _MyParser(self.corpus_store)
         self.delegate.feed(html)
 
 
 class _MyParser(HTMLParser):
-    def __init__(self, result_store):
+    def __init__(self, corpus_store):
         HTMLParser.__init__(self)
-        self.result_store = result_store
+        self.corpus_store = corpus_store
         self.is_literal_tag = False
         self.sources = []
         self.targets = []
@@ -71,5 +71,5 @@ class _MyParser(HTMLParser):
 
     def flash_into_file(self):
         if len(self.sources) > 0 and len(self.targets) > 0:
-            self.result_store.store_result(self.sources, self.targets)
+            self.corpus_store.store_data(self.sources, self.targets)
 

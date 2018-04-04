@@ -37,26 +37,34 @@ class VocabStore(object):
                     self.data_new.append(w)
 
     def save_to_file(self, vocab_file = None):
-        """ The vocab file is appended with new set of data."""
+        """ The vocab file is appended with new set of data. 
+            Return the file path when the file is updated. Otherwise return None. 
+        """
         if len(self.data_new) > 0:
             # Use file path which is given either by the constructor or this method's argument.
             # This method's argument takes priority.
-            fp = vocab_file
-            if not fp: fp = self.vocab_file
+            if not vocab_file:
+                vocab_file = self.vocab_file
 
-            if fp:
+            if vocab_file:
                 f = open(self.vocab_file, 'a', encoding='utf8')
                 for d in self.data_new:
                     f.write("%s\n" % d)
                 f.close()
+        return vocab_file
 
-class ParseResultStore(object):
-    def __init__(self, vocab_store = None):
+class CorpusStore(object):
+    def __init__(self, vocab_store = None, resolver = None):
         self.data = []
         self.vocab_store = vocab_store
-        self.resolver = sr.SentenseResolver()
+        self.resolver = resolver
+        if not self.resolver:
+            self.resolver = sr.SentenseResolver()
 
-    def _store_text(self, source_text_line, target_text_line):
+    def _copy_data(self, data):
+        self.data = data
+
+    def _store_data(self, source_text_line, target_text_line):
         self.data.append([source_text_line, target_text_line])
         if self.vocab_store:
             buf_list = self.resolver.split(source_text_line)
@@ -67,7 +75,31 @@ class ParseResultStore(object):
     def clear(self):
         del self.data[:]
 
-    def store_result(self, source, target):
+    def split(self, ratio):
+        """ Split the data into multiple blocks. Then each block is contained by another
+            instance of self class, and the returned value is the tuple of those instances.
+            The ratio is a tuple containing the distribution ratios in float totaling 1.
+        """
+        if sum(ratio) != 1:
+            raise ValueError("The ratio has to add up to 1.")
+
+        result_lists = []
+        data_cnt = len(self.data)
+
+        # List of each length of result lists.
+        ratio_lens = [int(data_cnt * r) for r in ratio]
+        st = 0
+        for l in ratio_lens:
+            # Create another instance that contains the split data
+            split_data = self.data[st:st + l]
+            new_instance = CorpusStore(self.vocab_store, self.resolver)
+            new_instance._copy_data(split_data)
+            result_lists.append(new_instance)
+            st += l
+
+        return tuple(result_lists)
+
+    def store_data(self, source, target):
         """ source/target is either a line of text or a list of text.
         This function stores the source/target text line into the list
         while splitting the text into character/word level and adding into the vocabulary.
@@ -78,9 +110,9 @@ class ParseResultStore(object):
             source = [source]
         if isinstance(target, str):
             target = [target]
-        for result in zip(source, target):
-            source_text_line, target_text_line = result[0], result[1]
-            self._store_text(source_text_line, target_text_line)
+        for data in zip(source, target):
+            source_text_line, target_text_line = data[0], data[1]
+            self._store_data(source_text_line, target_text_line)
 
     def export_to_file(self, out_dir, basename = None, size_limit_KB = None):
         """ Write out the stored source/target data into a pair of src/tgt files.
@@ -136,8 +168,7 @@ class ParseResultStore(object):
         """ Read the corpus file and restore the data. Vocaburary is also restored.
         """
         with open(file_path, 'r', encoding='utf8') as fp:
-            data = json.load(fp)
-            for result in data:
-                source_text_line, target_text_line = result[0], result[1]
-                self._store_text(source_text_line, target_text_line)
-            
+            lines = json.load(fp)
+            for data in lines:
+                source_text_line, target_text_line = data[0], data[1]
+                self._store_data(source_text_line, target_text_line)

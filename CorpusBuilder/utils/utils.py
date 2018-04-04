@@ -62,9 +62,10 @@ def distribute(lst, ratio):
 
     result_lists = []
 
-    ratio_len = [int(len(lst) * r) for r in ratio]
+    # List of each length of result lists.
+    ratio_lens = [int(len(lst) * r) for r in ratio]
     st = 0
-    for l in ratio_len:
+    for l in ratio_lens:
         result_lists.append(lst[st:st + l])
         st += l
 

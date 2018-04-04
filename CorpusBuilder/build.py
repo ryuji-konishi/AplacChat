@@ -19,21 +19,6 @@ def corpus(input_path, export_dir):
     if not os.path.exists(export_dir): os.makedirs(export_dir)
     vocab = ds.VocabStore(vocab_file)
 
-    def process(files, subject, vocab_store, size_limit_KB = None):
-        """ size_limit_KB is the limit of file size to be written. The size is in Kilo bite (1024 bytes)
-        """
-        result_store = ds.ParseResultStore(vocab_store)
-
-        for idx, file in enumerate(files):
-            f_abst = file[0]    # absolute path
-            f_rel = file[1]     # relative path
-            print ("(", idx, "of", len(files), ") file", f_rel)
-            result_store.import_corpus(f_abst)
-
-        # Export the corpus data into file
-        print ("Exporting the result...")
-        result_store.export_to_file(export_dir, subject, size_limit_KB)
-
     if os.path.isfile(input_path):
         print ("The input file is", input_path)
         print ("The output directory is", export_dir)
@@ -45,23 +30,38 @@ def corpus(input_path, export_dir):
         print ("Searching corpus files in the input directory...")
         files = file_utils.get_filelist_in_path("cor", input_dir, True)
 
-        # Distribute the list of files randomly into 3 lists - train, dev and test.
-        # The distribution ratio is train 98%, dev 1% and test 1%.
-        # Be careful not to make dev and test files too big otherwise Tensorflow training
-        # fails with out-of-memory (even with GPU machine).
-        # trains, devs, tests = utils.distribute_rnd(files, (0.98, 0.01, 0.01))
+    corpus_store = ds.CorpusStore(vocab)
+    print ("Total", len(files), "files to process. Loading...")
+    for idx, file in enumerate(files):
+        f_abst = file[0]    # absolute path
+        f_rel = file[1]     # relative path
+        print ("(", idx, "of", len(files), ") file", f_rel)
+        corpus_store.import_corpus(f_abst)
 
-        # Generate each file set
-        # print ("Total", len(files), "files to process.")
-        # process(trains, "train", vocab)
-        # process(devs, "dev", vocab, 100)
-        # process(tests, "test", vocab, 100)
+    # Split the corpus data randomly into 3 blocks - train, dev and test.
+    # The distribution ratio is train 98%, dev 1% and test 1%.
+    # Be careful not to make dev and test files too big otherwise Tensorflow training
+    # fails with out-of-memory (even with GPU machine).
+    train, dev, test = corpus_store.split((0.98, 0.01, 0.01))
 
-    print ("Total", len(files), "files to process.")
-    process(files, "train", vocab)
+    def process(corpus_store, subject, size_limit_KB = None):
+        """ size_limit_KB is the limit of file size to be written. The size is in Kilo bite (1024 bytes)
+        """
+        # Export the corpus data into file
+        print ("Exporting the", subject, "data into file...")
+        corpus_store.export_to_file(export_dir, subject, size_limit_KB)
+
+    # Generate each file set
+    process(train, "train")
+    process(dev, "dev", 100)
+    process(test, "test", 100)
+
     # Generate vocaburary file that contains words detected in all 3 file lists.
-    vocab.save_to_file()
-
+    vf = vocab.save_to_file()
+    if vf:
+        print ("Vocaburary file is updated:", vf)
+    else:
+        print ("No updates in vocaburary.")
 
 def parse_html(input_path, export_dir):
     """ Parse the HTML files and generate a corpus file.
@@ -71,7 +71,7 @@ def parse_html(input_path, export_dir):
     def process(files):
         """ size_limit_KB is the limit of file size to be written. The size is in Kilo bite (1024 bytes)
         """
-        result_store = ds.ParseResultStore()
+        corpus_store = ds.CorpusStore()
 
         for idx, file in enumerate(files):
             f_abst = file[0]    # absolute path
@@ -82,20 +82,20 @@ def parse_html(input_path, export_dir):
                 continue
 
             # 1st, process the data with Atomic Parser
-            parser = pat.Parser(result_store)
+            parser = pat.Parser(corpus_store)
             parser.parse(file_content)
 
             # Process the same data with Atomic HeaderBody Parser
-            parser = pah.Parser(result_store)
+            parser = pah.Parser(corpus_store)
             parser.parse(file_content)
 
             # Process the same data with HeaderBody Parser
-            parser = phb.Parser(result_store)
+            parser = phb.Parser(corpus_store)
             parser.parse(file_content)
 
         # Export the parsed data into file
         print ("Exporting the result...")
-        return result_store.export_corpus(export_dir)
+        return corpus_store.export_corpus(export_dir)
 
     if os.path.isfile(input_path):
         print ("The input file is", input_path)

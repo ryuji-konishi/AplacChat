@@ -27,14 +27,23 @@ class English(object):
     def __init__(self):
         # Load dictionary file
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        filename = os.path.join(current_dir, "English", "words_dictionary.json")
-        with open(filename, "r") as english_dictionary:
-            self.words_map = json.load(english_dictionary)
-        # Add some more
-        for word in self.addons:
-            self.words_map[word] = 1
+        self.filename = os.path.join(current_dir, "English", "words_dictionary.json")
+        self.words_map = None
+
+    def _lazy_loading(self):
+        """ Initialize self.words_map value by reading file. This is time and memory consuming, so
+            do this only when self.words_map is required for the first time (lazy loading)
+        """
+        if not self.words_map:
+            with open(self.filename, "r") as english_dictionary:
+                self.words_map = json.load(english_dictionary)
+            # Add some more
+            for word in self.addons:
+                self.words_map[word] = 1
 
     def Check(self, word):
+        self._lazy_loading()
+        
         word = word.lower()
         # All the words are assigned with 1 in the dictionary.
         if word in self.words_map:

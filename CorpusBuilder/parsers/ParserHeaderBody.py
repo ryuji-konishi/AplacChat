@@ -7,8 +7,8 @@ import utils.header_utils as header_utils
 import utils.utils as utils
 
 class Parser(object):
-    def __init__(self, result_store, target_tag = None):
-        self.result_store = result_store
+    def __init__(self, corpus_store, target_tag = None):
+        self.corpus_store = corpus_store
         if target_tag:
             self.target_tags = [target_tag]
         else:
@@ -16,8 +16,8 @@ class Parser(object):
 
     def parse(self, html):
         for target_tag in self.target_tags:
-            # self.delegate = BS_HeaderBodyParser(target_tag, self.result_store)
-            self.delegate = HTML_HeaderBodyParser(target_tag, self.result_store)
+            # self.delegate = BS_HeaderBodyParser(target_tag, self.corpus_store)
+            self.delegate = HTML_HeaderBodyParser(target_tag, self.corpus_store)
             self.delegate.feed(html)
             self.delegate.flash_into_file()
 
@@ -80,10 +80,10 @@ class BS_HeaderTag(object):
 
 
 class BS_HeaderBodyParser(BS_AbstractHeaderBodyParser):
-    def __init__(self, target_tag, result_store):
+    def __init__(self, target_tag, corpus_store):
         BS_AbstractHeaderBodyParser.__init__(self)
         self.target = BS_HeaderTag(target_tag)
-        self.result_store = result_store
+        self.corpus_store = corpus_store
         self.current = None
         self.body = ''
         self.is_waiting_target_endtag = False
@@ -143,7 +143,7 @@ class BS_HeaderBodyParser(BS_AbstractHeaderBodyParser):
         
     def flash_into_file(self):
         if self.current and self.body:
-            self.result_store.store_result(self.current.data, self.body)
+            self.corpus_store.store_data(self.current.data, self.body)
             self.current = None
             self.body = ''
 
@@ -168,10 +168,10 @@ class HTML_HeaderTag(object):
         return self.tag > other
 
 class HTML_HeaderBodyParser(HTMLParser):
-    def __init__(self, target_tag, result_store):
+    def __init__(self, target_tag, corpus_store):
         HTMLParser.__init__(self)
         self.target = HTML_HeaderTag(target_tag)
-        self.result_store = result_store
+        self.corpus_store = corpus_store
         self.current = None
         self.body = ''
         self.is_waiting_target_endtag = False
@@ -231,7 +231,7 @@ class HTML_HeaderBodyParser(HTMLParser):
 
     def flash_into_file(self):
         if self.current and self.body:
-            self.result_store.store_result(self.current.data, self.body)
+            self.corpus_store.store_data(self.current.data, self.body)
             self.current = None
             self.body = ''
 
