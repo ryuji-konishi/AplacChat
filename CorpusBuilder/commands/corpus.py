@@ -24,6 +24,7 @@ def generate(output_dir):
 def compile(input_path, output_dir):
     """ Compile the corpus files and generate a set of NMT data files (train/dev/test).
         input_path is either a folder path or file path, both in absolute path.
+        output_dir is the path to the folder where the data set is generated.
     """
     if not os.path.exists(output_dir): os.makedirs(output_dir)
 

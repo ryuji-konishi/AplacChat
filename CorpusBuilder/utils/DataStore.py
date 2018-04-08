@@ -13,6 +13,7 @@ class VocabStore(object):
         self.data_ext = list(special_tokens)      # Current existing data in the vocab file.
         self.data_new = list(special_tokens)      # New data to be added to the vocab file.
         self.vocab_file = vocab_file
+        self.reset_report()
         if vocab_file:
             if os.path.exists(vocab_file):
                 vocab = file_utils.read_filelist_any_encoding(vocab_file)
@@ -28,6 +29,15 @@ class VocabStore(object):
                     # If not, remove the existing file so that a new file will be generated.
                     os.remove(vocab_file)
 
+    def reset_report(self):
+        self.word_num = 0
+
+    def print_report(self):
+        if self.word_num > 0:
+            print("Vocaburary file is updated with", self.word_num, "of words newly added.")
+        else:
+            print("Nothing to report.")
+
     def add_vocab_words(self, words):
         """ Add new vocaburary of list of word"""
         for w in words:
@@ -38,8 +48,9 @@ class VocabStore(object):
 
     def save_to_file(self, vocab_file = None):
         """ The vocab file is appended with new set of data. 
-            Return the file path when the file is updated. Otherwise return None. 
+            Return True when the file is updated. Otherwise return False. 
         """
+        result = False
         if len(self.data_new) > 0:
             # Use file path which is given either by the constructor or this method's argument.
             # This method's argument takes priority.
@@ -50,8 +61,10 @@ class VocabStore(object):
                 f = open(self.vocab_file, 'a', encoding='utf8')
                 for d in self.data_new:
                     f.write("%s\n" % d)
+                    self.word_num += 1
                 f.close()
-        return vocab_file
+                result = True
+        return result
 
 class CorpusStore(object):
     def __init__(self, vocab_store = None, resolver = None):
