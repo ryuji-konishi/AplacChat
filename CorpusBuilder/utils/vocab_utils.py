@@ -34,8 +34,11 @@ def generate_standard_vocaburary(file_path):
 
     # Load Joyo-Kanji from resource
     jk = ld.JoyoKanjiLoader()
-    joyo_kanjis = jk.load_kanjis()
-    words.extend(joyo_kanjis)
+    words.extend(jk.load_kanjis())
+
+    # Load Jinmeiyo-Kanji from resource
+    jk = ld.JinmeiKanjiLoader()
+    words.extend(jk.load_kanjis())
 
     # Store the loaded characters into VocabStore, then export the vocab file.
     vocab = ds.VocabStore(file_path)

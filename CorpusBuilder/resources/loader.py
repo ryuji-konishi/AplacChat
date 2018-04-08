@@ -46,20 +46,20 @@ class NameLoader(Loader):
         return data['lastname'], data['firstname']
 
     def refresh(self):
-        data = self.load_json()
+        data = self.load_json(self.file_json)
         lastnames = data['lastname']
         data['lastname'] = self.remove_duplicate(lastnames)
         firstnames = data['firstname']
         data['firstname'] = self.remove_duplicate(firstnames)
         self.save_json(self.file_json, data)
 
-class JoyoKanjiLoader(Loader):
+class KanjiLoader(Loader):
     """ Joyo-kanji resource loader class.
     """
-    def __init__(self):
-        Loader.__init__(self, "joyo-kanji-code")
-        self.file_json = "joyo_kanji_code.json"
-        self.file_csv = "joyo-kanji-code-u.csv"
+    def __init__(self, folder_name, file_json, file_csv):
+        Loader.__init__(self, folder_name)
+        self.file_json = file_json
+        self.file_csv = file_csv
         # Check if json file exists. If not, generate csv file from it.
         # This is to run only once in the development phase.
         json_path = self._get_file_path(self.file_json)
@@ -79,8 +79,18 @@ class JoyoKanjiLoader(Loader):
         return data
 
     def refresh(self):
-        data = self.load_json()
+        data = self.load_json(self.file_json)
         data = self.remove_duplicate(data)
         self.save_json(self.file_json, data)
 
+class JoyoKanjiLoader(KanjiLoader):
+    """ Joyo-kanji resource loader class.
+    """
+    def __init__(self):
+        KanjiLoader.__init__(self, "kanji_joyo", "joyo_kanji_code.json", "joyo-kanji-code-u.csv")
 
+class JinmeiKanjiLoader(KanjiLoader):
+    """ Jinmeiyou-kanji resource loader class.
+    """
+    def __init__(self):
+        KanjiLoader.__init__(self, "kanji_jinmeiyo", "jinmei_kanji_code.json", "jinmeiyou-kanji-code-u.csv")
