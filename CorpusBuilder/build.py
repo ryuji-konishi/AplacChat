@@ -25,6 +25,7 @@ def f_aplac(args):
 
     html.clean(html_dir)
     html.parse(html_dir, corpus_dir)
+    vocab.generate(data_dir)        # Generate the standard vocab.src file as the base at the data directory.
     corpus.compile(corpus_dir, data_dir)
 
 def f_html_clean(args):
