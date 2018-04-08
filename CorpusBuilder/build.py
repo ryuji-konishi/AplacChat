@@ -5,7 +5,7 @@ import os
 import argparse
 import commands.html as html
 import commands.corpus as corpus
-
+import commands.vocab as vocab
 
 def conv_abs(path):
     """ Check if path is relative path, and convert it to absolute path 
@@ -54,6 +54,12 @@ def f_corpus_compile(args):
 
     corpus.compile(corpus_dir, data_dir)
 
+def f_vocab_generate(args):
+    """ Function called when the 'vocab generate' command is set in the argument."""
+    vocab_dir = conv_abs(args.vocab)
+
+    vocab.generate(vocab_dir)
+
 def add_arguments(parser):
     """Build ArgumentParser."""
 
@@ -65,10 +71,13 @@ def add_arguments(parser):
     help_corpus = "Command various operations for corpus files."
     help_corpus_generate = "Generate corpus files."
     help_corpus_compile = "Read corpus files and generate the NMT data set (src/tgt/vocab)."
+    help_vocab = "Command various operations for vocab files."
+    help_vocab_generate = "Generate the standard vocab file."
 
     help_path_html = "HTML files to parse. Absolute or relative path to a directory that contains HTML files, or a single HTML file."
     help_path_corpus = "Corpus files processed during build. Absolute or relative path to a directory where the corpus files are generated and read from."
     help_path_data = "Data files (src/tgt/vocab) generated as outcome. Absolute or relative path to a directory where the data files are generated."
+    help_path_vocab = "Vocaburary file (vocab) to be generated. Absolute or relative path to a directory where the file is generated."
 
     subparsers = parser.add_subparsers(help="Choose command from below.", dest='command')
 
@@ -104,6 +113,14 @@ def add_arguments(parser):
     parser_corpus_compile.add_argument('corpus', type=str, help=help_path_corpus)
     parser_corpus_compile.add_argument('data', type=str, help=help_path_data)
     parser_corpus_compile.set_defaults(func = f_corpus_compile)
+
+    # create the parser for the 'vocab' command
+    parser_vocab = subparsers.add_parser('vocab', help=help_vocab)
+    vocab_subparsers = parser_vocab.add_subparsers(help="Choose command from below.")
+    # 'vocab generate' sub-command
+    parser_vocab_generate = vocab_subparsers.add_parser('generate', help=help_vocab_generate)
+    parser_vocab_generate.add_argument('vocab', type=str, help=help_path_vocab)
+    parser_vocab_generate.set_defaults(func = f_vocab_generate)
 
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
