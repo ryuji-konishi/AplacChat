@@ -1,6 +1,7 @@
 import os
 import uuid
 import json
+import random
 import utils.file_utils as file_utils
 from common import SentenseResolver as sr
 from common import utils
@@ -87,6 +88,14 @@ class CorpusStore(object):
 
     def clear(self):
         del self.data[:]
+
+    def split_rnd(self, ratio):
+        """ Split the data randomly into multiple blocks. Then each block is contained by another
+            instance of self class, and the returned value is the tuple of those instances.
+            The ratio is a tuple containing the distribution ratios in float totaling 1.
+        """
+        random.shuffle(self.data)
+        return self.split(ratio)
 
     def split(self, ratio):
         """ Split the data into multiple blocks. Then each block is contained by another

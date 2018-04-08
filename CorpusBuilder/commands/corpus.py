@@ -5,7 +5,8 @@ import utils.DataStore as ds
 import utils.file_utils as file_utils
 
 def generate(output_dir):
-    """ Generate the corpus files
+    """ Generate the corpus files from template resources of data.
+        The template resources include salute, nodding, themed conversation etc.
     """
     if not os.path.exists(output_dir): os.makedirs(output_dir)
 
@@ -23,9 +24,9 @@ def generate(output_dir):
 
 def compile(input_path, vocab_path, output_dir):
     """ Compile the corpus files and generate a set of NMT data files (train/dev/test).
-        input_path is either a folder path or file path, both in absolute path.
-        vocab_path is either a folder path or file path, both in absolute path. If folder path is
-        given, the file name defaults 'vocab.src'.
+        input_path is the corpus data, either a folder path or file path, both in absolute path.
+        vocab_path is the vocaburary file, either a folder path or file path, both in absolute path. 
+        If folder path is given, the file name defaults 'vocab.src'.
         output_dir is the path to the folder where the data set is generated.
     """
     # Create output directory if not exist
@@ -64,7 +65,7 @@ def compile(input_path, vocab_path, output_dir):
     # The distribution ratio is train 98%, dev 1% and test 1%.
     # Be careful not to make dev and test files too big otherwise Tensorflow training
     # fails with out-of-memory (even with GPU machine).
-    train, dev, test = corpus_store.split((0.98, 0.01, 0.01))
+    train, dev, test = corpus_store.split_rnd((0.98, 0.01, 0.01))
 
     def process(corpus_store, subject, size_limit_KB = None):
         """ size_limit_KB is the limit of file size to be written. The size is in Kilo bite (1024 bytes)
