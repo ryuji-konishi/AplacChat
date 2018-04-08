@@ -53,8 +53,39 @@ class NameLoader(Loader):
         data['firstname'] = self.remove_duplicate(firstnames)
         self.save_json(self.file_json, data)
 
+class SaluteLoader(Loader):
+    """ Salute resource loader class.
+        The initial data is loaded from CSV file during development.
+    """
+    def __init__(self):
+        Loader.__init__(self, 'salute')
+        self.file_json = 'salute.json'
+        self.file_csv = 'salute.csv'
+        # Check if json file exists. If not, generate csv file from it.
+        # This is to run only once in the development phase.
+        json_path = self._get_file_path(self.file_json)
+        if not os.path.isfile(json_path):
+            data = []
+            csv_data = self.load_csv(self.file_csv)
+            for row in csv_data:
+                src = row[0]
+                tgt = row[1]
+                data.append([src, tgt])
+            self.save_json(self.file_json, data)
+
+    def load_salutes(self):
+        """ Load and return a set of source/target list. """
+        data = self.load_json(self.file_json)
+        return data
+
+    def refresh(self):
+        data = self.load_json(self.file_json)
+        data = self.remove_duplicate(data)
+        self.save_json(self.file_json, data)
+
 class KanjiLoader(Loader):
     """ Joyo-kanji resource loader class.
+        The initial data is loaded from CSV file during development.
     """
     def __init__(self, folder_name, file_json, file_csv):
         Loader.__init__(self, folder_name)
@@ -64,14 +95,14 @@ class KanjiLoader(Loader):
         # This is to run only once in the development phase.
         json_path = self._get_file_path(self.file_json)
         if not os.path.isfile(json_path):
-            buf = []
+            data = []
             csv_data = self.load_csv(self.file_csv)
             for row in csv_data:
                 c = row[0]
                 if c[0] == '#':     # if the line starts from '#', comment out.
                     continue
-                buf.append(c)
-            self.save_json(self.file_json, buf)
+                data.append(c)
+            self.save_json(self.file_json, data)
 
     def load_kanjis(self):
         """ Load and return a list of Joyo-Kanji charactors. """

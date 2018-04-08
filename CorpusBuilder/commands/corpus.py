@@ -3,6 +3,7 @@ import os
 import numpy as np
 import utils.DataStore as ds
 import utils.file_utils as file_utils
+import resources.loader as ld
 
 def generate(output_dir):
     """ Generate the corpus files from template resources of data.
@@ -12,13 +13,29 @@ def generate(output_dir):
 
     corpus_store = ds.CorpusStore()
 
-    dev = np.array([
-        ['ども、アキラです', 'アキラさん、こんにちは'],
-        ['ども、Ryujiです', 'Ryujiさん、こんにちは']
-    ])
-    src = dev[:, 0]
-    tgt = dev[:, 1]
-    corpus_store.store_data(src, tgt)
+
+    sl = ld.SaluteLoader()
+    salutes = sl.load_salutes()
+    nl = ld.NameLoader()
+    lastnames, firstnames = nl.load_names()
+
+    srcs = []
+    tgts = []
+    for salute in salutes:
+        src = salute[0]
+        tgt = salute[1]
+        if '{name}' in src or '{name}' in tgt:
+            for name in lastnames:
+                srcs.append(src.replace('{name}', name))
+                tgts.append(tgt.replace('{name}', name))
+            for name in firstnames:
+                srcs.append(src.replace('{name}', name))
+                tgts.append(tgt.replace('{name}', name))
+        else:
+            srcs.append(src)
+            tgts.append(tgt)
+
+    corpus_store.store_data(srcs, tgts)
     output_path = corpus_store.export_corpus(output_dir)
     print ("Exported:", output_path)
 
