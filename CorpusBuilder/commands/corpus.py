@@ -21,26 +21,35 @@ def generate(output_dir):
     output_path = corpus_store.export_corpus(output_dir)
     print ("Exported:", output_path)
 
-def compile(input_path, output_dir):
+def compile(input_path, vocab_path, output_dir):
     """ Compile the corpus files and generate a set of NMT data files (train/dev/test).
         input_path is either a folder path or file path, both in absolute path.
+        vocab_path is either a folder path or file path, both in absolute path. If folder path is
+        given, the file name defaults 'vocab.src'.
         output_dir is the path to the folder where the data set is generated.
     """
+    # Create output directory if not exist
     if not os.path.exists(output_dir): os.makedirs(output_dir)
+    
+    # Create vocab file directory if not exist. And get the file path.
+    if not os.path.isfile(vocab_path):
+        if not os.path.exists(vocab_path): os.makedirs(vocab_path)
+        vocab_path = os.path.join(vocab_path, 'vocab.src')
 
     if os.path.isfile(input_path):
         print ("The input file is", input_path)
+        print ("The vocab file is", vocab_path)
         print ("The output directory is", output_dir)
         files = [[input_path, os.path.basename(input_path)]]
     else:
         input_dir = input_path
         print ("The input directory is", input_dir)
+        print ("The vocab file is", vocab_path)
         print ("The output directory is", output_dir)
         print ("Searching corpus files in the input directory...")
         files = file_utils.get_filelist_in_path("cor", input_dir, True)
 
-    vocab_file = os.path.join(output_dir, 'vocab.src')
-    vocab = ds.VocabStore(vocab_file)
+    vocab = ds.VocabStore(vocab_path)
     corpus_store = ds.CorpusStore(vocab)
     print ("Total", len(files), "files to process. Loading...")
     for idx, file in enumerate(files):
@@ -70,9 +79,10 @@ def compile(input_path, output_dir):
     process(test, "test", 100)
 
     # Generate vocaburary file that contains words detected in all 3 file lists.
-    vf = vocab.save_to_file()
-    if vf:
-        print ("Vocaburary file is updated:", vf)
+    updated = vocab.save_to_file()
+    if updated:
+        print ("Vocaburary file is updated.")
+        vocab.print_report()
     else:
         print ("No updates in vocaburary.")
 

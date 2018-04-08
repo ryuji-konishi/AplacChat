@@ -49,10 +49,10 @@ def f_corpus_generate(args):
 def f_corpus_compile(args):
     """ Function called when the 'corpus compile' command is set in the argument."""
     corpus_dir = conv_abs(args.corpus)
+    vocab_path = conv_abs(args.vocab)
     data_dir = conv_abs(args.data)
-    # print(corpus_dir, data_dir)
 
-    corpus.compile(corpus_dir, data_dir)
+    corpus.compile(corpus_dir, vocab_path, data_dir)
 
 def f_vocab_generate(args):
     """ Function called when the 'vocab generate' command is set in the argument."""
@@ -77,7 +77,7 @@ def add_arguments(parser):
     help_path_html = "HTML files to parse. Absolute or relative path to a directory that contains HTML files, or a single HTML file."
     help_path_corpus = "Corpus files processed during build. Absolute or relative path to a directory where the corpus files are generated and read from."
     help_path_data = "Data files (src/tgt/vocab) generated as outcome. Absolute or relative path to a directory where the data files are generated."
-    help_path_vocab = "Vocaburary file (vocab) to be generated. Absolute or relative path to a directory where the file is generated."
+    help_path_vocab = "Vocaburary file (vocab) processed during build. Absolute or relative path to a directory where the file is generated."
 
     subparsers = parser.add_subparsers(help="Choose command from below.", dest='command')
 
@@ -111,6 +111,7 @@ def add_arguments(parser):
     # 'corpus compile' sub-command
     parser_corpus_compile = corpus_subparsers.add_parser('compile', help=help_corpus_compile)
     parser_corpus_compile.add_argument('corpus', type=str, help=help_path_corpus)
+    parser_corpus_compile.add_argument('vocab', type=str, help=help_path_vocab)
     parser_corpus_compile.add_argument('data', type=str, help=help_path_data)
     parser_corpus_compile.set_defaults(func = f_corpus_compile)
 
