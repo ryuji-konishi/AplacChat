@@ -3,10 +3,9 @@ sys.path.insert(0, '..\\')  # This is required to import common
 
 import os
 import argparse
-import commands.compile as compile
-import commands.parse as parse
-import commands.clean as clean
-import commands.generate as generate
+import commands.html as html
+import commands.corpus as corpus
+
 
 def conv_abs(path):
     """ Check if path is relative path, and convert it to absolute path 
@@ -24,28 +23,28 @@ def f_aplac(args):
     corpus_dir = conv_abs(args.corpus)
     data_dir = conv_abs(args.data)
 
-    clean.run(html_dir)
-    parse.run(html_dir, corpus_dir)
-    compile.run(corpus_dir, data_dir)
+    html.clean(html_dir)
+    html.parse(html_dir, corpus_dir)
+    corpus.compile(corpus_dir, data_dir)
 
 def f_html_clean(args):
     """ Function called when the 'html clean' command is set in the argument."""
     html_dir = conv_abs(args.html)
 
-    clean.run(html_dir)
+    html.clean(html_dir)
 
 def f_html_parse(args):
     """ Function called when the 'html parse' command is set in the argument."""
     html_dir = conv_abs(args.html)
     corpus_dir = conv_abs(args.corpus)
 
-    parse.run(html_dir, corpus_dir)
+    html.parse(html_dir, corpus_dir)
 
 def f_corpus_generate(args):
     """ Function called when the 'corpus generate' command is set in the argument."""
     corpus_dir = conv_abs(args.corpus)
 
-    generate.run(corpus_dir)
+    corpus.generate(corpus_dir)
 
 def f_corpus_compile(args):
     """ Function called when the 'corpus compile' command is set in the argument."""
@@ -53,7 +52,7 @@ def f_corpus_compile(args):
     data_dir = conv_abs(args.data)
     # print(corpus_dir, data_dir)
 
-    compile.run(corpus_dir, data_dir)
+    corpus.compile(corpus_dir, data_dir)
 
 def add_arguments(parser):
     """Build ArgumentParser."""
@@ -110,6 +109,7 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
     add_arguments(arg_parser)
     args = arg_parser.parse_args()
-    args.func(args)     # func is a function pointer which is set for each command with set_defaults function.
+    if 'func' in args:
+        args.func(args)     # func is a function pointer which is set for each command with set_defaults function.
 
     print ("Finished.")
