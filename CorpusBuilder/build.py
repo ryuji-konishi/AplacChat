@@ -3,6 +3,7 @@ sys.path.insert(0, '..\\')  # This is required to import common
 
 import os
 import argparse
+import time
 import commands.html as html
 import commands.corpus as corpus
 import commands.vocab as vocab
@@ -26,7 +27,8 @@ def f_aplac(args):
     html.clean(html_dir)
     html.parse(html_dir, corpus_dir)
     vocab.generate(data_dir)        # Generate the standard vocab.src file as the base at the data directory.
-    corpus.compile(corpus_dir, data_dir)
+    corpus.generate(corpus_dir)
+    corpus.compile(corpus_dir, data_dir, data_dir)
 
 def f_html_clean(args):
     """ Function called when the 'html clean' command is set in the argument."""
@@ -129,6 +131,9 @@ if __name__ == "__main__":
     add_arguments(arg_parser)
     args = arg_parser.parse_args()
     if 'func' in args:
+        st = time.time()
         args.func(args)     # func is a function pointer which is set for each command with set_defaults function.
+        print ("Time", round(time.time() - st, 2), "sec")
+    # corpus.generate("C:\\Tmp\\aplac\\corpus\\test")
 
     print ("Finished.")
