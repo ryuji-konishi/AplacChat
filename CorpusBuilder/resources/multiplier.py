@@ -1,6 +1,6 @@
 import os
 
-import loader as ld
+import resources.loader as ld
 
 class TextPair(object):
     """ Used for the set version of multiplier. Resulted in being slower than list version. Not used. """

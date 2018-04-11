@@ -4,38 +4,44 @@ import numpy as np
 import utils.DataStore as ds
 import utils.file_utils as file_utils
 import resources.loader as ld
+import resources.multiplier as mpl
 
-def generate(output_dir):
+def generate(output_dir, myname = '田村', yourname = '田村さん'):
     """ Generate the corpus files from template resources of data.
         The template resources include salute, nodding, themed conversation etc.
     """
     if not os.path.exists(output_dir): os.makedirs(output_dir)
 
     corpus_store = ds.CorpusStore()
+    def process(pairs):
+        name_mpx = mpl.NameMultiplier()
+        city_mpx = mpl.CityMultiplier()
+        for src, tgt in pairs:
+            src = src.replace('{myname}', myname)
+            tgt = tgt.replace('{myname}', myname)
+            src = src.replace('{yourname}', yourname)
+            tgt = tgt.replace('{yourname}', yourname)
 
+            srcs = [src]
+            tgts = [tgt]
 
+            srcs, tgts = name_mpx.multiply(srcs, tgts)
+            srcs, tgts = city_mpx.multiply(srcs, tgts)
+            corpus_store.store_data(srcs, tgts)
+
+    # Process salute sentences
     sl = ld.SaluteLoader()
     salutes = sl.load_salutes()
-    nl = ld.NameLoader()
-    lastnames, firstnames = nl.load_names()
-
-    srcs = []
-    tgts = []
-    for salute in salutes:
-        src = salute[0]
-        tgt = salute[1]
-        if '{name}' in src or '{name}' in tgt:
-            for name in lastnames:
-                srcs.append(src.replace('{name}', name))
-                tgts.append(tgt.replace('{name}', name))
-            for name in firstnames:
-                srcs.append(src.replace('{name}', name))
-                tgts.append(tgt.replace('{name}', name))
-        else:
-            srcs.append(src)
-            tgts.append(tgt)
-
-    corpus_store.store_data(srcs, tgts)
+    print (len(salutes), "of salute sentenses to process...")
+    process(salutes)
+    
+    # Process conversation sentences
+    cl = ld.ConversationLoader()
+    convs = cl.load_conversations()
+    print (len(convs), "of conversation sentenses to process...")
+    process(convs)
+    
+    print ("Exporting corpus...")
     output_path = corpus_store.export_corpus(output_dir)
     print ("Exported:", output_path)
 
