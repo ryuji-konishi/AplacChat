@@ -3,10 +3,10 @@ import sys
 
 import unittest
 import time
-import multiplexer as mpx
+import multiplier as mpl
 import loader as ld
 
-class TestMultiplexer(unittest.TestCase):
+class TestMultiplier(unittest.TestCase):
     def setUp(self):
         pass
 
@@ -15,14 +15,14 @@ class TestMultiplexer(unittest.TestCase):
         pair = ["I'm {name}", "Hi {name}."]
         expected = [["I'm Jack", "I'm George"], ["Hi Jack.", "Hi George."]]
 
-        name_mpx = mpx.NameMultiplexer(names)
+        name_mpx = mpl.NameMultiplier(names)
         src = pair[0]
         tgt = pair[1]
 
         srcs = [src]
         tgts = [tgt]
 
-        srcs, tgts = name_mpx.multiplex(srcs, tgts)
+        srcs, tgts = name_mpx.multiply(srcs, tgts)
 
         actual = [srcs, tgts]
         self.assertListEqual(expected, actual)
@@ -53,8 +53,8 @@ class TestMultiplexer(unittest.TestCase):
             ]
         ]
 
-        name_mpx = mpx.NameMultiplexer(names)
-        city_mpx = mpx.CityMultiplexer(cities)
+        name_mpx = mpl.NameMultiplier(names)
+        city_mpx = mpl.CityMultiplier(cities)
         srcs_result = []
         tgts_result = []
         for pair in pairs:
@@ -64,8 +64,8 @@ class TestMultiplexer(unittest.TestCase):
             srcs = [src]
             tgts = [tgt]
 
-            srcs, tgts = name_mpx.multiplex(srcs, tgts)
-            srcs, tgts = city_mpx.multiplex(srcs, tgts)
+            srcs, tgts = name_mpx.multiply(srcs, tgts)
+            srcs, tgts = city_mpx.multiply(srcs, tgts)
 
             srcs_result.extend(srcs)
             tgts_result.extend(tgts)
@@ -77,8 +77,8 @@ class TestMultiplexer(unittest.TestCase):
         names = ["%d" % i for i in range(100)]
         cities = ["%d" % i for i in range(100)]
         pairs = [["{name} {city} %d" % i, "{name} {city} %d" % i] for i in range(1000)]
-        name_mpx = mpx.NameMultiplexer(names)
-        city_mpx = mpx.CityMultiplexer(cities)
+        name_mpx = mpl.NameMultiplier(names)
+        city_mpx = mpl.CityMultiplier(cities)
         srcs_result = []
         tgts_result = []
         st = time.time()
@@ -89,8 +89,8 @@ class TestMultiplexer(unittest.TestCase):
             srcs = [src]
             tgts = [tgt]
 
-            srcs, tgts = name_mpx.multiplex(srcs, tgts)
-            srcs, tgts = city_mpx.multiplex(srcs, tgts)
+            srcs, tgts = name_mpx.multiply(srcs, tgts)
+            srcs, tgts = city_mpx.multiply(srcs, tgts)
 
             srcs_result.extend(srcs)
             tgts_result.extend(tgts)
@@ -101,16 +101,16 @@ class TestMultiplexer(unittest.TestCase):
     #     names = ["%d" % i for i in range(100)]
     #     cities = ["%d" % i for i in range(100)]
     #     pairs = [["{name} {city} %d" % i, "{name} {city} %d" % i] for i in range(1000)]
-    #     name_mpx = mpx.NameMultiplexer(names)
-    #     city_mpx = mpx.CityMultiplexer(cities)
+    #     name_mpx = mpl.NameMultiplier(names)
+    #     city_mpx = mpl.CityMultiplier(cities)
     #     result = set()
     #     st = time.time()
     #     for src, tgt in pairs:
-    #         pair = mpx.TextPair(src, tgt)
+    #         pair = mpl.TextPair(src, tgt)
     #         tmp_pairs = [pair]
 
-    #         tmp_pairs = name_mpx.multiplex_set(tmp_pairs)
-    #         tmp_pairs = city_mpx.multiplex_set(tmp_pairs)
+    #         tmp_pairs = name_mpx.multiply_set(tmp_pairs)
+    #         tmp_pairs = city_mpx.multiply_set(tmp_pairs)
 
     #         result = result.union(tmp_pairs)
     #     print ("Speed test (set version)", round(time.time() - st, 2), "sec")

@@ -3,7 +3,7 @@ import os
 import loader as ld
 
 class TextPair(object):
-    """ Used for the set version of multiplexer. Resulted in being slower than list version. Not used. """
+    """ Used for the set version of multiplier. Resulted in being slower than list version. Not used. """
     def __init__(self, text1, text2):
         self.text1 = text1
         self.text2 = text2
@@ -17,12 +17,12 @@ class TextPair(object):
     def __hash__(self):
         return self.h
 
-class _Multiplexer(object):
+class _Multiplier(object):
     def __init__(self, tag, elements):
         self.tag = tag
         self.elements = elements
 
-    def multiplex(self, srcs, tgts):
+    def multiply(self, srcs, tgts):
         result_srcs = []
         result_tgts = []
         for src, tgt in zip(srcs, tgts):
@@ -35,7 +35,7 @@ class _Multiplexer(object):
                 result_tgts.append(tgt)
         return result_srcs, result_tgts
 
-    def multiplex_set(self, pairs):
+    def multiply_set(self, pairs):
         """ Set version of process. Resulted in being slower than list version. Not used. """
         result = set()
         for pair in pairs:
@@ -50,18 +50,18 @@ class _Multiplexer(object):
                 result.add(TextPair(src, tgt))
         return result
 
-class NameMultiplexer(_Multiplexer):
+class NameMultiplier(_Multiplier):
     def __init__(self, names = None):
         if not names:
             rl = ld.NameLoader()
             names = rl.load_names()
-        _Multiplexer.__init__(self, '{name}', names)
+        _Multiplier.__init__(self, '{name}', names)
 
-class CityMultiplexer(_Multiplexer):
+class CityMultiplier(_Multiplier):
     def __init__(self, cities = None):
         if not cities:
             rl = ld.CityLoader()
             cities = rl.load_cities()
-        _Multiplexer.__init__(self, '{city}', cities)
+        _Multiplier.__init__(self, '{city}', cities)
 
 
