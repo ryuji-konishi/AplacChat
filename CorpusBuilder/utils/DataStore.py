@@ -3,10 +3,10 @@ import uuid
 import json
 import random
 import utils.file_utils as file_utils
-from common import SentenseResolver as sr
+from common import tokenizer as tk
 from common import utils
 
-special_tokens = sr.special_tokens
+special_tokens = tk.special_tokens
 
 class VocabStore(object):
     def __init__(self, vocab_file = None):
@@ -68,12 +68,12 @@ class VocabStore(object):
         return result
 
 class CorpusStore(object):
-    def __init__(self, vocab_store = None, resolver = None):
+    def __init__(self, vocab_store = None, tokenizer = None):
         self.data = []
         self.vocab_store = vocab_store
-        self.resolver = resolver
-        if not self.resolver:
-            self.resolver = sr.SentenseResolver()
+        self.tokenizer = tokenizer
+        if not self.tokenizer:
+            self.tokenizer = tk.tokenizer()
 
     def _copy_data(self, data):
         self.data = data
@@ -81,9 +81,9 @@ class CorpusStore(object):
     def _store_data(self, source_text_line, target_text_line, store_vocab = True):
         self.data.append([source_text_line, target_text_line])
         if self.vocab_store and store_vocab:
-            buf_list = self.resolver.split(source_text_line)
+            buf_list = self.tokenizer.split(source_text_line)
             self.vocab_store.add_vocab_words(buf_list)
-            buf_list = self.resolver.split(target_text_line)
+            buf_list = self.tokenizer.split(target_text_line)
             self.vocab_store.add_vocab_words(buf_list)
 
     def clear(self):
@@ -114,7 +114,7 @@ class CorpusStore(object):
         for l in ratio_lens:
             # Create another instance that contains the split data
             split_data = self.data[st:st + l]
-            new_instance = CorpusStore(self.vocab_store, self.resolver)
+            new_instance = CorpusStore(self.vocab_store, self.tokenizer)
             new_instance._copy_data(split_data)
             result_lists.append(new_instance)
             st += l
@@ -158,11 +158,11 @@ class CorpusStore(object):
             for d in self.data:
                 source_text_line, target_text_line = d[0], d[1]
 
-                src_list = self.resolver.split(source_text_line)
+                src_list = self.tokenizer.split(source_text_line)
                 buf_str = utils.join_list_by_space(src_list)
                 sf.write(buf_str + '\n')
 
-                tgt_list = self.resolver.split(target_text_line)
+                tgt_list = self.tokenizer.split(target_text_line)
                 buf_str = utils.join_list_by_space(tgt_list)
                 tf.write(buf_str + '\n')
 

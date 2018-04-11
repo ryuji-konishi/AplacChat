@@ -45,7 +45,7 @@ special_terminators = [u'.']
 #     [u'＜', '＞']
 # ]
 
-class SentenseResolver(object):
+class tokenizer(object):
 
     def __init__(self):
         self.dic = dic.Dictionary()

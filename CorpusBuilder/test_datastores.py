@@ -5,9 +5,9 @@ import os, errno
 import filecmp
 import unittest
 import utils.DataStore as ds
-from common import SentenseResolver as sr
+from common import tokenizer as tk
 
-special_tokens = sr.special_tokens
+special_tokens = tk.special_tokens
 
 class TestVocabStore(unittest.TestCase):
     def setUp(self):
