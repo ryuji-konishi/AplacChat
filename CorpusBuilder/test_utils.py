@@ -1,16 +1,74 @@
 import sys
 sys.path.insert(0, '..\\')  # This is required to import common
 
+import os, errno
+import filecmp
 import unittest
-import utils.DataStore as ds
+import utils.corpus_utils as corpus_utils
 import utils.utils as utils
+import utils.vocab_utils as vocab_utils
+from common import tokenizer as tk
+
+special_tokens = tk.special_tokens
+
+class TestVocabStore(unittest.TestCase):
+    def setUp(self):
+        self.filename1 = 'tmp1'
+        self.filename2 = 'tmp2'
+        silentremove(self.filename1)
+        silentremove(self.filename2)
+        
+    def tearDown(self):
+        silentremove(self.filename1)
+        silentremove(self.filename2)
+
+    def test_CreateNewFile(self):
+        vocab = vocab_utils.VocabStore(self.filename1)
+        vocab.add_vocab_words(['abc', 'abc', 'def'])
+        vocab.save_to_file()
+
+        with open(self.filename2, 'w', encoding='utf8') as the_file:
+            write_special_tokens(the_file)
+            the_file.write('abc\n')
+            the_file.write('def\n')
+        self.assertTrue(filecmp.cmp(self.filename1, self.filename2))
+
+    def test_LoadExistingFile(self):
+        # Create original file before VocabStore
+        with open(self.filename1, 'w', encoding='utf8') as the_file:
+            write_special_tokens(the_file)
+            the_file.write('abc\n')
+            the_file.write('def\n')
+        
+        vocab = vocab_utils.VocabStore(self.filename1)
+        vocab.add_vocab_words(['abc', '123'])
+        vocab.save_to_file()
+
+        with open(self.filename2, 'w', encoding='utf8') as the_file:
+            write_special_tokens(the_file)
+            the_file.write('abc\n')
+            the_file.write('def\n')
+            the_file.write('123\n')
+        
+        self.assertTrue(filecmp.cmp(self.filename1, self.filename2))
+
+def write_special_tokens(the_file):
+    for t in special_tokens:
+        the_file.write(t + '\n')
+
+def silentremove(filename):
+    try:
+        os.remove(filename)
+    except OSError as e: # this would be "except OSError, e:" before Python 2.6
+        if e.errno != errno.ENOENT: # errno.ENOENT = no such file or directory
+            raise # re-raise exception if a different error occurred
 
 class TestCorpusStore(unittest.TestCase):
     def setUp(self):
         pass
 
     def test_store_data(self):
-        corpus_store = ds.CorpusStore()
+        corpus_store = corpus_utils.CorpusStore()
 
         # If the input to the corpus store is either
         # - a line of text or
@@ -53,7 +111,7 @@ class TestCorpusStore(unittest.TestCase):
         corpus_store.clear()
 
     def test_split(self):
-        corpus_store = ds.CorpusStore()
+        corpus_store = corpus_utils.CorpusStore()
 
         corpus_store.store_data(
             ['source a', 'source b', 'source c', 'source d'], 
@@ -102,7 +160,7 @@ class TestCorpusStore(unittest.TestCase):
             else:
                 return True
 
-        corpus_store = ds.CorpusStore(func_validate = validator)
+        corpus_store = corpus_utils.CorpusStore(func_validate = validator)
 
         corpus_store.store_data('source text', 'target text')
         corpus_store.store_data('boom', 'target text')

@@ -5,7 +5,8 @@ import unittest
 import parsers.ParserAtomic as pat
 import parsers.ParserAtomicHeaderBody as pah
 import parsers.ParserHeaderBody as phb
-import utils.DataStore as ds
+import utils.corpus_utils as corpus_utils
+import utils.vocab_utils as vocab_utils
 import utils.utils as utils
 
 class TestAtomicParser(unittest.TestCase):
@@ -18,8 +19,8 @@ class TestAtomicParser(unittest.TestCase):
         
     def test_AtomicParserJpn(self):
         """Test the targetted atomic parser with Japanese sentence."""
-        vocab = ds.VocabStore()
-        corpus_store = ds.CorpusStore(vocab)
+        vocab = vocab_utils.VocabStore()
+        corpus_store = corpus_utils.CorpusStore(vocab)
         parser = pat.Parser(corpus_store)
         parser.parse(self.html)
 
@@ -89,8 +90,8 @@ class TestAtomicHeaderBodyParser(unittest.TestCase):
 
     def test_AtomicHeaderBodyParser(self):
         """Test the targetted atomic parser which is going to be in the actual use."""
-        vocab = ds.VocabStore()
-        corpus_store = ds.CorpusStore(vocab)
+        vocab = vocab_utils.VocabStore()
+        corpus_store = corpus_utils.CorpusStore(vocab)
         parser = pah.Parser(corpus_store)
         parser.parse(self.htmlStruct)
 
@@ -107,8 +108,8 @@ class TestAtomicHeaderBodyParser(unittest.TestCase):
 
     def test_AtomicHeaderBodyParserJpn(self):
         """Test the targetted atomic parser with Japanese sentence."""
-        vocab = ds.VocabStore()
-        corpus_store = ds.CorpusStore(vocab)
+        vocab = vocab_utils.VocabStore()
+        corpus_store = corpus_utils.CorpusStore(vocab)
         parser = pah.Parser(corpus_store)
         html = ('<html><head><title>test</title></head>'
             '<body>'
@@ -147,8 +148,8 @@ class TestHeaderBodyParser(unittest.TestCase):
         
     def test_parse_h1(self):
         """Test H1"""
-        vocab = ds.VocabStore()
-        corpus_store = ds.CorpusStore(vocab)
+        vocab = vocab_utils.VocabStore()
+        corpus_store = corpus_utils.CorpusStore(vocab)
         parser = phb.Parser(corpus_store, 'h1')
         parser.parse(self.htmlStruct)
 
@@ -160,8 +161,8 @@ class TestHeaderBodyParser(unittest.TestCase):
 
     def test_parse_h2(self):
         """Test H2"""
-        vocab = ds.VocabStore()
-        corpus_store = ds.CorpusStore(vocab)
+        vocab = vocab_utils.VocabStore()
+        corpus_store = corpus_utils.CorpusStore(vocab)
         parser = phb.Parser(corpus_store, 'h2')
         parser.parse(self.htmlStruct)
 
@@ -175,8 +176,8 @@ class TestHeaderBodyParser(unittest.TestCase):
 
     def test_parse_h3(self):
         """Test H3"""
-        vocab = ds.VocabStore()
-        corpus_store = ds.CorpusStore(vocab)
+        vocab = vocab_utils.VocabStore()
+        corpus_store = corpus_utils.CorpusStore(vocab)
         parser = phb.Parser(corpus_store, 'h3')
         parser.parse(self.htmlStruct)
 
@@ -188,8 +189,8 @@ class TestHeaderBodyParser(unittest.TestCase):
 
     def test_parse_script(self):
         """Test script element within a font element"""
-        vocab = ds.VocabStore()
-        corpus_store = ds.CorpusStore(vocab)
+        vocab = vocab_utils.VocabStore()
+        corpus_store = corpus_utils.CorpusStore(vocab)
         parser = phb.Parser(corpus_store)
 
         html = ('<html><head><title>test</title></head>'

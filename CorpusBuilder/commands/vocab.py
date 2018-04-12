@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 import resources.loader as ld
-import utils.DataStore as ds
+import utils.vocab_utils as vocab_utils
 
 # Unocode code page ranges. Note that they are not UTF8, nor UTF16, but code page values.
 # https://ja.wikipedia.org/wiki/Unicode%E4%B8%80%E8%A6%A7_3000-3FFF
@@ -43,7 +43,7 @@ def _generate_standard(file_path):
     words.extend(jk.load_kanjis())
 
     # Store the loaded characters into VocabStore, then export the vocab file.
-    vocab = ds.VocabStore(file_path)
+    vocab = vocab_utils.VocabStore(file_path)
     vocab.add_vocab_words(words)
     vocab.save_to_file()
 

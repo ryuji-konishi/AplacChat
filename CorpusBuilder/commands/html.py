@@ -9,7 +9,7 @@ import urllib.request
 import shutil
 
 import utils.file_utils as file_utils
-import utils.DataStore as ds
+import utils.corpus_utils as corpus_utils
 import parsers.ParserAtomic as pat
 import parsers.ParserAtomicHeaderBody as pah
 import parsers.ParserHeaderBody as phb
@@ -96,7 +96,7 @@ def parse(input_path, output_dir):
     def process(files):
         """ size_limit_KB is the limit of file size to be written. The size is in Kilo bite (1024 bytes)
         """
-        corpus_store = ds.CorpusStore()
+        corpus_store = corpus_utils.CorpusStore()
 
         for idx, file in enumerate(files):
             f_abst = file[0]    # absolute path

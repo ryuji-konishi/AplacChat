@@ -126,14 +126,25 @@ def add_arguments(parser):
     parser_vocab_generate.add_argument('vocab', type=str, help=help_path_vocab)
     parser_vocab_generate.set_defaults(func = f_vocab_generate)
 
-if __name__ == "__main__":
+def main():
     arg_parser = argparse.ArgumentParser()
     add_arguments(arg_parser)
     args = arg_parser.parse_args()
     if 'func' in args:
         st = time.time()
         args.func(args)     # func is a function pointer which is set for each command with set_defaults function.
-        print ("Time", round(time.time() - st, 2), "sec")
+        ts = time.time() - st   # time spent
+        if ts > 6000:
+            print ("Time", round(ts / 3600, 2), "hour")
+        elif ts > 100:
+            print ("Time", round(ts / 60, 2), "min")
+        else:
+            print ("Time", round(ts, 2), "sec")
+    else:
+        print("But. ArgumentParser is not correctly configured.")   # You can't reach here.
+
+if __name__ == "__main__":
+    main()
     # corpus.generate("C:\\Tmp\\aplac\\corpus\\test")
 
     print ("Finished.")

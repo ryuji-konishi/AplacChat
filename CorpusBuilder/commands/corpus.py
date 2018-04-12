@@ -1,8 +1,9 @@
 import os
 
 import numpy as np
-import utils.DataStore as ds
+import utils.corpus_utils as corpus_utils
 import utils.file_utils as file_utils
+import utils.vocab_utils as vocab_utils
 import resources.loader as ld
 import resources.multiplier as mpl
 
@@ -12,7 +13,7 @@ def generate(output_dir, myname = '田村', yourname = '田村さん'):
     """
     if not os.path.exists(output_dir): os.makedirs(output_dir)
 
-    corpus_store = ds.CorpusStore()
+    corpus_store = corpus_utils.CorpusStore()
     def process(pairs):
         """ Loop through the list of src/tgt pairs, replace the resource tags (name, city etc)
             and store the result into CorpusStore.
@@ -76,8 +77,8 @@ def compile(input_path, vocab_path, output_dir):
         print ("Searching corpus files in the input directory...")
         files = file_utils.get_filelist_in_path("cor", input_dir, True)
 
-    vocab = ds.VocabStore(vocab_path)
-    corpus_store = ds.CorpusStore(vocab)
+    vocab = vocab_utils.VocabStore(vocab_path)
+    corpus_store = corpus_utils.CorpusStore(vocab)
     print ("Total", len(files), "files to process. Loading...")
     for idx, file in enumerate(files):
         f_abst = file[0]    # absolute path
