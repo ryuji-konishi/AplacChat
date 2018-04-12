@@ -144,6 +144,28 @@ class NameLoader(_ResourceLoader):
         data['firstname'] = self.remove_duplicate(firstnames)
         self.save_json(self.file_json, data)
 
+class CountryLoader(_ResourceLoader):
+    """ Country resource loader class.
+    """
+    def __init__(self):
+        _ResourceLoader.__init__(self, "country")
+        self.file_json = "country.json"
+
+    def load_countries(self):
+        """ Load and return a table sum of country names in both English and Japanese. """
+        data = self.load_json(self.file_json)
+        result = data['eng']
+        result.extend(data['jpn'])
+        return result
+
+    def refresh(self):
+        data = self.load_json(self.file_json)
+        eng = data['eng']
+        data['eng'] = self.remove_duplicate(eng)
+        jpn = data['jpn']
+        data['jpn'] = self.remove_duplicate(jpn)
+        self.save_json(self.file_json, data)
+
 class SaluteLoader(object):
     """ Salute resource loader class.
         The initial data is loaded from CSV file during development.
