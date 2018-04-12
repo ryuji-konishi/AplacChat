@@ -121,57 +121,12 @@ class _MultiColInitLoader(_ResourceLoader):
         data = self.remove_duplicate(data)
         self.save_json(self.file_json, data)
 
-class NameLoader(_ResourceLoader):
-    """ Name resource loader class.
-    """
-    def __init__(self):
-        _ResourceLoader.__init__(self, "name")
-        self.file_json = "names_jpn.json"
-
-    def load_names(self):
-        """ Load and return a table sum of lastname and firstname. """
-        data = self.load_json(self.file_json)
-        lastnames = data['lastname']
-        firstnames = data['firstname']
-        lastnames.extend(firstnames)
-        return lastnames
-
-    def refresh(self):
-        data = self.load_json(self.file_json)
-        lastnames = data['lastname']
-        data['lastname'] = self.remove_duplicate(lastnames)
-        firstnames = data['firstname']
-        data['firstname'] = self.remove_duplicate(firstnames)
-        self.save_json(self.file_json, data)
-
-class CountryLoader(_ResourceLoader):
-    """ Country resource loader class.
-    """
-    def __init__(self):
-        _ResourceLoader.__init__(self, "country")
-        self.file_json = "country.json"
-
-    def load_countries(self):
-        """ Load and return a table sum of country names in both English and Japanese. """
-        data = self.load_json(self.file_json)
-        result = data['eng']
-        result.extend(data['jpn'])
-        return result
-
-    def refresh(self):
-        data = self.load_json(self.file_json)
-        eng = data['eng']
-        data['eng'] = self.remove_duplicate(eng)
-        jpn = data['jpn']
-        data['jpn'] = self.remove_duplicate(jpn)
-        self.save_json(self.file_json, data)
-
 class SaluteLoader(object):
     """ Salute resource loader class.
         The initial data is loaded from CSV file during development.
     """
-    def __init__(self):
-        self.delegate = _MultiColInitLoader('salute', 'salute.json', 'salute.csv')
+    def __init__(self, lang = 'jpn'):
+        self.delegate = _MultiColInitLoader('salute', 'salute_' + lang + '.json', 'salute_' + lang + '.csv')
 
     def load_salutes(self):
         """ Load and return a set of source/target list. """
@@ -184,8 +139,8 @@ class ConversationLoader(object):
     """ Conversation resource loader class.
         The initial data is loaded from CSV file during development.
     """
-    def __init__(self):
-        self.delegate = _MultiColInitLoader('conversation', 'conversation.json', 'conversation.csv')
+    def __init__(self, lang = 'jpn'):
+        self.delegate = _MultiColInitLoader('conversation', 'conversation_' + lang + '.json', 'conversation_' + lang + '.csv')
 
     def load_conversations(self):
         """ Load and return a set of source/target list. """
@@ -223,8 +178,8 @@ class JinmeiKanjiLoader(object):
 class CityLoader(object):
     """ City name resource loader class.
     """
-    def __init__(self):
-        self.delegate = _SingleColInitLoader('city', 'city.json', None)
+    def __init__(self, lang = 'jpn'):
+        self.delegate = _SingleColInitLoader('city', 'city_' + lang + '.json', None)
 
     def load_cities(self):
         """ Load and return a list of city names """
@@ -232,3 +187,30 @@ class CityLoader(object):
 
     def refresh(self):
         self.delegate.refresh()
+
+class CountryLoader(object):
+    """ Country resource loader class.
+    """
+    def __init__(self, lang = 'jpn'):
+        self.delegate = _SingleColInitLoader('country', 'country_' + lang + '.json', None)
+
+    def load_countries(self):
+        """ Load and return a list of country names. """
+        return self.delegate.load()
+
+    def refresh(self):
+        self.delegate.refresh()
+
+class NameLoader(object):
+    """ Name resource loader class.
+    """
+    def __init__(self, lang = 'jpn'):
+        self.delegate = _SingleColInitLoader('name', 'name_' + lang + '.json', None)
+
+    def load_names(self):
+        """ Load and return a list of names. """
+        return self.delegate.load()
+
+    def refresh(self):
+        self.delegate.refresh()
+
