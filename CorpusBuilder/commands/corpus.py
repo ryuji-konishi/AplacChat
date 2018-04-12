@@ -17,9 +17,8 @@ def generate(output_dir, myname = '田村', yourname = '田村さん'):
         """ Loop through the list of src/tgt pairs, replace the resource tags (name, city etc)
             and store the result into CorpusStore.
         """
-        name_mpx = mpl.NameMultiplier()
-        city_mpx = mpl.CityMultiplier()
-        country_mpx = mpl.CountryMultiplier()
+        multipliers = [mpl.NameMultiplier(), mpl.CityMultiplier(), mpl.CountryMultiplier(), 
+            mpl.LocationMultiplier(), mpl.ThingMultiplier()]
         for src, tgt in pairs:
             src = src.replace('{myname}', myname)
             tgt = tgt.replace('{myname}', myname)
@@ -29,9 +28,8 @@ def generate(output_dir, myname = '田村', yourname = '田村さん'):
             srcs = [src]
             tgts = [tgt]
 
-            srcs, tgts = name_mpx.multiply(srcs, tgts)
-            srcs, tgts = city_mpx.multiply(srcs, tgts)
-            srcs, tgts = country_mpx.multiply(srcs, tgts)
+            for multiplier in multipliers:
+                srcs, tgts = multiplier.multiply(srcs, tgts)
             corpus_store.store_data(srcs, tgts)
 
     # Process salute sentences

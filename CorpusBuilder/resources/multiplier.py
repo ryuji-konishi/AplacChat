@@ -78,5 +78,10 @@ class LocationMultiplier(_Multiplier):
             locations = rl.load_locations()
         _Multiplier.__init__(self, '{location}', locations)
 
-
+class ThingMultiplier(_Multiplier):
+    def __init__(self, things = None):
+        if not things:
+            rl = ld.ThingLoader()
+            things = rl.load_things()
+        _Multiplier.__init__(self, '{thing}', things)
 

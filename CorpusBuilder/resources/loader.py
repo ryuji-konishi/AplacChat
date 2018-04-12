@@ -227,3 +227,16 @@ class LocationLoader(object):
     def refresh(self):
         self.delegate.refresh()
 
+class ThingLoader(object):
+    """ Thing resource loader class.
+    """
+    def __init__(self, lang = 'jpn'):
+        self.delegate = _SingleColInitLoader('thing', 'thing_' + lang + '.json', 'thing_' + lang + '.csv')
+
+    def load_things(self):
+        """ Load and return a list of things. """
+        return self.delegate.load()
+
+    def refresh(self):
+        self.delegate.refresh()
+
