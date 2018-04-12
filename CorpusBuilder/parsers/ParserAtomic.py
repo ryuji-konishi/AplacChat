@@ -5,6 +5,11 @@ import utils.header_utils as header_utils
 import utils.utils as utils
 
 class Parser(object):
+    """ The smallest block of text that is extracted from the whole part of HTML, 
+        delimited by '。', section, line break or any type of atomic block of text.
+        This will result in single line of text for source, single line of test for target,
+        and the same number of lines will be loaded in to both source and target file.
+    """
     def __init__(self, corpus_store):
         self.corpus_store = corpus_store
 

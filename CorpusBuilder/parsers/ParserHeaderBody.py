@@ -7,6 +7,10 @@ import utils.header_utils as header_utils
 import utils.utils as utils
 
 class Parser(object):
+    """ The source text is extracted from the header texts (H1, H2, H3 etc). 
+        The target text is the body of the trailing paragraphs that appear following after the header. This text contains line breaks.
+        The resulted text in the source is a line of text, and the target is a chain of several paragraphs.
+    """
     def __init__(self, corpus_store, target_tag = None):
         self.corpus_store = corpus_store
         if target_tag:

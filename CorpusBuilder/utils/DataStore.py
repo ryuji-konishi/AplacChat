@@ -68,23 +68,34 @@ class VocabStore(object):
         return result
 
 class CorpusStore(object):
-    def __init__(self, vocab_store = None, tokenizer = None):
+    def __init__(self, vocab_store = None, tokenizer = None, func_validate = None):
+        """ vocab_store is an instance of VocabStore class.
+            tokenizer is an instance of common.tokenizer class.
+            func_validate is a function that takes two texts as source and target. If omitted any texts will be stored.
+        """
         self.data = []
         self.vocab_store = vocab_store
         self.tokenizer = tokenizer
         if not self.tokenizer:
             self.tokenizer = tk.tokenizer()
+        self.func_validate = func_validate
 
     def _copy_data(self, data):
         self.data = data
 
     def _store_data(self, source_text_line, target_text_line, store_vocab = True):
-        self.data.append([source_text_line, target_text_line])
-        if self.vocab_store and store_vocab:
-            buf_list = self.tokenizer.split(source_text_line)
-            self.vocab_store.add_vocab_words(buf_list)
-            buf_list = self.tokenizer.split(target_text_line)
-            self.vocab_store.add_vocab_words(buf_list)
+        if self.func_validate:
+            is_valid = self.func_validate(source_text_line, target_text_line)
+        else:
+            is_valid = True
+
+        if is_valid:
+            self.data.append([source_text_line, target_text_line])
+            if self.vocab_store and store_vocab:
+                buf_list = self.tokenizer.split(source_text_line)
+                self.vocab_store.add_vocab_words(buf_list)
+                buf_list = self.tokenizer.split(target_text_line)
+                self.vocab_store.add_vocab_words(buf_list)
 
     def clear(self):
         del self.data[:]
@@ -132,9 +143,8 @@ class CorpusStore(object):
             source = [source]
         if isinstance(target, str):
             target = [target]
-        for data in zip(source, target):
-            source_text_line, target_text_line = data[0], data[1]
-            self._store_data(source_text_line, target_text_line)
+        for src, tgt in zip(source, target):
+            self._store_data(src, tgt)
 
     def export_to_file(self, out_dir, basename = None, size_limit_KB = None, store_vocab = False):
         """ Write out the stored source/target data into a pair of src/tgt files.

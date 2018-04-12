@@ -115,7 +115,7 @@ def parse(input_path, output_dir):
             parser.parse(file_content)
 
             # Process the same data with HeaderBody Parser
-            parser = phb.Parser(corpus_store)
+            parser = phb.Parser(corpus_store, ['h1', 'h2', 'h3', 'h4', 'h5'])
             parser.parse(file_content)
 
         # Export the parsed data into file

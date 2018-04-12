@@ -7,6 +7,12 @@ import utils.utils as utils
 
 
 class Parser(object):
+    """ Like the Header/Body parser, the header becomes the source and the body becomes 
+        the target. But the body text is broken into the atomic piece of text, like the atomic 
+        parser, and the each atomic text is linked to that section's header.
+        This will result in the same line of text appears in the source, where the series of 
+        target text lines share the common source text.
+    """
     def __init__(self, corpus_store):
         self.delegate = TreeAtomicParser(corpus_store)
 

@@ -92,6 +92,26 @@ class TestCorpusStore(unittest.TestCase):
 
         corpus_store.clear()
 
+    def test_validation(self):
+        """ Test if validation works. Validator checks src and tgt texts, and only if
+            they are valid, the texts are stored.
+        """
+        def validator(source, target):
+            if 'boom' in source or 'boom' in target:
+                return False
+            else:
+                return True
+
+        corpus_store = ds.CorpusStore(func_validate = validator)
+
+        corpus_store.store_data('source text', 'target text')
+        corpus_store.store_data('boom', 'target text')
+        corpus_store.store_data('source text', 'boom')
+        self.assertTrue(
+            corpus_store.data, 
+            ['source text', 'target text'])
+        corpus_store.clear()
+
 
 class TestUtils(unittest.TestCase):
     def setUp(self):
