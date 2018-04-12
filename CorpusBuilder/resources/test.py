@@ -1,5 +1,5 @@
 import sys
-#sys.path.insert(0, '..\\')  # This is required to import common
+sys.path.insert(0, '..\\')  # This is required to import resources
 
 import unittest
 import time
@@ -15,14 +15,14 @@ class TestMultiplier(unittest.TestCase):
         pair = ["I'm {name}", "Hi {name}."]
         expected = [["I'm Jack", "I'm George"], ["Hi Jack.", "Hi George."]]
 
-        name_mpx = mpl.NameMultiplier(names)
+        name_mpl = mpl.NameMultiplier(names)
         src = pair[0]
         tgt = pair[1]
 
         srcs = [src]
         tgts = [tgt]
 
-        srcs, tgts = name_mpx.multiply(srcs, tgts)
+        srcs, tgts = name_mpl.multiply(srcs, tgts)
 
         actual = [srcs, tgts]
         self.assertListEqual(expected, actual)
@@ -53,8 +53,8 @@ class TestMultiplier(unittest.TestCase):
             ]
         ]
 
-        name_mpx = mpl.NameMultiplier(names)
-        city_mpx = mpl.CityMultiplier(cities)
+        name_mpl = mpl.NameMultiplier(names)
+        city_mpl = mpl.CityMultiplier(cities)
         srcs_result = []
         tgts_result = []
         for pair in pairs:
@@ -64,8 +64,8 @@ class TestMultiplier(unittest.TestCase):
             srcs = [src]
             tgts = [tgt]
 
-            srcs, tgts = name_mpx.multiply(srcs, tgts)
-            srcs, tgts = city_mpx.multiply(srcs, tgts)
+            srcs, tgts = name_mpl.multiply(srcs, tgts)
+            srcs, tgts = city_mpl.multiply(srcs, tgts)
 
             srcs_result.extend(srcs)
             tgts_result.extend(tgts)
@@ -77,8 +77,8 @@ class TestMultiplier(unittest.TestCase):
         names = ["%d" % i for i in range(100)]
         cities = ["%d" % i for i in range(100)]
         pairs = [["{name} {city} %d" % i, "{name} {city} %d" % i] for i in range(1000)]
-        name_mpx = mpl.NameMultiplier(names)
-        city_mpx = mpl.CityMultiplier(cities)
+        name_mpl = mpl.NameMultiplier(names)
+        city_mpl = mpl.CityMultiplier(cities)
         srcs_result = []
         tgts_result = []
         st = time.time()
@@ -89,8 +89,8 @@ class TestMultiplier(unittest.TestCase):
             srcs = [src]
             tgts = [tgt]
 
-            srcs, tgts = name_mpx.multiply(srcs, tgts)
-            srcs, tgts = city_mpx.multiply(srcs, tgts)
+            srcs, tgts = name_mpl.multiply(srcs, tgts)
+            srcs, tgts = city_mpl.multiply(srcs, tgts)
 
             srcs_result.extend(srcs)
             tgts_result.extend(tgts)

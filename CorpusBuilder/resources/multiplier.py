@@ -71,4 +71,12 @@ class CountryMultiplier(_Multiplier):
             countries = rl.load_countries()
         _Multiplier.__init__(self, '{country}', countries)
 
+class LocationMultiplier(_Multiplier):
+    def __init__(self, locations = None):
+        if not locations:
+            rl = ld.LocationLoader()
+            locations = rl.load_locations()
+        _Multiplier.__init__(self, '{location}', locations)
+
+
 
