@@ -1,10 +1,22 @@
 import sys
-sys.path.insert(0, '..\\')  # This is required to import resources
+sys.path.insert(0, '..\\')  # This is required to import common
 
 import unittest
 import time
-import multiplier as mpl
-import loader as ld
+import resources.multiplier as mpl
+import resources.loader as rl
+
+class TestLoader(unittest.TestCase):
+    def setUp(self):
+        pass
+    def test_load(self):
+        loaders = [rl.JoyoKanjiLoader, rl.JinmeiKanjiLoader, rl.CityLoader, 
+            rl.CountryLoader, rl.NameLoader, rl.LocationLoader, rl.ThingLoader]
+        
+        for loader in loaders:
+            ld = loader()
+            data = ld.load()
+            self.assertTrue(len(data) > 0)
 
 class TestMultiplier(unittest.TestCase):
     def setUp(self):
@@ -74,9 +86,9 @@ class TestMultiplier(unittest.TestCase):
         self.assertListEqual(expected, actual)
         
     def test_speed(self):
-        names = ["%d" % i for i in range(100)]
-        cities = ["%d" % i for i in range(100)]
-        pairs = [["{name} {city} %d" % i, "{name} {city} %d" % i] for i in range(1000)]
+        names = ["%d" % i for i in range(10)]
+        cities = ["%d" % i for i in range(10)]
+        pairs = [["{name} {city} %d" % i, "{name} {city} %d" % i] for i in range(100)]
         name_mpl = mpl.NameMultiplier(names)
         city_mpl = mpl.CityMultiplier(cities)
         srcs_result = []
