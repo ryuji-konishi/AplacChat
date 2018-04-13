@@ -63,6 +63,16 @@ def silentremove(filename):
         if e.errno != errno.ENOENT: # errno.ENOENT = no such file or directory
             raise # re-raise exception if a different error occurred
 
+class TestVocabUtils(unittest.TestCase):
+    def test_character(self):
+        self.assertTrue(vocab_utils.is_charactor_ascii(u'a'))
+        self.assertTrue(vocab_utils.is_charactor_ascii_symbol(u'$'))
+        self.assertTrue(vocab_utils.is_charactor_ascii_alphabet(u'a'))
+        self.assertTrue(vocab_utils.is_charactor_ascii_number(u'0'))
+        self.assertTrue(vocab_utils.is_charactor_jpn_symbol(u'【'))
+        self.assertTrue(vocab_utils.is_charactor_hiragana(u'あ'))
+        self.assertTrue(vocab_utils.is_charactor_katakana(u'ア'))
+
 class TestCorpusStore(unittest.TestCase):
     def setUp(self):
         pass

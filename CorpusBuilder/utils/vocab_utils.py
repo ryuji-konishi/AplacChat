@@ -4,6 +4,98 @@ from common import tokenizer as tk
 
 special_tokens = tk.special_tokens
 
+# Unocode code page ranges. Note that they are not UTF8, nor UTF16, but code page values.
+# https://ja.wikipedia.org/wiki/Unicode%E4%B8%80%E8%A6%A7_3000-3FFF
+ascii_ranges = [[0x0021, 0x007E], [0x00A1, 0x00B8]]
+ascii_symbol_ranges = [[0x0021, 0x002F], [0x003A, 0x0041],      # Note this is overlapped with 'ascii_ranges'
+    [0x005B, 0x0061], [0x007B, 0x007E]]
+ascii_alpabet_ranges = [[0x0041, 0x005A], [0x0061, 0x007A]]     # Note this is overlapped with 'ascii_ranges'
+ascii_number_ranges = [[0x0030, 0x0039]]                        # Note this is overlapped with 'ascii_ranges'
+jpn_symbol_ranges = [[0x3001, 0x3036], [0x3099, 0x309E]]
+hiragana_ranges = [[0x3041, 0x3094], [0x3099, 0x309E]]
+katakana_ranges = [[0x30A1, 0x30F6], [0x30FB, 0x30FE]]
+
+def _get_code_ranges(code_ranges, chars):
+    for rng in code_ranges:
+        for code in range(rng[0], rng[1]):
+            chars.append(chr(code))
+
+def _is_within_ranges(code_ranges, code):
+    for rng in code_ranges:
+        if rng[0] <= code <= rng[1]:
+            return True
+    return False
+
+def get_charactors_ascii():
+    """ Return ASCII characters in list. """
+    result = []
+    _get_code_ranges(ascii_ranges, result)
+    return result
+
+def get_charactors_ascii_symbol():
+    """ Return ASCII symbol (non alphabet) characters in list. """
+    result = []
+    _get_code_ranges(ascii_symbol_ranges, result)
+    return result
+
+def get_charactors_ascii_alphabet():
+    """ Return ASCII alphabet characters in list. """
+    result = []
+    _get_code_ranges(ascii_alpabet_ranges, result)
+    return result
+
+def get_charactors_ascii_number():
+    """ Return ASCII number 0 - 9 characters in list. """
+    result = []
+    _get_code_ranges(ascii_number_ranges, result)
+    return result
+
+def get_charactors_jpn_symbol():
+    """ Return JPN symbol characters in list. """
+    result = []
+    _get_code_ranges(jpn_symbol_ranges, result)
+    return result
+
+def get_charactors_hiragana():
+    """ Return hiragana characters in list. """
+    result = []
+    _get_code_ranges(hiragana_ranges, result)
+    return result
+
+def get_charactors_katakana():
+    """ Return katakana characters in list. """
+    result = []
+    _get_code_ranges(katakana_ranges, result)
+    return result
+
+def is_charactor_ascii(char):
+    """ Return if the character is ASCII code. """
+    return _is_within_ranges(ascii_ranges, ord(char))
+
+def is_charactor_ascii_symbol(char):
+    """ Return if the character is ASCII symbol (non alphabet) character. """
+    return _is_within_ranges(ascii_symbol_ranges, ord(char))
+
+def is_charactor_ascii_alphabet(char):
+    """ Return if the character is ASCII alphabet character. """
+    return _is_within_ranges(ascii_alpabet_ranges, ord(char))
+
+def is_charactor_ascii_number(char):
+    """ Return if the character is ASCII number 0 - 9 character. """
+    return _is_within_ranges(ascii_number_ranges, ord(char))
+
+def is_charactor_jpn_symbol(char):
+    """ Return if the character is JPN symbol code. """
+    return _is_within_ranges(jpn_symbol_ranges, ord(char))
+
+def is_charactor_hiragana(char):
+    """ Return if the character is hiragana code. """
+    return _is_within_ranges(hiragana_ranges, ord(char))
+
+def is_charactor_katakana(char):
+    """ Return if the character is katakana code. """
+    return _is_within_ranges(katakana_ranges, ord(char))
+
 class VocabStore(object):
     def __init__(self, vocab_file = None):
         """ If vocab_file is given, read and initialize data from it."""
