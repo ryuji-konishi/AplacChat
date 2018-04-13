@@ -42,7 +42,7 @@ def f_html_parse(args):
     corpus_dir = conv_abs(args.corpus)
 
     # APLaC specific
-    html.parse(html_dir, corpus_dir, aplac.pair_validate, aplac.html_target_tag)
+    html.parse(html_dir, corpus_dir, aplac.validate_pair_html, aplac.html_target_tag)
 
 def f_corpus_generate(args):
     """ Function called when the 'corpus generate' command is set in the argument."""
@@ -50,7 +50,7 @@ def f_corpus_generate(args):
 
     # APLaC specific
     pair_loaders = [aplac.SaluteLoader(), aplac.ConversationLoader()]
-    corpus.generate(corpus_dir, aplac.myname, aplac.yourname, pair_loaders, aplac.pair_validate)
+    corpus.generate(corpus_dir, aplac.myname, aplac.yourname, pair_loaders, aplac.validate_pair_corpus)
 
 def f_corpus_compile(args):
     """ Function called when the 'corpus compile' command is set in the argument."""

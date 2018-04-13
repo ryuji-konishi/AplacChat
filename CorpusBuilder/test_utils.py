@@ -69,7 +69,7 @@ class TestVocabUtils(unittest.TestCase):
         self.assertTrue(vocab_utils.is_charactor_ascii_symbol(u'$'))
         self.assertTrue(vocab_utils.is_charactor_ascii_alphabet(u'a'))
         self.assertTrue(vocab_utils.is_charactor_ascii_number(u'0'))
-        self.assertTrue(vocab_utils.is_charactor_jpn_symbol(u'【'))
+        self.assertTrue(vocab_utils.is_charactor_full_symbol(u'【'))
         self.assertTrue(vocab_utils.is_charactor_hiragana(u'あ'))
         self.assertTrue(vocab_utils.is_charactor_katakana(u'ア'))
 

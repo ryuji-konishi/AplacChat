@@ -19,7 +19,7 @@ def _generate_standard(file_path):
 
     # Load charactors from Unicode table ranges
     vocab.add_vocab_words(vocab_utils.get_charactors_ascii())
-    vocab.add_vocab_words(vocab_utils.get_charactors_jpn_symbol())
+    vocab.add_vocab_words(vocab_utils.get_charactors_full_symbol())
     vocab.add_vocab_words(vocab_utils.get_charactors_hiragana())
     vocab.add_vocab_words(vocab_utils.get_charactors_katakana())
 

@@ -32,7 +32,7 @@ def check_contain(file_content, check_text):
 def download_html(html_path):
     html_path = html_path.replace(os.path.sep, '/')
     url = 'https://aplac.net/' + html_path
-    local_filename, headers = urllib.request.urlretrieve(url)
+    local_filename, _ = urllib.request.urlretrieve(url)
     return local_filename       # the file is in the sytem temp folder
 
 def clean(input_path):
