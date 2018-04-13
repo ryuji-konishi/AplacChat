@@ -166,9 +166,9 @@ class TestCorpusStore(unittest.TestCase):
         """
         def validator(source, target):
             if 'boom' in source or 'boom' in target:
-                return False
+                return '', ''
             else:
-                return True
+                return source, target
 
         corpus_store = corpus_utils.CorpusStore(func_validate = validator)
 

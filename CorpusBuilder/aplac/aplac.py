@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 
 import resources.loader as rl
 import utils.vocab_utils as vocab_utils
@@ -39,23 +40,85 @@ def get_number_ratio(text):
     else:
         return cnt / len(text)
 
+def regex_trim(text, reg_exps):
+    """ Remove the keyword being matched with regular expression and return the result.
+        reg_exps is a list of regular expression strings.
+    """
+    # Loop until trimming has no effect
+    while True:
+        buf = text
+        for regex in reg_exps:
+            buf = re.sub(regex, '', buf).strip()
+        if text == buf:     # no difference between before and after.
+            break
+        text = buf
+    return text
+
+def contains(text, phrases):
+    for phrase in phrases:
+        if phrase in text:
+            return True
+    return False
+
 def validate_pair_html(source, target):
     """ This is a function that takes source/target text pairs from the or HTML parsers, 
         and it decides if the texts are valid and to be processed and stored into corpus.
     """
     if get_symbol_ratio(source) >= 0.5:
-        print ("source", source, "is skipped")
-        return False
+        return '', ''
     if get_number_ratio(source) >= 0.5:
-        print ("source", source, "is skipped")
-        return False
-    return True
+        return '', ''
+
+    # Ignore any texts that contain specific phrases.
+    ignore_phrases = [
+        u'→MORE', u'★→', u'→APLaCの総合トップに戻る']
+    if contains(source, ignore_phrases) or contains(target, ignore_phrases):
+        return '', ''
+
+    # Regular expressions to remove from source and target
+    regexs_both = [
+        # ESSAY 452／（１） 〜これまで
+        u'^ESSAY [0-9|０-９]+', 
+        # Part 01：最強最速の情況記憶
+        u'^Part [0-9|０-９| ]+[.|．|:|：]', 
+        # ２．学生ビザの取得方法
+        u'^[0-9|０-９| ]+[.|．|:|：]',
+        # 1-1.概況　オーストラリアの犯罪状況
+        u'^[0-9|０-９| ]+[-|－|−]+[0-9|０-９| ]+[.|．|:|：]*',
+        # beginning of
+        u'^[　|～|〜|－|／|、|●|★|:|;|~]+', 
+        # numbers in brackets at the beginning （１） （その１）これまで
+        u'^[(|\\[|\\{|<|（|【|｛|＜][0-9|０-９|その| ]+[)|\\]|\\}|>|）|】|｝|＞]',
+        # numbers in brackets at the end  これまで（１）（その１）
+        u'[(|\\[|\\{|<|（|【|｛|＜][0-9|０-９|その| ]+[)|\\]|\\}|>|）|】|｝|＞]$',
+        # constant keywords at the beginning
+        u'^[日本／|◆コラム]', 
+        # Copyright 1996
+        u'Copyright [0-9|０-９|-|－|−]+',
+        # email address
+        u'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+']
+    source = regex_trim(source, regexs_both)
+    target = regex_trim(target, regexs_both)
+
+    # Regular expressions to remove from source
+    regexs_src = [
+        # repeating symbol characters at the beginning
+        u'^[@#%\\^&\\*_+-=,\\.<>?]+', 
+        # any of / ／ ・  ＊ ＃
+        u'[/|／|・|＊|＃]']
+    source = regex_trim(source, regexs_src)
+
+    if len(source) > 200 or len(target) > 200:
+        return '', ''   # skip too long
+    if len(source) < 3 or len(target) < 3:
+        return '', ''   # skip too short
+    return source.strip(), target.strip()
 
 def validate_pair_corpus(source, target):
     """ This is a function that takes source/target text pairs from the corpus resouces,
         and it decides if the texts are valid and to be processed and stored into corpus.
     """
-    return True
+    return source, target
 
 class SaluteLoader(object):
     """ Salute sentense pair resource loader class.

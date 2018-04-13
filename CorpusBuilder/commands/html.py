@@ -79,9 +79,8 @@ def clean(input_path):
 def parse(input_path, output_dir, func_validate = None, target_tag = None):
     """ Parse the HTML files and generate a corpus file.
         input_path is either a folder path or file path, both in absolute path.
-        func_validate is a function that takes two texts as source and target. If omitted any texts will be processed.
         func_validate is a function that takes source/target text pairs from HTML parsers, and it
-        decides if the texts are valid and to be processed and stored into corpus.
+        returns the validated and cleaned texts. The validated texts are only stored into corpus.
         If omitted any texts will be stored.
         target_tag is a list containing HTML header tag texts, 'h1', 'h2' and so on, that are
         to be parsed for.

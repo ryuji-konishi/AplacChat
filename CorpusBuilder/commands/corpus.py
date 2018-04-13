@@ -16,8 +16,8 @@ def generate(output_dir, myname, yourname, pair_loaders, func_validate = None):
         a phrase that is used when someone calls you, for example, "Hi {yourname}, nice to see you."
         pair_loaders is a list containing sentense pair resource loaders. Sentense pair resouces are
         a bunch of source/target text pairs that are used to generate corpus data.
-        func_validate is a function that takes source/target text pairs from the resouces, and it
-        decides if the texts are valid and to be processed and stored into corpus.
+        func_validate is a function that takes source/target text pairs from HTML parsers, and it
+        returns the validated and cleaned texts. The validated texts are only stored into corpus.
         If omitted any texts will be stored.
     """
     if not os.path.exists(output_dir): os.makedirs(output_dir)

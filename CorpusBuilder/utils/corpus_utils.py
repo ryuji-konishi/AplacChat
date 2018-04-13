@@ -9,7 +9,8 @@ class CorpusStore(object):
     def __init__(self, vocab_store = None, tokenizer = None, func_validate = None):
         """ vocab_store is an instance of VocabStore class.
             tokenizer is an instance of common.tokenizer class.
-            func_validate is a function that takes two texts as source and target. 
+            func_validate is a function that takes two texts as source and target, and
+            return the validated and cleaned texts.
             If omitted any texts will be stored.
         """
         self.data = []
@@ -23,8 +24,12 @@ class CorpusStore(object):
         self.data = data
 
     def _store_data(self, source_text_line, target_text_line, store_vocab = True):
+        is_valid = False
         if self.func_validate:
-            is_valid = self.func_validate(source_text_line, target_text_line)
+            # Validate and clean the texts
+            source_text_line, target_text_line = self.func_validate(source_text_line, target_text_line)
+            if source_text_line and target_text_line:
+                is_valid = True
         else:
             is_valid = True
 
@@ -64,7 +69,7 @@ class CorpusStore(object):
         for l in ratio_lens:
             # Create another instance that contains the split data
             split_data = self.data[st:st + l]
-            new_instance = CorpusStore(self.vocab_store, self.tokenizer)
+            new_instance = CorpusStore(self.vocab_store, self.tokenizer, self.func_validate)
             new_instance._copy_data(split_data)
             result_lists.append(new_instance)
             st += l
