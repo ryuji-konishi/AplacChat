@@ -7,6 +7,7 @@ import time
 import commands.html as html
 import commands.corpus as corpus
 import commands.vocab as vocab
+import aplac.aplac as aplac
 
 def conv_abs(path):
     """ Check if path is relative path, and convert it to absolute path 
@@ -20,15 +21,14 @@ def conv_abs(path):
 
 def f_aplac(args):
     """ Function called when the 'all' command is set in the argument."""
-    html_dir = conv_abs(args.html)
-    corpus_dir = conv_abs(args.corpus)
-    data_dir = conv_abs(args.data)
 
-    html.clean(html_dir)
-    html.parse(html_dir, corpus_dir)
-    vocab.generate(data_dir)        # Generate the standard vocab.src file as the base at the data directory.
-    corpus.generate(corpus_dir)
-    corpus.compile(corpus_dir, data_dir, data_dir)
+    args.__dict__['vocab'] = args.data       # Generate the standard vocab.src file as the base at the data directory.
+
+    f_html_clean(args)
+    f_html_parse(args)
+    f_vocab_generate(args)       
+    f_corpus_generate(args)
+    f_corpus_compile(args)
 
 def f_html_clean(args):
     """ Function called when the 'html clean' command is set in the argument."""
@@ -41,13 +41,16 @@ def f_html_parse(args):
     html_dir = conv_abs(args.html)
     corpus_dir = conv_abs(args.corpus)
 
-    html.parse(html_dir, corpus_dir)
+    # APLaC specific
+    html.parse(html_dir, corpus_dir, aplac.pair_validate, aplac.html_target_tag)
 
 def f_corpus_generate(args):
     """ Function called when the 'corpus generate' command is set in the argument."""
     corpus_dir = conv_abs(args.corpus)
 
-    corpus.generate(corpus_dir)
+    # APLaC specific
+    pair_loaders = [aplac.SaluteLoader(), aplac.ConversationLoader()]
+    corpus.generate(corpus_dir, aplac.myname, aplac.yourname, pair_loaders, aplac.pair_validate)
 
 def f_corpus_compile(args):
     """ Function called when the 'corpus compile' command is set in the argument."""
@@ -145,6 +148,11 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # corpus.generate("C:\\Tmp\\aplac\\corpus\\test")
+        
+    # class Namespace:
+    #     def __init__(self, **kwargs):
+    #         self.__dict__.update(kwargs)    
+    # args = Namespace(html = "C:\\Tmp\\aplac\\html\\xs", corpus ="C:\\Tmp\\aplac\\corpus\\test", data ="C:\\Tmp\\aplac\\data\\xs")
+    # f_aplac(args)
 
     print ("Finished.")

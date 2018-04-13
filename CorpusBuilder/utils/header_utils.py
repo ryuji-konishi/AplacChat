@@ -1,4 +1,4 @@
-header_tags = ['h1', 'h2', 'h3', 'h4']
+header_tags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']      # all h tags defined
 tag_map = dict(zip(header_tags, range(len(header_tags))))
 
 def is_header_tag(tag_str):

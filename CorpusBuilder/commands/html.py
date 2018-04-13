@@ -76,9 +76,15 @@ def clean(input_path):
 
     print ("Finished.")
 
-def parse(input_path, output_dir):
+def parse(input_path, output_dir, func_validate = None, target_tag = None):
     """ Parse the HTML files and generate a corpus file.
         input_path is either a folder path or file path, both in absolute path.
+        func_validate is a function that takes two texts as source and target. If omitted any texts will be processed.
+        func_validate is a function that takes source/target text pairs from HTML parsers, and it
+        decides if the texts are valid and to be processed and stored into corpus.
+        If omitted any texts will be stored.
+        target_tag is a list containing HTML header tag texts, 'h1', 'h2' and so on, that are
+        to be parsed for.
     """
     if not os.path.exists(output_dir): os.makedirs(output_dir)
 
@@ -94,9 +100,7 @@ def parse(input_path, output_dir):
         files = file_utils.get_filelist_in_path("html", input_dir, True)
 
     def process(files):
-        """ size_limit_KB is the limit of file size to be written. The size is in Kilo bite (1024 bytes)
-        """
-        corpus_store = corpus_utils.CorpusStore()
+        corpus_store = corpus_utils.CorpusStore(func_validate = func_validate)
 
         for idx, file in enumerate(files):
             f_abst = file[0]    # absolute path
@@ -115,7 +119,7 @@ def parse(input_path, output_dir):
             parser.parse(file_content)
 
             # Process the same data with HeaderBody Parser
-            parser = phb.Parser(corpus_store, ['h1', 'h2', 'h3', 'h4', 'h5'])
+            parser = phb.Parser(corpus_store, target_tag)
             parser.parse(file_content)
 
         # Export the parsed data into file

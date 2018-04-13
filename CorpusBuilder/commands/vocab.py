@@ -25,11 +25,11 @@ def _generate_standard(file_path):
 
     # Load Joyo-Kanji from resource
     jk = ld.JoyoKanjiLoader()
-    vocab.add_vocab_words(jk.load_kanjis())
+    vocab.add_vocab_words(jk.load())
 
     # Load Jinmeiyo-Kanji from resource
     jk = ld.JinmeiKanjiLoader()
-    vocab.add_vocab_words(jk.load_kanjis())
+    vocab.add_vocab_words(jk.load())
 
     vocab.save_to_file()
 

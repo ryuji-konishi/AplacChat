@@ -54,34 +54,34 @@ class NameMultiplier(_Multiplier):
     def __init__(self, names = None):
         if not names:
             rl = ld.NameLoader()
-            names = rl.load_names()
+            names = rl.load()
         _Multiplier.__init__(self, '{name}', names)
 
 class CityMultiplier(_Multiplier):
     def __init__(self, cities = None):
         if not cities:
             rl = ld.CityLoader()
-            cities = rl.load_cities()
+            cities = rl.load()
         _Multiplier.__init__(self, '{city}', cities)
 
 class CountryMultiplier(_Multiplier):
     def __init__(self, countries = None):
         if not countries:
             rl = ld.CountryLoader()
-            countries = rl.load_countries()
+            countries = rl.load()
         _Multiplier.__init__(self, '{country}', countries)
 
 class LocationMultiplier(_Multiplier):
     def __init__(self, locations = None):
         if not locations:
             rl = ld.LocationLoader()
-            locations = rl.load_locations()
+            locations = rl.load()
         _Multiplier.__init__(self, '{location}', locations)
 
 class ThingMultiplier(_Multiplier):
     def __init__(self, things = None):
         if not things:
             rl = ld.ThingLoader()
-            things = rl.load_things()
+            things = rl.load()
         _Multiplier.__init__(self, '{thing}', things)
 

@@ -8,13 +8,19 @@ import utils.utils as utils
 
 class Parser(object):
     """ The source text is extracted from the header texts (H1, H2, H3 etc). 
-        The target text is the body of the trailing paragraphs that appear following after the header. This text contains line breaks.
+        The target text is the body of the trailing paragraphs that appear following after the header. 
+        This text contains line breaks.
         The resulted text in the source is a line of text, and the target is a chain of several paragraphs.
+        target_tag is a list of, or string of, HTML header tag texts, 'h1', 'h2' and so on, that this
+        parser is targeted on.
     """
     def __init__(self, corpus_store, target_tag = None):
         self.corpus_store = corpus_store
         if target_tag:
-            self.target_tags = [target_tag]
+            if isinstance(target_tag, str):
+                self.target_tags = [target_tag]
+            else:
+                self.target_tags = target_tag
         else:
             self.target_tags = header_utils.header_tags
 
@@ -92,7 +98,7 @@ class BS_HeaderBodyParser(BS_AbstractHeaderBodyParser):
         self.body = ''
         self.is_waiting_target_endtag = False
         self.is_processing_header_tag = False
-        self.processing_tag = ''
+        self.processing_tag = None
 
     def handle_starttag(self, tag):
         self.processing_tag = tag

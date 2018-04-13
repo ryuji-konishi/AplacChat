@@ -7,13 +7,22 @@ import utils.vocab_utils as vocab_utils
 import resources.loader as ld
 import resources.multiplier as mpl
 
-def generate(output_dir, myname = '田村', yourname = '田村さん'):
+def generate(output_dir, myname, yourname, pair_loaders, func_validate = None):
     """ Generate the corpus files from template resources of data.
         The template resources include salute, nodding, themed conversation etc.
+        myname is to replace '{myname}' tag appearing in the sentenses. {myname} is 
+        a phrase that is used to call yourself, for example, "Hi, my name is {myname}."
+        yourname is to replace '{yourname}' tag appearing in the sentenses. {yourname} is 
+        a phrase that is used when someone calls you, for example, "Hi {yourname}, nice to see you."
+        pair_loaders is a list containing sentense pair resource loaders. Sentense pair resouces are
+        a bunch of source/target text pairs that are used to generate corpus data.
+        func_validate is a function that takes source/target text pairs from the resouces, and it
+        decides if the texts are valid and to be processed and stored into corpus.
+        If omitted any texts will be stored.
     """
     if not os.path.exists(output_dir): os.makedirs(output_dir)
 
-    corpus_store = corpus_utils.CorpusStore()
+    corpus_store = corpus_utils.CorpusStore(func_validate = func_validate)
     def process(pairs):
         """ Loop through the list of src/tgt pairs, replace the resource tags (name, city etc)
             and store the result into CorpusStore.
@@ -33,18 +42,11 @@ def generate(output_dir, myname = '田村', yourname = '田村さん'):
                 srcs, tgts = multiplier.multiply(srcs, tgts)
             corpus_store.store_data(srcs, tgts)
 
-    # Process salute sentences
-    sl = ld.SaluteLoader()
-    salutes = sl.load_salutes()
-    print (len(salutes), "of salute sentenses to process...")
-    process(salutes)
-    
-    # Process conversation sentences
-    cl = ld.ConversationLoader()
-    convs = cl.load_conversations()
-    print (len(convs), "of conversation sentenses to process...")
-    process(convs)
-    
+    for pair_loader in pair_loaders:
+        pairs = pair_loader.load()
+        print (len(pairs), "of pairs to process...")
+        process(pairs)
+
     print ("Exporting corpus...")
     output_path = corpus_store.export_corpus(output_dir)
     print ("Exported:", output_path)

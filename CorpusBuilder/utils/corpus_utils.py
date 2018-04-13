@@ -9,7 +9,8 @@ class CorpusStore(object):
     def __init__(self, vocab_store = None, tokenizer = None, func_validate = None):
         """ vocab_store is an instance of VocabStore class.
             tokenizer is an instance of common.tokenizer class.
-            func_validate is a function that takes two texts as source and target. If omitted any texts will be stored.
+            func_validate is a function that takes two texts as source and target. 
+            If omitted any texts will be stored.
         """
         self.data = []
         self.vocab_store = vocab_store
