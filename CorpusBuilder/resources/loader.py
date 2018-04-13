@@ -4,8 +4,13 @@ import os, sys
 import csv
 
 class _ResourceLoader(object):
-    def __init__(self, folder_name):
-        self.current_dir = os.path.dirname(os.path.realpath(__file__))
+    def __init__(self, python_file, folder_name):
+        """ python_file is the file name of the python code that the child class that inherits this 
+            class is defined. This is used to locate the resouce folder path which is supposed to be
+            placed within the same path as the python file.
+            folder_name is the folder name that the resouce file is contained.
+        """
+        self.current_dir = os.path.dirname(os.path.realpath(python_file))
         self.folder = folder_name
 
     def _get_file_path(self, file_name):
@@ -39,8 +44,15 @@ class _SingleColInitLoader(_ResourceLoader):
         The initial data is loaded from CSV file during development.
         The updated data is stored into JSON file.
     """
-    def __init__(self, folder_name, file_json, file_csv):
-        _ResourceLoader.__init__(self, folder_name)
+    def __init__(self, python_file, folder_name, file_json, file_csv):
+        """ python_file is the file name of the python code that the child class that inherits this 
+            class is defined. This is used to locate the resouce folder path which is supposed to be
+            placed within the same path as the python file.
+            folder_name is the folder name that the resouce file is contained.
+            file_json is the json file that contains the resouce data with data structure.
+            file_csv is the csv file that contains the initial data which is converted into json data.
+        """
+        _ResourceLoader.__init__(self, python_file, folder_name)
         self.file_json = file_json
         self.file_csv = file_csv
         # Check if json file exists. If not, generate csv file from it.
@@ -70,8 +82,15 @@ class _TwoColInitLoader(_ResourceLoader):
         The initial data is loaded from CSV file during development.
         The updated data is stored into JSON file.
     """
-    def __init__(self, folder_name, file_json, file_csv):
-        _ResourceLoader.__init__(self, folder_name)
+    def __init__(self, python_file, folder_name, file_json, file_csv):
+        """ python_file is the file name of the python code that the child class that inherits this 
+            class is defined. This is used to locate the resouce folder path which is supposed to be
+            placed within the same path as the python file.
+            folder_name is the folder name that the resouce file is contained.
+            file_json is the json file that contains the resouce data with data structure.
+            file_csv is the csv file that contains the initial data which is converted into json data.
+        """
+        _ResourceLoader.__init__(self, python_file, folder_name)
         self.file_json = file_json
         self.file_csv = file_csv
         # Check if json file exists. If not, generate csv file from it.
@@ -92,14 +111,21 @@ class _TwoColInitLoader(_ResourceLoader):
         data = self.remove_duplicate(data)
         self.save_json(self.file_json, data)
 
-class _MultiColInitLoader(_ResourceLoader):
+class MultiColInitLoader(_ResourceLoader):
     """ Multi columns, initializable resource loader.
         The table has multiple columns. The first col is src, the following cols are tgts.
         The initial data is loaded from CSV file during development.
         The updated data is stored into JSON file.
     """
-    def __init__(self, folder_name, file_json, file_csv):
-        _ResourceLoader.__init__(self, folder_name)
+    def __init__(self, python_file, folder_name, file_json, file_csv):
+        """ python_file is the file name of the python code that the child class that inherits this 
+            class is defined. This is used to locate the resouce folder path which is supposed to be
+            placed within the same path as the python file.
+            folder_name is the folder name that the resouce file is contained.
+            file_json is the json file that contains the resouce data with data structure.
+            file_csv is the csv file that contains the initial data which is converted into json data.
+        """
+        _ResourceLoader.__init__(self, python_file, folder_name)
         self.file_json = file_json
         self.file_csv = file_csv
         # Check if json file exists. If not, generate csv file from it.
@@ -121,41 +147,14 @@ class _MultiColInitLoader(_ResourceLoader):
         data = self.remove_duplicate(data)
         self.save_json(self.file_json, data)
 
-class SaluteLoader(object):
-    """ Salute resource loader class.
-        The initial data is loaded from CSV file during development.
-    """
-    def __init__(self, lang = 'jpn'):
-        self.delegate = _MultiColInitLoader('salute', 'salute_' + lang + '.json', 'salute_' + lang + '.csv')
-
-    def load_salutes(self):
-        """ Load and return a set of source/target list. """
-        return self.delegate.load()
-
-    def refresh(self):
-        self.delegate.refresh()
-
-class ConversationLoader(object):
-    """ Conversation resource loader class.
-        The initial data is loaded from CSV file during development.
-    """
-    def __init__(self, lang = 'jpn'):
-        self.delegate = _MultiColInitLoader('conversation', 'conversation_' + lang + '.json', 'conversation_' + lang + '.csv')
-
-    def load_conversations(self):
-        """ Load and return a set of source/target list. """
-        return self.delegate.load()
-
-    def refresh(self):
-        self.delegate.refresh()
-
 class JoyoKanjiLoader(object):
     """ Joyo-kanji resource loader class.
     """
     def __init__(self):
-        self.delegate = _SingleColInitLoader('kanji_joyo', 'joyo_kanji_code.json', 'joyo-kanji-code-u.csv')
+        self.delegate = _SingleColInitLoader(__file__, 
+            'kanji_joyo', 'joyo_kanji_code.json', 'joyo-kanji-code-u.csv')
 
-    def load_kanjis(self):
+    def load(self):
         """ Load and return a list of Joyo-Kanji charactors. """
         return self.delegate.load()
 
@@ -166,9 +165,10 @@ class JinmeiKanjiLoader(object):
     """ Jinmeiyou-kanji resource loader class.
     """
     def __init__(self):
-        self.delegate = _SingleColInitLoader('kanji_jinmeiyo', 'jinmei_kanji_code.json', 'jinmeiyou-kanji-code-u.csv')
+        self.delegate = _SingleColInitLoader(__file__,
+            'kanji_jinmeiyo', 'jinmei_kanji_code.json', 'jinmeiyou-kanji-code-u.csv')
 
-    def load_kanjis(self):
+    def load(self):
         """ Load and return a list of Joyo-Kanji charactors. """
         return self.delegate.load()
 
@@ -179,9 +179,10 @@ class CityLoader(object):
     """ City name resource loader class.
     """
     def __init__(self, lang = 'jpn'):
-        self.delegate = _SingleColInitLoader('city', 'city_' + lang + '.json', None)
+        self.delegate = _SingleColInitLoader(__file__,
+            'city', 'city_' + lang + '.json', None)
 
-    def load_cities(self):
+    def load(self):
         """ Load and return a list of city names """
         return self.delegate.load()
 
@@ -192,9 +193,10 @@ class CountryLoader(object):
     """ Country resource loader class.
     """
     def __init__(self, lang = 'jpn'):
-        self.delegate = _SingleColInitLoader('country', 'country_' + lang + '.json', None)
+        self.delegate = _SingleColInitLoader(__file__,
+            'country', 'country_' + lang + '.json', None)
 
-    def load_countries(self):
+    def load(self):
         """ Load and return a list of country names. """
         return self.delegate.load()
 
@@ -205,9 +207,10 @@ class NameLoader(object):
     """ Name resource loader class.
     """
     def __init__(self, lang = 'jpn'):
-        self.delegate = _SingleColInitLoader('name', 'name_' + lang + '.json', None)
+        self.delegate = _SingleColInitLoader(__file__,
+            'name', 'name_' + lang + '.json', None)
 
-    def load_names(self):
+    def load(self):
         """ Load and return a list of names. """
         return self.delegate.load()
 
@@ -218,9 +221,10 @@ class LocationLoader(object):
     """ Location resource loader class.
     """
     def __init__(self, lang = 'jpn'):
-        self.delegate = _SingleColInitLoader('location', 'location_' + lang + '.json', 'location_' + lang + '.csv')
+        self.delegate = _SingleColInitLoader(__file__,
+            'location', 'location_' + lang + '.json', 'location_' + lang + '.csv')
 
-    def load_locations(self):
+    def load(self):
         """ Load and return a list of locations. """
         return self.delegate.load()
 
@@ -231,9 +235,10 @@ class ThingLoader(object):
     """ Thing resource loader class.
     """
     def __init__(self, lang = 'jpn'):
-        self.delegate = _SingleColInitLoader('thing', 'thing_' + lang + '.json', 'thing_' + lang + '.csv')
+        self.delegate = _SingleColInitLoader(__file__,
+            'thing', 'thing_' + lang + '.json', 'thing_' + lang + '.csv')
 
-    def load_things(self):
+    def load(self):
         """ Load and return a list of things. """
         return self.delegate.load()
 
