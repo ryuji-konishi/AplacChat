@@ -15,12 +15,12 @@ class TestVocabStore(unittest.TestCase):
     def setUp(self):
         self.filename1 = 'tmp1'
         self.filename2 = 'tmp2'
-        silentremove(self.filename1)
-        silentremove(self.filename2)
+        self.silentremove(self.filename1)
+        self.silentremove(self.filename2)
         
     def tearDown(self):
-        silentremove(self.filename1)
-        silentremove(self.filename2)
+        self.silentremove(self.filename1)
+        self.silentremove(self.filename2)
 
     def test_CreateNewFile(self):
         vocab = vocab_utils.VocabStore(self.filename1)
@@ -28,7 +28,7 @@ class TestVocabStore(unittest.TestCase):
         vocab.save_to_file()
 
         with open(self.filename2, 'w', encoding='utf8') as the_file:
-            write_special_tokens(the_file)
+            self.write_special_tokens(the_file)
             the_file.write('abc\n')
             the_file.write('def\n')
         self.assertTrue(filecmp.cmp(self.filename1, self.filename2))
@@ -36,7 +36,7 @@ class TestVocabStore(unittest.TestCase):
     def test_LoadExistingFile(self):
         # Create original file before VocabStore
         with open(self.filename1, 'w', encoding='utf8') as the_file:
-            write_special_tokens(the_file)
+            self.write_special_tokens(the_file)
             the_file.write('abc\n')
             the_file.write('def\n')
         
@@ -45,23 +45,23 @@ class TestVocabStore(unittest.TestCase):
         vocab.save_to_file()
 
         with open(self.filename2, 'w', encoding='utf8') as the_file:
-            write_special_tokens(the_file)
+            self.write_special_tokens(the_file)
             the_file.write('abc\n')
             the_file.write('def\n')
             the_file.write('123\n')
         
         self.assertTrue(filecmp.cmp(self.filename1, self.filename2))
 
-def write_special_tokens(the_file):
-    for t in special_tokens:
-        the_file.write(t + '\n')
+    def write_special_tokens(self, the_file):
+        for t in special_tokens:
+            the_file.write(t + '\n')
 
-def silentremove(filename):
-    try:
-        os.remove(filename)
-    except OSError as e: # this would be "except OSError, e:" before Python 2.6
-        if e.errno != errno.ENOENT: # errno.ENOENT = no such file or directory
-            raise # re-raise exception if a different error occurred
+    def silentremove(self, filename):
+        try:
+            os.remove(filename)
+        except OSError as e: # this would be "except OSError, e:" before Python 2.6
+            if e.errno != errno.ENOENT: # errno.ENOENT = no such file or directory
+                raise # re-raise exception if a different error occurred
 
 class TestVocabUtils(unittest.TestCase):
     def test_character(self):
@@ -184,6 +184,43 @@ class TestCorpusStore(unittest.TestCase):
 class TestUtils(unittest.TestCase):
     def setUp(self):
         pass
+
+    def test_sort_unicode_word_list(self):
+        words = ['c', 'b', 'a']
+        expected = ['a', 'b', 'c']
+        utils.sort_unicode_word_list(words)
+        self.assertListEqual(expected, words)
+
+        words = ['ac', 'ab', 'aa']
+        expected = ['aa', 'ab', 'ac']
+        utils.sort_unicode_word_list(words)
+        self.assertListEqual(expected, words)
+
+        words = [u'う', u'い', u'あ']
+        expected = [u'あ', u'い', u'う']
+        utils.sort_unicode_word_list(words)
+        self.assertListEqual(expected, words)
+
+        words = [u'あう', u'あい', u'ああ']
+        expected = [u'ああ', u'あい', u'あう']
+        utils.sort_unicode_word_list(words)
+        self.assertListEqual(expected, words)
+
+        words = [u'ああ', u'あ']
+        expected = [u'あ', u'ああ']
+        utils.sort_unicode_word_list(words)
+        self.assertListEqual(expected, words)
+
+        words = [u'あa', u'あA']
+        expected = [u'あA', u'あa']
+        utils.sort_unicode_word_list(words)
+        self.assertListEqual(expected, words)
+
+        # make sure it really sorts by Unicode code point across 0x00** - 0x30**
+        words = [u'ゑ', u'め', u'ぱ', u'ち', u'け', u'ぁ', u'〱', u'〡', u'】', u'、', u'q', u'a', u'Q', u'A', u'1', u'!']
+        expected = [u'!', u'1', u'A', u'Q', u'a', u'q', u'、', u'】', u'〡', u'〱', u'ぁ', u'け', u'ち', u'ぱ', u'め', u'ゑ']
+        utils.sort_unicode_word_list(words)
+        self.assertListEqual(expected, words)
 
     def test_trim_structural_char(self):
         self.assertTrue(utils.trim_structural_char('') == '')

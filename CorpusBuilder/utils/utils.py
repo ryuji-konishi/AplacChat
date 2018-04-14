@@ -77,3 +77,8 @@ def distribute_rnd(lst, ratio):
     """
     random.shuffle(lst)
     return distribute(lst, ratio)
+
+def sort_unicode_word_list(words):
+    """ Sort the given list of words by Unicode code point value. """
+    words.sort()
+

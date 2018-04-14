@@ -31,6 +31,7 @@ def _generate_standard(file_path):
     jk = ld.JinmeiKanjiLoader()
     vocab.add_vocab_words(jk.load())
 
+    vocab.sort_by_unicode()
     vocab.save_to_file()
 
 def generate(output_dir):
