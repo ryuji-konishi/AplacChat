@@ -1,4 +1,4 @@
-from common import SentenseResolver as sr
+from common import tokenizer as tk
 from common import utils
 from infer_web import app
 from flask import request, json, jsonify
@@ -10,7 +10,7 @@ import tensorflow as tf
 hparams = None
 ckpt = None
 infer_model = None
-resolver = sr.SentenseResolver()
+tokenizer = tk.tokenizer()
 
 def init(FLAGS):
 	global hparams, ckpt, infer_model
@@ -29,7 +29,7 @@ def init(FLAGS):
 		scope=None)
 
 def nmt_inter(inference_input):
-	buf_list = resolver.split(inference_input)
+	buf_list = tokenizer.split(inference_input)
 	inference_input = utils.join_list_by_space(buf_list)
 	outputs = inference.single_worker_inference_m(
 		infer_model,
@@ -39,7 +39,7 @@ def nmt_inter(inference_input):
 	result = ''
 	for o in outputs:
 		buf_list = o.split()
-		result += resolver.concatenate(buf_list) + '\n'
+		result += tokenizer.concatenate(buf_list) + '\n'
 	return result.strip()		# remove the last line-break
 
 @app.route('/')
