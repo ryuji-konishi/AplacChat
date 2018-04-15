@@ -4,7 +4,7 @@ import argparse
 import tensorflow as tf
 
 # data_path = "/Users/ryuji/prg/aplac/chat/generated/4_2316"
-data_path = "/Users/ryuji/tmp/aplac/7_5812"
+data_path = "/Users/ryuji/tmp/aplac/10_12974"
 
 if __name__ == "__main__":
   nmt_parser = argparse.ArgumentParser()
@@ -18,15 +18,15 @@ if __name__ == "__main__":
   nmt.nmt.FLAGS.dev_prefix=data_path + "/data/dev"
   nmt.nmt.FLAGS.test_prefix=data_path + "/data/test"
   nmt.nmt.FLAGS.out_dir=data_path + "/model"
-  nmt.nmt.FLAGS.num_train_steps=300
+  nmt.nmt.FLAGS.num_train_steps=24000
   nmt.nmt.FLAGS.steps_per_stats=100
   nmt.nmt.FLAGS.num_layers=2
-  nmt.nmt.FLAGS.num_units=128
+  nmt.nmt.FLAGS.num_units=256
   nmt.nmt.FLAGS.dropout=0.2
   nmt.nmt.FLAGS.metrics="bleu"
   nmt.nmt.FLAGS.share_vocab=True    # This option doesn't work for NMT (git 842c4358695b3da42927e85e7b963a579f8a3363) for tf1.4.0
-  nmt.nmt.FLAGS.src_max_len=200
-  nmt.nmt.FLAGS.tgt_max_len=200
+  nmt.nmt.FLAGS.src_max_len=300
+  nmt.nmt.FLAGS.tgt_max_len=300
 
   # Below is the setting for tensorflow/nmt tutorial
   # nmt.nmt.FLAGS.src="vi"

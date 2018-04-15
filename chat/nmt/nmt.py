@@ -472,6 +472,12 @@ def create_or_load_hparams(
   else:
     hparams = ensure_compatible_hparams(hparams, default_hparams, hparams_path)
 
+  # If bigger train step is given in console, that means we want to
+  # continue training. Overwrite the step read from hparam file so that
+  # the training continues.
+  if hparams.num_train_steps < default_hparams.num_train_steps:
+    hparams.num_train_steps = default_hparams.num_train_steps
+
   # Save HParams
   if save_hparams:
     utils.save_hparams(out_dir, hparams)
