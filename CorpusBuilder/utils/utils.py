@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 import collections
 import random
 
 def split_jpn_sentence(sentence):
     """ Split a Japanese sentence into a list and return it"""
-    return split_sentence(sentence, '。')
+    return split_sentence(sentence, u'。')
 
 def split_sentence(sentence, delimiter):
     """ Split sentence into a list and return it"""
