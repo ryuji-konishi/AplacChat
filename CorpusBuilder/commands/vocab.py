@@ -5,18 +5,14 @@ import numpy as np
 import resources.loader as ld
 import utils.vocab_utils as vocab_utils
 
-def _generate_standard(file_path):
-    """ Generate the starndard vocaburary file for NMT. This vocaburary contains
-        the standard charactors:
+def _add_standard_words(vocab):
+    """ Add the starndard vocaburary words. The standard words are:
         - ASCII charactors
         - Commonly used symbols
         - Japanese Hiraganas
         - Japanese Kanjis
         - Japanese Joyo-Kanjis
     """
-    # Store the loaded characters into VocabStore, then export the vocab file.
-    vocab = vocab_utils.VocabStore(file_path)
-
     # Load charactors from Unicode table ranges
     vocab.add_vocab_words(vocab_utils.get_charactors_ascii())
     vocab.add_vocab_words(vocab_utils.get_charactors_full_symbol())
@@ -31,16 +27,18 @@ def _generate_standard(file_path):
     jk = ld.JinmeiKanjiLoader()
     vocab.add_vocab_words(jk.load())
 
-    vocab.sort_by_unicode()
-    vocab.save_to_file()
-    vocab.save_unicode_list(file_path + '.txt')
-
 def generate(output_dir):
     """ Generate the standard vocaburary file
     """
     if not os.path.exists(output_dir): os.makedirs(output_dir)
 
     file_path = os.path.join(output_dir, 'vocab.src')
-    _generate_standard(file_path)
-    print ("Generated:", file_path)
+    # Store the loaded characters into VocabStore, then export the vocab file.
+    vocab = vocab_utils.VocabStore(file_path)
+    _add_standard_words(vocab)
+    vocab.sort_by_unicode()
+    vocab.save_to_file()
+    vocab.print_report()
+    # For analysis purposes, export in unicode code point.
+    vocab.save_unicode_list(file_path + '.txt')
 

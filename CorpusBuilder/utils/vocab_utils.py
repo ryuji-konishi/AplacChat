@@ -160,13 +160,21 @@ class VocabStore(object):
                     os.remove(vocab_file)
 
     def reset_report(self):
-        self.word_num = 0
+        self.export_num = 0
+        self.export_appended = False
 
-    def print_report(self):
-        if self.word_num > 0:
-            print("Vocaburary file is updated with", self.word_num, "of words newly added.")
+    def print_report(self, func_print = None):
+        if not func_print:
+            func_print = print
+
+        if self.export_num > 0:
+            if self.export_appended:
+                func_print("Vocaburary file is updated with", self.export_num, "of newly added words.")
+            else:
+                func_print("New vocaburary file is generated.")
         else:
-            print("Nothing to report.")
+            func_print("No vocaburaries are newly added.")
+        func_print("Vocaburaries are now in total of", len(self.words_ext) + len(self.words_new))
 
     def add_vocab_words(self, words):
         """ Add new vocaburary of list of word"""
@@ -196,9 +204,8 @@ class VocabStore(object):
 
     def save_to_file(self, vocab_file = None):
         """ The vocab file is appended with new set of data. 
-            Return True when the file is updated. Otherwise return False. 
+            The details of vocab file being saved is printed by print_report function separatelly.
         """
-        result = False
         if len(self.words_new) > 0:
             # Use file path which is given either by the constructor or this method's argument.
             # This method's argument takes priority.
@@ -206,9 +213,10 @@ class VocabStore(object):
                 vocab_file = self.vocab_file
 
             if vocab_file:
+                self.export_appended = False
                 if os.path.exists(vocab_file):
                     # Append the data to the existing vocab file.
-                    result = True
+                    self.export_appended = True
                 else:
                     # If the vocab file is to be newly created, initialize the file with special tokens first.
                     with open(vocab_file, 'w', encoding='utf8') as fp:
@@ -219,8 +227,7 @@ class VocabStore(object):
                 with open(vocab_file, 'a', encoding='utf8') as fp:
                     for d in self.words_new:
                         fp.write("%s\n" % d)
-                        self.word_num += 1
-        return result
+                        self.export_num += 1
 
     def save_unicode_list(self, file_path):
         """ For debugging and analysis purposes. Save the vocab words' unicode point value to file. """

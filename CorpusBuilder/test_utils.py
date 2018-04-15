@@ -15,12 +15,12 @@ class TestVocabStore(unittest.TestCase):
     def setUp(self):
         self.filename1 = 'tmp1'
         self.filename2 = 'tmp2'
-        self.silentremove(self.filename1)
-        self.silentremove(self.filename2)
+        self._silentremove(self.filename1)
+        self._silentremove(self.filename2)
         
     def tearDown(self):
-        self.silentremove(self.filename1)
-        self.silentremove(self.filename2)
+        self._silentremove(self.filename1)
+        self._silentremove(self.filename2)
 
     def test_CreateNewFile(self):
         vocab = vocab_utils.VocabStore(self.filename1)
@@ -28,7 +28,7 @@ class TestVocabStore(unittest.TestCase):
         vocab.save_to_file()
 
         with open(self.filename2, 'w', encoding='utf8') as the_file:
-            self.write_special_tokens(the_file)
+            self._write_special_tokens(the_file)
             the_file.write('abc\n')
             the_file.write('def\n')
         self.assertTrue(filecmp.cmp(self.filename1, self.filename2))
@@ -36,7 +36,7 @@ class TestVocabStore(unittest.TestCase):
     def test_LoadExistingFile(self):
         # Create original file before VocabStore
         with open(self.filename1, 'w', encoding='utf8') as the_file:
-            self.write_special_tokens(the_file)
+            self._write_special_tokens(the_file)
             the_file.write('abc\n')
             the_file.write('def\n')
         
@@ -45,18 +45,29 @@ class TestVocabStore(unittest.TestCase):
         vocab.save_to_file()
 
         with open(self.filename2, 'w', encoding='utf8') as the_file:
-            self.write_special_tokens(the_file)
+            self._write_special_tokens(the_file)
             the_file.write('abc\n')
             the_file.write('def\n')
             the_file.write('123\n')
         
         self.assertTrue(filecmp.cmp(self.filename1, self.filename2))
 
-    def write_special_tokens(self, the_file):
+    def test_print_report(self):
+        vocab = vocab_utils.VocabStore(self.filename1)
+        vocab.add_vocab_words(['abc', 'abc', 'def'])
+        vocab.save_to_file()
+
+        def myprint(*arg):
+            a = [str(elem) for elem in arg]
+            print(' '.join(a))
+
+        vocab.print_report(myprint)
+
+    def _write_special_tokens(self, the_file):
         for t in special_tokens:
             the_file.write(t + '\n')
 
-    def silentremove(self, filename):
+    def _silentremove(self, filename):
         try:
             os.remove(filename)
         except OSError as e: # this would be "except OSError, e:" before Python 2.6

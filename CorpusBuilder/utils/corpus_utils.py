@@ -19,6 +19,7 @@ class CorpusStore(object):
         if not self.tokenizer:
             self.tokenizer = tk.tokenizer()
         self.func_validate = func_validate
+        self.reset_report()
 
     def _copy_data(self, data):
         self.data = data
@@ -40,6 +41,18 @@ class CorpusStore(object):
                 self.vocab_store.add_vocab_words(buf_list)
                 buf_list = self.tokenizer.split(target_text_line)
                 self.vocab_store.add_vocab_words(buf_list)
+
+    def reset_report(self):
+        self.export_num = 0
+
+    def print_report(self, func_print = None):
+        if not func_print:
+            func_print = print
+
+        if self.export_num > 0:
+            func_print("CorpusStore exported", self.export_num, "of sentenses.")
+        else:
+            func_print("No sentenses are exported.")
 
     def clear(self):
         del self.data[:]
@@ -119,6 +132,8 @@ class CorpusStore(object):
                 tgt_list = self.tokenizer.split(target_text_line)
                 buf_str = utils.join_list_by_space(tgt_list)
                 tf.write(buf_str + '\n')
+
+                self.export_num += 1
 
                 if self.vocab_store and store_vocab:
                     self.vocab_store.add_vocab_words(src_list)
