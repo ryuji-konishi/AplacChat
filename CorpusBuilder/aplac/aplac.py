@@ -86,7 +86,7 @@ def validate_pair_html(source, target):
         # 1-1.概況　オーストラリアの犯罪状況
         u'^[0-9|０-９| ]+[-|－|−]+[0-9|０-９| ]+[.|．|:|：]*',
         # beginning of
-        u'^[　|～|〜|－|／|、|●|★|:|;|~]+', 
+        u'^[　|～|〜|－|／|、|●|★|■|→|:|;|~]+', 
         # numbers in brackets at the beginning （１） （その１）これまで
         u'^[(|\\[|\\{|<|（|【|｛|＜][0-9|０-９|その| ]+[)|\\]|\\}|>|）|】|｝|＞]',
         # numbers in brackets at the end  これまで（１）（その１）

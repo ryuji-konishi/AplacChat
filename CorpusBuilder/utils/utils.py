@@ -80,5 +80,6 @@ def distribute_rnd(lst, ratio):
 
 def sort_unicode_word_list(words):
     """ Sort the given list of words by Unicode code point value. """
+    # Sorting a list of string is done by Unicode code point value in both Python 2 and 3.
     words.sort()
 

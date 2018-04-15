@@ -111,6 +111,7 @@ def compile(input_path, vocab_path, output_dir):
     # Generate vocaburary file that contains words detected in all 3 file lists.
     vocab.sort_by_unicode()
     updated = vocab.save_to_file()
+    vocab.save_unicode_list(vocab_path + '.txt')
     if updated:
         print ("Vocaburary file is updated.")
         vocab.print_report()

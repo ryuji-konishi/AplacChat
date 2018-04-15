@@ -152,7 +152,8 @@ if __name__ == "__main__":
     # class Namespace:
     #     def __init__(self, **kwargs):
     #         self.__dict__.update(kwargs)    
-    # args = Namespace(html = "C:\\Tmp\\aplac\\html\\xs", corpus ="C:\\Tmp\\aplac\\corpus\\test", data ="C:\\Tmp\\aplac\\data\\xs")
-    # f_aplac(args)
+    # args = Namespace(html = "C:\\Tmp\\aplac\\html\\xs", corpus ="C:\\Tmp\\aplac\\corpus\\test", 
+    #     data ="C:\\Tmp\\aplac\\data\\xs", vocab = "C:\\Tmp\\aplac\\data\\test")
+    # f_vocab_generate(args)
 
     print ("Finished.")

@@ -32,7 +32,7 @@ class TestAtomicParser(unittest.TestCase):
         self.assertCountEqual(expected, corpus_store.data)
 
         expected = ['<unk>', '<s>', '</s>', '<br>', '<sp>', '<c1>', '<c2>', 'test', 'ヘ', 'ッ', 'ダ', 'ー', '1', 'こ', 'ん', 'に', 'ち', 'は', '。', 'さ', 'よ', 'う', 'な', 'ら']
-        self.assertCountEqual(expected, vocab.data_new)
+        self.assertCountEqual(expected, vocab.words_new)
 
 class TestAtomicHeaderBodyParser(unittest.TestCase):
     def setUp(self):

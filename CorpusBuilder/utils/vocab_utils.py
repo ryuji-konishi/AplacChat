@@ -1,4 +1,5 @@
 import os
+import uuid
 import utils.file_utils as file_utils
 import utils.utils as utils
 from common import tokenizer as tk
@@ -7,6 +8,8 @@ special_tokens = tk.special_tokens
 
 # Unocode code page ranges. Note that they are not UTF8, nor UTF16, but code page values.
 # https://ja.wikipedia.org/wiki/Unicode%E4%B8%80%E8%A6%A7_3000-3FFF
+none_char_ranges = [[0x0000, 0x0020], [0x007F, 0x00A0], [0x2000, 0x200F], [0x2028, 0x202F],
+    [0x2066, 0x206F], [0xFFF9, 0xFFFF]]
 ascii_ranges = [[0x0021, 0x007E], [0x00A1, 0x00B8]]
 ascii_symbol_ranges = [[0x0021, 0x002F], [0x003A, 0x0040],      # Note this is overlapped with 'ascii_ranges'
     [0x005B, 0x0060], [0x007B, 0x007E]]
@@ -131,11 +134,15 @@ def is_charactor_katakana_half(char):
     """ Return if the character is half-width katakana code. """
     return _is_within_ranges(katakana_half_ranges, ord(char))
 
+def is_none_char(char):
+    """ Return if the character is none-character (control code). """
+    return _is_within_ranges(none_char_ranges, ord(char))
+
 class VocabStore(object):
     def __init__(self, vocab_file = None):
         """ If vocab_file is given, read and initialize data from it."""
-        self.data_ext = []      # Current existing data in the vocab file.
-        self.data_new = []      # New data to be added to the vocab file.
+        self.words_ext = []      # Current existing words in the vocab file.
+        self.words_new = []      # New words to be added to the vocab file.
         self.vocab_file = vocab_file
         self.reset_report()
         if vocab_file:
@@ -147,7 +154,7 @@ class VocabStore(object):
                 if set(vocab[:sp_cnt]).issuperset(special_tokens):
                     # If the existing vocab file is all good, get the vocab into the 
                     # buffer except special tokens.
-                    self.data_ext = vocab[sp_cnt:]
+                    self.words_ext = vocab[sp_cnt:]
                 else:
                     # If not, remove the existing file so that a new file will be generated.
                     os.remove(vocab_file)
@@ -163,22 +170,36 @@ class VocabStore(object):
 
     def add_vocab_words(self, words):
         """ Add new vocaburary of list of word"""
-        for w in words:
-            w = w.strip()
-            if w:
-                if (not w in self.data_ext) and (not w in self.data_new):
-                    self.data_new.append(w)
+        for word in words:
+            word = word.strip()
+            if word:
+                self.add_vocab_word(word)
+
+    def add_vocab_word(self, word):
+        """ Add new vocaburary of single word.
+            If the word contains none-charctor code it won't be added.
+        """
+        # If it's a special token, it'll be separatelly processed during saving file. Skip here.
+        if word in special_tokens:
+            return
+        # Check each character in the word. We don't want none-character (control code) in the vocaburary.
+        for char in word:
+            if is_none_char(char):
+                return
+        # If it's a new word, store it.
+        if (not word in self.words_ext) and (not word in self.words_new):
+            self.words_new.append(word)
 
     def sort_by_unicode(self):
         """ Sort the vocab data by Unicode code point value. """
-        utils.sort_unicode_word_list(self.data_new)
+        utils.sort_unicode_word_list(self.words_new)
 
     def save_to_file(self, vocab_file = None):
         """ The vocab file is appended with new set of data. 
             Return True when the file is updated. Otherwise return False. 
         """
         result = False
-        if len(self.data_new) > 0:
+        if len(self.words_new) > 0:
             # Use file path which is given either by the constructor or this method's argument.
             # This method's argument takes priority.
             if not vocab_file:
@@ -196,7 +217,23 @@ class VocabStore(object):
 
                 # Append the newly added data
                 with open(vocab_file, 'a', encoding='utf8') as fp:
-                    for d in self.data_new:
+                    for d in self.words_new:
                         fp.write("%s\n" % d)
                         self.word_num += 1
         return result
+
+    def save_unicode_list(self, file_path):
+        """ For debugging and analysis purposes. Save the vocab words' unicode point value to file. """
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        with open(file_path, 'w', encoding='utf8') as fp:
+            for d in special_tokens:
+                fp.write("%s\n" % d)
+
+        with open(file_path, 'a', encoding='utf8') as fp:
+            for d in self.words_new:
+                line = ''
+                for c in d:
+                    line += "{0:#0{1}x} ".format(ord(c), 6)
+                fp.write("%s\n" % line)

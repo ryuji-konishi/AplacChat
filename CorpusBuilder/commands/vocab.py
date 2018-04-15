@@ -33,6 +33,7 @@ def _generate_standard(file_path):
 
     vocab.sort_by_unicode()
     vocab.save_to_file()
+    vocab.save_unicode_list(file_path + '.txt')
 
 def generate(output_dir):
     """ Generate the standard vocaburary file

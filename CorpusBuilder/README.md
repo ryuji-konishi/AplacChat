@@ -1,5 +1,9 @@
 # Corpus Builder
 
+## System Requirements
+* Python 3
+* Windows
+
 ## How to run
 From command line, move to the root folder of CorpusBuilder, then type the following coomand.
 ```
