@@ -7,15 +7,17 @@
 # Next open the terminal, move to the file location, and enter the command:
 #  $ chmod 700 this_file.sh
 
+DATA_PATH="/Users/ryuji/tmp/aplac/9_Hello"
+
 python -m nmt.nmt \
  --src="src" \
  --tgt="tgt" \
- --vocab_prefix="/Users/ryuji/tmp/aplac/data/vocab" \
- --train_prefix="/Users/ryuji/tmp/aplac/data/train" \
- --dev_prefix="/Users/ryuji/tmp/aplac/data/dev" \
- --test_prefix="/Users/ryuji/tmp/aplac/data/test" \
- --out_dir="/Users/ryuji/tmp/aplac/model" \
- --num_train_steps=12000 \
+ --vocab_prefix="${DATA_PATH}/data/vocab" \
+ --train_prefix="${DATA_PATH}/data/train" \
+ --dev_prefix="${DATA_PATH}/data/dev" \
+ --test_prefix="${DATA_PATH}/data/test" \
+ --out_dir="${DATA_PATH}/model" \
+ --num_train_steps=1000 \
  --steps_per_stats=100 \
  --num_layers=2 \
  --num_units=128 \

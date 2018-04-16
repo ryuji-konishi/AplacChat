@@ -17,7 +17,8 @@
 PROJECT_ID=ryuji-test1
 BUCKET_NAME=${PROJECT_ID}-mlengine
 REGION=asia-east1
-DATA_NAME="8_16012"
+DATA_NAME="10_12974"
+LOCAL_DATA_PATH=/Users/ryuji/tmp/aplac/$DATA_NAME
 
 # Local directory
 #    chat
@@ -44,7 +45,6 @@ DATA_NAME="8_16012"
 #
 # Upload the Input Files
 #
-LOCAL_DATA_PATH="generated/$DATA_NAME"
 REMOTE_DATA_PATH=gs://$BUCKET_NAME/$DATA_NAME/data
 gsutil -m cp -r "$LOCAL_DATA_PATH/data/*" "$REMOTE_DATA_PATH"
 
@@ -71,7 +71,7 @@ gcloud ml-engine jobs submit training $JOB_NAME \
  --dev_prefix="$REMOTE_DATA_PATH/dev" \
  --test_prefix="$REMOTE_DATA_PATH/test" \
  --out_dir="$OUTPUT_PATH" \
- --num_train_steps=12000 \
+ --num_train_steps=24000 \
  --steps_per_stats=100 \
  --num_layers=2 \
  --num_units=256 \
@@ -80,6 +80,12 @@ gcloud ml-engine jobs submit training $JOB_NAME \
  --share_vocab=True \
  --src_max_len=300 \
  --tgt_max_len=300
+
+#
+# Continue the same Training Job
+#
+JOB_NAME=${JOB_NAME}_x
+# run the same gcloud command above with increased num_train_steps parameter.
 
 
 #
