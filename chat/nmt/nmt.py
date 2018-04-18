@@ -472,6 +472,13 @@ def create_or_load_hparams(
   else:
     hparams = ensure_compatible_hparams(hparams, default_hparams, hparams_path)
 
+  # When re-training, the input data (train/dev/test) can also change. So the console
+  # argument values (here it's default_hparams) takes priority.
+  # (Here we don't change vocab path because vocab must be consistant for re-training)
+  hparams.train_prefix = default_hparams.train_prefix
+  hparams.dev_prefix = default_hparams.dev_prefix
+  hparams.test_prefix = default_hparams.test_prefix
+
   # If bigger train step is given in console, that means we want to
   # continue training. Overwrite the step read from hparam file so that
   # the training continues.
