@@ -8,6 +8,38 @@ myname = '田村'
 yourname = '田村さん'
 html_target_tag = ['h1', 'h2', 'h3', 'h4', 'h5']
 
+# Regular expressions to remove character patterns from source and target
+regexs_both = [
+    # ESSAY 452／（１） 〜これまで
+    u'^ESSAY [0-9|０-９]+', 
+    # Part 01：最強最速の情況記憶
+    u'^Part [0-9|０-９| ]+[.|．|:|：]', 
+    # ２．学生ビザの取得方法
+    u'^[0-9|０-９| ]+[.|．|:|：]',
+    # 1-1.概況　オーストラリアの犯罪状況
+    u'^[0-9|０-９| ]+[-|－|−]+[0-9|０-９| ]+[.|．|:|：]*',
+    # beginning of
+    u'^[　|～|〜|－|／|、|●|★|■|→|:|;|~]+', 
+    # numbers in brackets at the beginning （１） （その１）これまで
+    u'^[(|\\[|\\{|<|（|【|｛|＜][0-9|０-９|その| ]+[)|\\]|\\}|>|）|】|｝|＞]',
+    # numbers in brackets at the end  これまで（１）（その１）
+    u'[(|\\[|\\{|<|（|【|｛|＜][0-9|０-９|その| ]+[)|\\]|\\}|>|）|】|｝|＞]$',
+    # constant keywords at the beginning
+    u'^[日本／|◆コラム|今週の１枚|更新記録簿|を|初稿福島記]',
+    # exact line
+    u'^Home$|^ツイート$',
+    # Copyright 1996
+    u'Copyright [0-9|０-９|-|－|−]+',
+    # email address
+    u'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+']
+
+# Regular expressions to remove from source
+regexs_src = [
+    # repeating symbol characters at the beginning
+    u'^[!#%&\\)\\*\\+,\\-\\./:;=>\\?@\\\\\\]\\^_`|\\}~¢¤§¨­®°±´¸×÷‐―‥…※℃ⅠⅡⅢⅣ←↑→↓⇔∀−∥∪≒≠≦≪≫━■□▲△▼▽◆◇○◎●◯★☆♪♬♭、。々〇〉》」』】〒〕〜゛゜・ー㎡！＃％＆）＊＋，－．／：；＝＞？＠＼］＾＿｀｝～｣､]+',
+    # any of / ／ ・  ＊ ＃
+    u'[/／・＊＃]']
+
 def get_symbol_ratio(text):
     """ Calculate the ratio of symbol characters contained in the given text.
         For example, '!@#$%' is 100%, and 'abcdef' is 0%.
@@ -75,38 +107,9 @@ def validate_pair_html(source, target):
     if contains(source, ignore_phrases) or contains(target, ignore_phrases):
         return '', ''
 
-    # Regular expressions to remove from source and target
-    regexs_both = [
-        # ESSAY 452／（１） 〜これまで
-        u'^ESSAY [0-9|０-９]+', 
-        # Part 01：最強最速の情況記憶
-        u'^Part [0-9|０-９| ]+[.|．|:|：]', 
-        # ２．学生ビザの取得方法
-        u'^[0-9|０-９| ]+[.|．|:|：]',
-        # 1-1.概況　オーストラリアの犯罪状況
-        u'^[0-9|０-９| ]+[-|－|−]+[0-9|０-９| ]+[.|．|:|：]*',
-        # beginning of
-        u'^[　|～|〜|－|／|、|●|★|■|→|:|;|~]+', 
-        # numbers in brackets at the beginning （１） （その１）これまで
-        u'^[(|\\[|\\{|<|（|【|｛|＜][0-9|０-９|その| ]+[)|\\]|\\}|>|）|】|｝|＞]',
-        # numbers in brackets at the end  これまで（１）（その１）
-        u'[(|\\[|\\{|<|（|【|｛|＜][0-9|０-９|その| ]+[)|\\]|\\}|>|）|】|｝|＞]$',
-        # constant keywords at the beginning
-        u'^[日本／|◆コラム]', 
-        # Copyright 1996
-        u'Copyright [0-9|０-９|-|－|−]+',
-        # email address
-        u'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+']
     source = regex_trim(source, regexs_both)
-    target = regex_trim(target, regexs_both)
-
-    # Regular expressions to remove from source
-    regexs_src = [
-        # repeating symbol characters at the beginning
-        u'^[@#%\\^&\\*_+-=,\\.<>?]+', 
-        # any of / ／ ・  ＊ ＃
-        u'[/|／|・|＊|＃]']
     source = regex_trim(source, regexs_src)
+    target = regex_trim(target, regexs_both)
 
     if len(source) > 200 or len(target) > 200:
         return '', ''   # skip too long
