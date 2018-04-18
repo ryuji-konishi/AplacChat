@@ -1,3 +1,4 @@
+# Script commands that run on the target deployment machine.
 
 #
 # Preparation
@@ -6,8 +7,8 @@ PROJECT_ID=ryuji-test1
 BUCKET_NAME=${PROJECT_ID}-mlengine
 REGION=asia-east1
 DATA_NAME="10_12974"
-LOCAL_DATA_PATH="generated/$DATA_NAME"
-JOB_NAME="job_180415_090124_10_12974_standard_gpu_x_x_x"
+LOCAL_DATA_PATH=/home/apps/tmp/aplac/$DATA_NAME
+JOB_NAME="job_180415_090124_10_12974_standard_gpu"
 
 #
 # Copy from GCP Storage
@@ -16,9 +17,9 @@ REMOTE_DATA_PATH=gs://$BUCKET_NAME/$DATA_NAME/data
 OUTPUT_PATH=gs://$BUCKET_NAME/$DATA_NAME/model/$JOB_NAME
 
 mkdir $LOCAL_DATA_PATH/model
-gsutil -m cp -r dir $OUTPUT_PATH/* $LOCAL_DATA_PATH/model/
+gsutil -m cp -r $OUTPUT_PATH/* $LOCAL_DATA_PATH/model/
 mkdir $LOCAL_DATA_PATH/data
-gsutil -m cp -r $REMOTE_DATA_PATH/* $LOCAL_DATA_PATH/data/
+gsutil -m cp -r $REMOTE_DATA_PATH/vocab.src $LOCAL_DATA_PATH/data/vocab.src
 
 #
 # Modify hparams
