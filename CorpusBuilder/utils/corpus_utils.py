@@ -145,22 +145,54 @@ class CorpusStore(object):
 
     def export_corpus(self, out_dir, basename = None, size_limit_KB = None):
         """ Write out the stored source/target data into a corpus file.
+            If the corpus data size exceeds the limit, the data is deviced and exported into multiple files.
             basename is the file name exclude extension. If omitted, ramdom name is generated.
             size_limit_KB is the limit of file size to be written. The size is in Kilo bite (1024 bytes)
             Return the absolute path to the exported file.
         """
-        if not basename:
-            basename = str(uuid.uuid4())
         if size_limit_KB:
             size_limit = size_limit_KB * 1024
         else:
             size_limit = None
 
-        file_path = os.path.join(out_dir, basename + '.cor')
-        with open(file_path, 'w', encoding='utf8') as fp:
-            json.dump(self.data, fp, ensure_ascii=False)
+        filenames = []
+        # Devide the data into multiple blocks by the size limit.
+        # Note the size is only a guide, not a exact syze in bytes.
+        encoding = 'utf8'
+        block_size = 0
+        block_index = 1
+        block_data = []
+        for d in self.data:
+            source_text_line, target_text_line = d[0], d[1]
+            src_size = len(source_text_line.encode(encoding))   # get the size of text with the file encoding.
+            tgt_size = len(target_text_line.encode(encoding))
+            one_line_size = src_size + tgt_size + 5     # 5 = 4 double quotations and 1 comma.
+            block_data.append([source_text_line, target_text_line])
+            block_size += one_line_size                 # calculate the total size of the block.
+            if size_limit and block_size >= size_limit: # if the block size exceeds the limit
+                filename = self._export_corpus_sub(out_dir, basename, block_data, block_index)
+                filenames.append(filename)
+                block_size = 0
+                block_index += 1
+                del block_data[:]
+        # Export the remaining
+        if block_size > 0:
+            filename = self._export_corpus_sub(out_dir, basename, block_data, block_index)
+            filenames.append(filename)
 
-        return file_path
+        return filenames
+
+    def _export_corpus_sub(self, out_dir, basename, block_data, block_index):
+        if not basename:
+            filename = str(uuid.uuid4())
+        else:
+            filename = '{0}_{1}'.format(basename, block_index)
+        
+        file_path = os.path.join(out_dir, filename + '.cor')
+        with open(file_path, 'w', encoding='utf8') as fp:
+            json.dump(block_data, fp, ensure_ascii=False)
+        
+        return filename
 
     def import_corpus(self, file_path, restore_vocab):
         """ Read the corpus file and restore the data.

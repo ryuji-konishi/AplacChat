@@ -76,7 +76,7 @@ def clean(input_path):
 
     print ("Finished.")
 
-def parse(input_path, output_dir, func_validate = None, target_tag = None):
+def parse(input_path, output_dir, func_validate = None, target_tag = None, size_limit_KB = None):
     """ Parse the HTML files and generate a corpus file.
         input_path is either a folder path or file path, both in absolute path.
         func_validate is a function that takes source/target text pairs from HTML parsers, and it
@@ -84,6 +84,8 @@ def parse(input_path, output_dir, func_validate = None, target_tag = None):
         If omitted any texts will be stored.
         target_tag is a list containing HTML header tag texts, 'h1', 'h2' and so on, that are
         to be parsed for.
+        size_limit_KB is the limit of each corpus file to export. The size is in Kilo bite (1024 bytes).
+        If the size exceeds the limit, the corpus data is devided and multiple files are exported.
     """
     if not os.path.exists(output_dir): os.makedirs(output_dir)
 
@@ -114,8 +116,8 @@ def parse(input_path, output_dir, func_validate = None, target_tag = None):
             parser.parse(file_content)
 
             # Process the same data with Atomic HeaderBody Parser
-            parser = pah.Parser(corpus_store)
-            parser.parse(file_content)
+            # parser = pah.Parser(corpus_store)
+            # parser.parse(file_content)
 
             # Process the same data with HeaderBody Parser
             parser = phb.Parser(corpus_store, target_tag)
@@ -123,10 +125,10 @@ def parse(input_path, output_dir, func_validate = None, target_tag = None):
 
         # Export the parsed data into file
         print ("Exporting the result...")
-        return corpus_store.export_corpus(output_dir)
+        return corpus_store.export_corpus(output_dir, size_limit_KB = size_limit_KB)
 
     print ("Total", len(files), "files to process.")
-    output_path = process(files)
-    print ("Exported:", output_path)
+    exported_files = process(files)
+    print ("Exported:", exported_files)
 
 

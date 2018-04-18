@@ -42,7 +42,8 @@ def f_html_parse(args):
     corpus_dir = conv_abs(args.corpus)
 
     # APLaC specific
-    html.parse(html_dir, corpus_dir, aplac.validate_pair_html, aplac.html_target_tag)
+    size_limit_KB = 10 * 1024       # 10MB
+    html.parse(html_dir, corpus_dir, aplac.validate_pair_html, aplac.html_target_tag, size_limit_KB)
 
 def f_corpus_generate(args):
     """ Function called when the 'corpus generate' command is set in the argument."""
@@ -50,7 +51,8 @@ def f_corpus_generate(args):
 
     # APLaC specific
     pair_loaders = [aplac.SaluteLoader(), aplac.ConversationLoader()]
-    corpus.generate(corpus_dir, aplac.myname, aplac.yourname, pair_loaders, aplac.validate_pair_corpus)
+    size_limit_KB = 10 * 1024       # 10MB
+    corpus.generate(corpus_dir, aplac.myname, aplac.yourname, pair_loaders, aplac.validate_pair_corpus, size_limit_KB)
 
 def f_corpus_compile(args):
     """ Function called when the 'corpus compile' command is set in the argument."""
@@ -154,6 +156,6 @@ if __name__ == "__main__":
     #         self.__dict__.update(kwargs)    
     # args = Namespace(html = "C:\\Tmp\\aplac\\html\\xs", corpus ="C:\\Tmp\\aplac\\corpus\\test", 
     #     data ="C:\\Tmp\\aplac\\data\\xs", vocab = "C:\\Tmp\\aplac\\data\\test")
-    # f_vocab_generate(args)
+    # f_html_parse(args)
 
     print ("Finished.")

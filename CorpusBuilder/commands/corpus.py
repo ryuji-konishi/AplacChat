@@ -8,7 +8,7 @@ import utils.vocab_utils as vocab_utils
 import resources.loader as ld
 import resources.multiplier as mpl
 
-def generate(output_dir, myname, yourname, pair_loaders, func_validate = None):
+def generate(output_dir, myname, yourname, pair_loaders, func_validate = None, size_limit_KB = None):
     """ Generate the corpus files from template resources of data.
         The template resources include salute, nodding, themed conversation etc.
         myname is to replace '{myname}' tag appearing in the sentenses. {myname} is 
@@ -20,6 +20,8 @@ def generate(output_dir, myname, yourname, pair_loaders, func_validate = None):
         func_validate is a function that takes source/target text pairs from HTML parsers, and it
         returns the validated and cleaned texts. The validated texts are only stored into corpus.
         If omitted any texts will be stored.
+        size_limit_KB is the limit of each corpus file to export. The size is in Kilo bite (1024 bytes).
+        If the size exceeds the limit, the corpus data is devided and multiple files are exported.
     """
     if not os.path.exists(output_dir): os.makedirs(output_dir)
 
@@ -49,9 +51,9 @@ def generate(output_dir, myname, yourname, pair_loaders, func_validate = None):
         process(pairs)
 
     print ("Exporting corpus...")
-    output_path = corpus_store.export_corpus(output_dir)
+    exported_files = corpus_store.export_corpus(output_dir, size_limit_KB = size_limit_KB)
     corpus_store.print_report()
-    print ("Exported:", output_path)
+    print ("Exported:", exported_files)
 
 def compile(input_path, vocab_path, output_dir):
     """ Compile the corpus files and generate a set of NMT data files (train/dev/test).
