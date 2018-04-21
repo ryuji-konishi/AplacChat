@@ -1,31 +1,37 @@
 # Corpus Builder
 
+## What is Corpus Builder
+Corpus Builder is used to generate the NMT data set that include train, dev, test and vocaburary files. To generate them, Corpus Builder has the following functionalities:
+- Clean the pre-downloaded HTML files by checking file corruption and unwanted files
+- Parse HTML files and extract text sentenses, and store those sentenses into corpus files
+- Generate the standard vocaburary file that include the very basic and general text charactors
+- Read the corpus files and generate the NMT data source files
+
+## What is Corpus Files
+Corpus files are JSON formatted text files that contain the series of source/target pair texts. Corpus files are used as medium file before generating the NMT data set, for the purposes of storing data temporarily or organising different sources of data.
+
 ## System Requirements
 * Python 3
 * Windows
+* MeCab Library
+
+MeCab is a morphologinal analyzer that is used to tokenize Japanese sentenses. MeCab Python library needs to be installed to run Corpus Bilder.
+[How to setup MeCab](CorpusBuilder/README%20Setup%20MeCab.md)
 
 ## How to run
-From command line, move to the root folder of CorpusBuilder, then type the following coomand.
+From command line, move to the root folder of CorpusBuilder, then type ```python build.py -h``` to see the help.
+Also the followings are unit tests.
 ```
-# The main component
-python build.py
-# Parser unit test
+python test_aplac.py
 python test_parsers.py
-# utils unit test
+python test_resources.py
 python test_utils.py
 ```
 
 To debug with Visual Studio Code, open the CorpusBuilder folder as the project directory, and run the each py file.
 
-
-# HTML Parser Component
-
-## What does it do?
-The basic behaviours of the HTML parser are:
-- Search and read the all HTML files under the specified folder.
-- Parse the HTML files and export the pair of source and target files and the vocabulary file.
-
-3 different types of source/target pair are generated:
+## HTML Parsing
+There are 3 different types of HTML parsers used. Each of them parses the same HTML and generate sorce/target pairs, but they analyze HTML in different ways.
 
 #### A. Header/Body
 The source text is extracted from the header texts (H1, H2, H3 etc). The target text is the body of the trailing paragraphs that appear following after the header. This text contains line breaks.

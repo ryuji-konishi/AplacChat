@@ -1,2 +1,6 @@
 # Log file of APLaC HTML File Cleaner.py
 cleaner.log
+
+# MeCab installation temporary files
+MeCab/
+
