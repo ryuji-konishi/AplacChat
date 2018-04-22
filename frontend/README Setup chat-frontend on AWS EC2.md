@@ -31,6 +31,19 @@ ssh -i /path/to/your/keyfile ec2-user@your_public_dnsname_here
 ```
 ## Setup Environment
 
+### Things to be installed
+* NGINX
+* virtualenv
+* Tensorflow 1.4.0
+* Flask
+* Gunicorn
+* Google Cloud SDK
+* .NET Core 2.0
+* MeCab Python Library
+
+MeCab is a morphologinal analyzer that is used to tokenize Japanese sentenses. MeCab Python library needs to be installed to run Chat.
+[How to setup MeCab](../MeCab/README%20Setup%20MeCab.md)
+
 ### 1. Install tools with root user
 ```
 sudo easy_install pip

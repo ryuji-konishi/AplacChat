@@ -76,13 +76,11 @@ public:
 ```
 
 ### 7. Integrate modified libmecab.dll
-Go to [this site](http://neu101.seesaa.net/article/272153413.html) and download ```mecab-python-0.993.win-build.zip```.
-Extract the zip file and get the following files under 64 folder:
-- libmecab.dll
-- libmecab.lib
+Copy the following files into ```mecab-python-0.996``` folder that you created in step 2.
+- [libmecab.dll](./win/libmecab.dll)
+- [libmecab.lib](./win/libmecab.lib)
 
-Copy those files into ```mecab-python-0.996``` folder that you created in step 2.
-
+Those files are required to run setup.py script on Windows systems because the original setup.py script is not Windows compatible. The above files are downloaded from [this site](http://neu101.seesaa.net/article/272153413.html) archived in ```mecab-python-0.993.win-build.zip```. You can find them under '64' folder.
 ### 8. Install MeCab
 Within the folder ```mecab-python-0.996```, open the terminal and run the following commands.
 ```
