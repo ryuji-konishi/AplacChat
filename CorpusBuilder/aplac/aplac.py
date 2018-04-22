@@ -48,7 +48,7 @@ def get_symbol_ratio(text):
     # count the number of symbol characters in text
     cnt = 0
     for char in text:
-        if cu.is_charactor_ascii_symbol(char) or cu.is_charactor_full_symbol(char):
+        if cu.is_char_ascii_symbol(char) or cu.is_char_full_symbol(char):
             cnt += 1
 
     # return the ratio
@@ -64,7 +64,7 @@ def get_number_ratio(text):
     # count the number of number characters in text
     cnt = 0
     for char in text:
-        if cu.is_charactor_ascii_number(char) or cu.is_charactor_full_number(char):
+        if cu.is_char_ascii_number(char) or cu.is_char_full_number(char):
             cnt += 1
 
     # return the ratio

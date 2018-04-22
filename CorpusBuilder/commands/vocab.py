@@ -15,10 +15,14 @@ def _add_standard_words(vocab):
         - Japanese Joyo-Kanjis
     """
     # Load charactors from Unicode table ranges
-    vocab.add_vocab_words(cu.get_charactors_ascii())
-    vocab.add_vocab_words(cu.get_charactors_full_symbol())
-    vocab.add_vocab_words(cu.get_charactors_hiragana())
-    vocab.add_vocab_words(cu.get_charactors_katakana())
+    vocab.add_vocab_words(cu.get_chars_ascii())
+    vocab.add_vocab_words(cu.get_chars_deco_number())
+    vocab.add_vocab_words(cu.get_chars_full_symbol())
+    vocab.add_vocab_words(cu.get_chars_full_number())
+    vocab.add_vocab_words(cu.get_chars_full_alphabet())
+    vocab.add_vocab_words(cu.get_chars_hiragana())
+    vocab.add_vocab_words(cu.get_chars_katakana())
+    vocab.add_vocab_words(cu.get_chars_katakana_half())
 
     # Load Joyo-Kanji from resource
     jk = ld.JoyoKanjiLoader()

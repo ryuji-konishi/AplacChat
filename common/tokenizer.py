@@ -15,10 +15,10 @@ special_tokens.extend(letter_case_tokens)       # Combine special tokens so that
 # Define special characters that are handled as a 'single word' in the vocaburary no matter
 # what context it's being used. 
 special_atoms = []
-special_atoms.extend(char_utils.get_charactors_ascii_number())
-special_atoms.extend(char_utils.get_charactors_ascii_symbol())
-special_atoms.extend(char_utils.get_charactors_full_number())
-special_atoms.extend(char_utils.get_charactors_full_symbol())
+special_atoms.extend(char_utils.get_chars_ascii_number())
+special_atoms.extend(char_utils.get_chars_ascii_symbol())
+special_atoms.extend(char_utils.get_chars_full_number())
+special_atoms.extend(char_utils.get_chars_full_symbol())
 special_atoms.remove(u"'")
 
 # Define terminating characters that are specifically handled as a 'single word' in the vocaburary. 

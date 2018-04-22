@@ -9,6 +9,7 @@ ascii_symbol_ranges = [[0x0021, 0x002F], [0x003A, 0x0040],      # Note this is o
     [0x005B, 0x0060], [0x007B, 0x007E]]
 ascii_alpabet_ranges = [[0x0041, 0x005A], [0x0061, 0x007A]]     # Note this is overlapped with 'ascii_ranges'
 ascii_number_ranges = [[0x0030, 0x0039]]                        # Note this is overlapped with 'ascii_ranges'
+decorated_number_ranges = [[0x2460, 0x2469]]
 full_symbol_ranges = [[0x3001, 0x3036], [0x3099, 0x309E], 
     [0xFF01, 0xFF0F], [0xFF1A, 0xFF20], [0xFF3B, 0xFF40], [0xFF5B, 0xFF65]]
 full_number_ranges = [[0xFF10, 0xFF19]]
@@ -37,103 +38,113 @@ def _is_within_ranges(code_ranges, code):
             return True
     return False
 
-def get_charactors_ascii():
+def get_chars_ascii():
     """ Return ASCII characters in list. """
     result = []
     _get_code_ranges(ascii_ranges, result)
     return result
 
-def get_charactors_ascii_symbol():
+def get_chars_ascii_symbol():
     """ Return ASCII symbol (non alphabet) characters in list. """
     result = []
     _get_code_ranges(ascii_symbol_ranges, result)
     return result
 
-def get_charactors_ascii_alphabet():
+def get_chars_ascii_alphabet():
     """ Return ASCII alphabet characters in list. """
     result = []
     _get_code_ranges(ascii_alpabet_ranges, result)
     return result
 
-def get_charactors_ascii_number():
+def get_chars_ascii_number():
     """ Return ASCII number 0 - 9 characters in list. """
     result = []
     _get_code_ranges(ascii_number_ranges, result)
     return result
 
-def get_charactors_full_symbol():
+def get_chars_deco_number():
+    """ Return decorated number characters ①, ② etc in list. """
+    result = []
+    _get_code_ranges(decorated_number_ranges, result)
+    return result
+
+def get_chars_full_symbol():
     """ Return full-width symbol characters in list. """
     result = []
     _get_code_ranges(full_symbol_ranges, result)
     return result
 
-def get_charactors_full_number():
+def get_chars_full_number():
     """ Return full-width number characters in list. """
     result = []
     _get_code_ranges(full_number_ranges, result)
     return result
 
-def get_charactors_full_alphabet():
+def get_chars_full_alphabet():
     """ Return full-width alphabet characters in list. """
     result = []
     _get_code_ranges(full_alphabet_ranges, result)
     return result
 
-def get_charactors_hiragana():
+def get_chars_hiragana():
     """ Return hiragana characters in list. """
     result = []
     _get_code_ranges(hiragana_ranges, result)
     return result
 
-def get_charactors_katakana():
+def get_chars_katakana():
     """ Return katakana characters in list. """
     result = []
     _get_code_ranges(katakana_ranges, result)
     return result
 
-def get_charactors_katakana_half():
+def get_chars_katakana_half():
     """ Return half-width katakana characters in list. """
     result = []
     _get_code_ranges(katakana_half_ranges, result)
     return result
 
-def is_charactor_ascii(char):
+def is_char_ascii(char):
     """ Return if the character is ASCII code. """
     return _is_within_ranges(ascii_ranges, ord(char))
 
-def is_charactor_ascii_symbol(char):
+def is_char_ascii_symbol(char):
     """ Return if the character is ASCII symbol (non alphabet) character. """
     return _is_within_ranges(ascii_symbol_ranges, ord(char))
 
-def is_charactor_ascii_alphabet(char):
+def is_char_ascii_alphabet(char):
     """ Return if the character is ASCII alphabet character. """
     return _is_within_ranges(ascii_alpabet_ranges, ord(char))
 
-def is_charactor_ascii_number(char):
+def is_char_ascii_number(char):
     """ Return if the character is ASCII number 0 - 9 character. """
     return _is_within_ranges(ascii_number_ranges, ord(char))
 
-def is_charactor_full_symbol(char):
+def is_char_deco_number(char):
+    """ Return if the character is decorated number character ①, ② etc. """
+    return _is_within_ranges(decorated_number_ranges, ord(char))
+
+def is_char_full_symbol(char):
     """ Return if the character is full-width symbol code. """
     return _is_within_ranges(full_symbol_ranges, ord(char))
 
-def is_charactor_full_number(char):
+def is_char_full_number(char):
     """ Return if the character is full-width number code. """
     return _is_within_ranges(full_number_ranges, ord(char))
 
-def is_charactor_full_alphabet(char):
+def is_char_full_alphabet(char):
     """ Return if the character is full-width alphabet code. """
     return _is_within_ranges(full_alphabet_ranges, ord(char))
 
-def is_charactor_hiragana(char):
+def is_char_hiragana(char):
     """ Return if the character is hiragana code. """
     return _is_within_ranges(hiragana_ranges, ord(char))
 
-def is_charactor_katakana(char):
+def is_char_katakana(char):
     """ Return if the character is katakana code. """
     return _is_within_ranges(katakana_ranges, ord(char))
 
-def is_charactor_katakana_half(char):
+def is_char_katakana_half(char):
     """ Return if the character is half-width katakana code. """
     return _is_within_ranges(katakana_half_ranges, ord(char))
 
