@@ -3,11 +3,11 @@
 This document describes the installation steps of MeCab morphological analyzer and its Python library into Windows and Linux systems with the following system configurations.
 
 * Windows
- * Windows 10 64 bit
- * Python 3
+  * Windows 10 64 bit
+  * Python 3
 * Linux
- * Amazon Linux 2
- * Python 2
+  * Amazon Linux 2
+  * Python 2
 
 We also create a user dictionary for MeCab. The dictionary is generated on Windows system, and then it's used on both Windows and Linux systems.
 
@@ -101,9 +101,11 @@ If you are using Anaconda3, copy the libmecab.dll/lib files to the following pat
 
 ### 10. Test
 Open the Python and run the script below.
+```
 import MeCab
 mecab = MeCab.Tagger("-Ochasen")
 print(mecab.parse("すもももももももものうち"))
+```
 
 ## MeCab User Dictionary Configuration
 We create the user dictionary file of MeCab in which there are additional custom words registered. First we create the user dictionary file (user.dic) on Windows, and then we import it to Linux system.
@@ -118,10 +120,10 @@ SET CHAR_ENCODING=utf8
 
 mecab-dict-index.exe -d %IPA_DIC_PATH% -u %USER_DIC_NAME% -f %CHAR_ENCODING% -t %CHAR_ENCODING% %USER_CSV_PATH%
 ```
-USER_CSV_PATH is the file path to the csv file which is the source of the dictionary data.
-IPA_DIC_PATH is the MeCab system dictionary that you've chosen during the installation. For Windows IPA dictionary is installed in default.
-USER_DIC_NAME is the dictionary file name to be created.
-CHAR_ENCODING is the character encoding of the csv file and dictionary file.
+- USER_CSV_PATH is the file path to the csv file which is the source of the dictionary data.
+- IPA_DIC_PATH is the MeCab system dictionary that you've chosen during the installation. For Windows IPA dictionary is installed in default.
+- USER_DIC_NAME is the dictionary file name to be created.
+- CHAR_ENCODING is the character encoding of the csv file and dictionary file.
 
 The above command is stored in a Windows bat file ```user_dic_compile.bat``` in the repository.
 
