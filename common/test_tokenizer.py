@@ -89,7 +89,7 @@ class TestSentenseResulver(unittest.TestCase):
             [u'(', u'abc', u'def', u')'])
         self.assertListEqual(
             self.tokenizer.split(u"He said \"What's up?\""), 
-            [u'He', u'said', u'"', u'<c1>', u"what's", u'up', u'?', u'"'])
+            [u'<c1>', u'he', u'said', u'"', u'<c1>', u"what's", u'up', u'?', u'"'])
 
     def test_concatenate(self):
         self.assertTrue(

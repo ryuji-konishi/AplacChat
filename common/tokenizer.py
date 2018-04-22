@@ -107,24 +107,14 @@ class tokenizer(object):
         """
         texts = [sentense.replace(u'\n', u' <br> ').replace(u'　', u' <fp> ')]
 
-        # for pair in special_brackets:
-        #     texts = self._split_by_brackets(pair[0], pair[1], texts)
-
         words = self._split_by_space(texts)
 
         for atom in special_atoms:
             words = self._split_by_atomic(atom, words)
 
-        words = self._morph_tokenize(words)
-        # words = self._split_by_char_code(words)
-
-        # words = self._split_by_quote(words)
-
-        # words = self._split_by_terminator(words)
-
-        # words = self._breakdown(words)
-
         words = self._letter_case(words)
+
+        words = self._morph_tokenize(words)
 
         return words
 
