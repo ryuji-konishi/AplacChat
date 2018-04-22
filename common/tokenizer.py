@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from common.dictionary import Dictionary as dic
+from common import char_utils
 from io import StringIO
 
 # Special tokens that are used in the vocaburary file. These are required to represent to 
 # indicate special directions to the seq2seq RNN.
-special_tokens = [u'<unk>', u'<s>', u'</s>', u'<br>', u'<sp>']
+special_tokens = [u'<unk>', u'<s>', u'</s>', u'<br>', u'<sp>', u'<fp>']
 
 # Special tokens that are used for letter case upper/lower patterns.
 letter_case_tokens = [u'<c1>', u'<c2>']
@@ -12,11 +13,17 @@ special_tokens.extend(letter_case_tokens)       # Combine special tokens so that
 
 # Define special characters that are handled as a 'single word' in the vocaburary no matter
 # what context it's being used. 
-special_atoms = [u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', 
-    u',', u'!', u'@', u'#', u'$', u'%', u'^', u'&', u'*', u'-', u'_', u'+', u'=', u':', u';', u'/', u'?', u'`', u'~',
-    u'"', 
-    u'(', u')', u'{', u'}', u'[', u']', u'“', u'”', u'（', u'）', u'(', u'）', u'（', u')', u'「', u'」', u'【', u'】', u'『', u'』', u'＜', u'＞'
-    ]
+# special_atoms = [u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', 
+#     u',', u'!', u'@', u'#', u'$', u'%', u'^', u'&', u'*', u'-', u'_', u'+', u'=', u':', u';', u'/', u'?', u'`', u'~',
+#     u'"', 
+#     u'(', u')', u'{', u'}', u'[', u']', u'“', u'”', u'（', u'）', u'(', u'）', u'（', u')', u'「', u'」', u'【', u'】', u'『', u'』', u'＜', u'＞'
+#     ]
+special_atoms = []
+special_atoms.extend(char_utils.get_charactors_ascii_number())
+special_atoms.extend(char_utils.get_charactors_ascii_symbol())
+special_atoms.extend(char_utils.get_charactors_ascii_symbol())
+special_atoms.extend(char_utils.get_charactors_full_number())
+special_atoms.extend(char_utils.get_charactors_full_symbol())
 
 # Define terminating characters that are specifically handled as a 'single word' in the vocaburary. 
 # For example, "A car." is devided into "A", "car" and ".".
@@ -45,11 +52,35 @@ special_terminators = [u'.']
 #     [u'＜', '＞']
 # ]
 
+class _MeCab(object):
+    def __init__(self):
+        import MeCab
+        self.m = MeCab.Tagger("-Owakati")   # Option wakati splits text into words concatenated by space ' '
+
+    def tokenize(self, text):
+        words_text = self.m.parse(text)
+        return words_text.split()           # Split text by space into a list
+
 class tokenizer(object):
 
     def __init__(self):
         self.dic = dic.Dictionary()
         self.tagger = LetterCaseTagger()
+        self.morph_tokenizer = _MeCab()     # The delegated morphological analyzer tokenizer
+
+    def _morph_tokenize(self, texts):
+        """ Loop throught the text list, and tokenize the text into multiple words
+            by the morphological analyzer tokenizer.
+            Return the list of tokenized words.
+        """
+        result = []
+        for text in texts:
+            if len(text) > 1 and text not in special_tokens:
+                words = self.morph_tokenizer.tokenize(text)
+                result.extend(words)
+            else:
+                result.append(text)
+        return result
 
     def split(self, sentense):
         """ Split the given sentense into a list at each character/word level
@@ -64,7 +95,7 @@ class tokenizer(object):
             F) 'abc  def' -> ['abc', '<sp>', 'def']
             G) 'He said "What's up?"' -> ['He', 'said', '"', What's", 'up?', '"']
         """
-        texts = [sentense.replace(u'\n', u' <br> ')]
+        texts = [sentense.replace(u'\n', u' <br> ').replace(u'　', u' <fp> ')]
 
         # for pair in special_brackets:
         #     texts = self._split_by_brackets(pair[0], pair[1], texts)
@@ -74,13 +105,14 @@ class tokenizer(object):
         for atom in special_atoms:
             words = self._split_by_atomic(atom, words)
 
-        words = self._split_by_char_code(words)
+        words = self._morph_tokenize(words)
+        # words = self._split_by_char_code(words)
 
         # words = self._split_by_quote(words)
 
-        words = self._split_by_terminator(words)
+        # words = self._split_by_terminator(words)
 
-        words = self._breakdown(words)
+        # words = self._breakdown(words)
 
         words = self._letter_case(words)
 
@@ -114,6 +146,9 @@ class tokenizer(object):
                     continue
                 elif word == u'.':
                     result += u'.'
+                    continue
+                elif word == u'<fp>':
+                    result += u'　'
                     continue
             
             # If you get here with case_tag value, change the case of word accordingly.
@@ -253,18 +288,21 @@ class tokenizer(object):
         """
         result = []
         for word in words:
-            buf = u''
-            for char in word:
-                if char == atom:
-                    if len(buf):
-                        result.append(buf)
-                        buf = u''
-                    result.append(atom)
-                else:
-                    buf += char
+            if len(word) > 1 and word not in special_tokens:
+                buf = u''
+                for char in word:
+                    if char == atom:
+                        if len(buf):
+                            result.append(buf)
+                            buf = u''
+                        result.append(atom)
+                    else:
+                        buf += char
 
-            if len(buf):
-                result.append(buf)
+                if len(buf):
+                    result.append(buf)
+            else:
+                result.append(word)
 
         return result
 

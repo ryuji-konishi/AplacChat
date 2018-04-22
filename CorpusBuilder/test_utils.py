@@ -74,16 +74,6 @@ class TestVocabStore(unittest.TestCase):
             if e.errno != errno.ENOENT: # errno.ENOENT = no such file or directory
                 raise # re-raise exception if a different error occurred
 
-class TestVocabUtils(unittest.TestCase):
-    def test_character(self):
-        self.assertTrue(vocab_utils.is_charactor_ascii(u'a'))
-        self.assertTrue(vocab_utils.is_charactor_ascii_symbol(u'$'))
-        self.assertTrue(vocab_utils.is_charactor_ascii_alphabet(u'a'))
-        self.assertTrue(vocab_utils.is_charactor_ascii_number(u'0'))
-        self.assertTrue(vocab_utils.is_charactor_full_symbol(u'【'))
-        self.assertTrue(vocab_utils.is_charactor_hiragana(u'あ'))
-        self.assertTrue(vocab_utils.is_charactor_katakana(u'ア'))
-
 class TestCorpusStore(unittest.TestCase):
     def setUp(self):
         pass
@@ -252,32 +242,23 @@ class TestUtils(unittest.TestCase):
         lst = ['a', 'b', 'c', 'd']
 
         ratio = (0.5, 0.5)
-        actual = utils.distribute(lst, ratio)
-        expected = [
-            ['a', 'b'],
-            ['c', 'd']
-            ]
-        self.assertCountEqual(expected, actual)
+        actual1, actual2 = utils.distribute(lst, ratio)
+        self.assertListEqual(['a', 'b'], actual1)
+        self.assertListEqual(['c', 'd'], actual2)
 
         ratio = (0.5, 0.25, 0.25)
-        actual = utils.distribute(lst, ratio)
-        expected = [
-            ['a', 'b'],
-            ['c'],
-            ['d']
-            ]
-        self.assertCountEqual(expected, actual)
+        actual1, actual2, actual3 = utils.distribute(lst, ratio)
+        self.assertListEqual(['a', 'b'], actual1)
+        self.assertListEqual(['c'], actual2)
+        self.assertListEqual(['d'], actual3)
 
         lst = [i for i in range(10)]
 
         ratio = (0.5, 0.2, 0.3)
-        actual = utils.distribute(lst, ratio)
-        expected = [
-            [0, 1, 2, 3, 4],
-            [5, 6],
-            [7, 8, 9]
-            ]
-        self.assertCountEqual(expected, actual)
+        actual1, actual2, actual3 = utils.distribute(lst, ratio)
+        self.assertListEqual([0, 1, 2, 3, 4], actual1)
+        self.assertListEqual([5, 6], actual2)
+        self.assertListEqual([7, 8, 9], actual3)
 
 if __name__ == "__main__":
     unittest.main()

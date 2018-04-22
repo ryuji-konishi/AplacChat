@@ -4,6 +4,7 @@ import numpy as np
 
 import resources.loader as ld
 import utils.vocab_utils as vocab_utils
+from common import char_utils as cu
 
 def _add_standard_words(vocab):
     """ Add the starndard vocaburary words. The standard words are:
@@ -14,10 +15,10 @@ def _add_standard_words(vocab):
         - Japanese Joyo-Kanjis
     """
     # Load charactors from Unicode table ranges
-    vocab.add_vocab_words(vocab_utils.get_charactors_ascii())
-    vocab.add_vocab_words(vocab_utils.get_charactors_full_symbol())
-    vocab.add_vocab_words(vocab_utils.get_charactors_hiragana())
-    vocab.add_vocab_words(vocab_utils.get_charactors_katakana())
+    vocab.add_vocab_words(cu.get_charactors_ascii())
+    vocab.add_vocab_words(cu.get_charactors_full_symbol())
+    vocab.add_vocab_words(cu.get_charactors_hiragana())
+    vocab.add_vocab_words(cu.get_charactors_katakana())
 
     # Load Joyo-Kanji from resource
     jk = ld.JoyoKanjiLoader()
