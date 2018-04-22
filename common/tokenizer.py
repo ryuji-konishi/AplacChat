@@ -13,17 +13,12 @@ special_tokens.extend(letter_case_tokens)       # Combine special tokens so that
 
 # Define special characters that are handled as a 'single word' in the vocaburary no matter
 # what context it's being used. 
-# special_atoms = [u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', 
-#     u',', u'!', u'@', u'#', u'$', u'%', u'^', u'&', u'*', u'-', u'_', u'+', u'=', u':', u';', u'/', u'?', u'`', u'~',
-#     u'"', 
-#     u'(', u')', u'{', u'}', u'[', u']', u'“', u'”', u'（', u'）', u'(', u'）', u'（', u')', u'「', u'」', u'【', u'】', u'『', u'』', u'＜', u'＞'
-#     ]
 special_atoms = []
 special_atoms.extend(char_utils.get_charactors_ascii_number())
 special_atoms.extend(char_utils.get_charactors_ascii_symbol())
-special_atoms.extend(char_utils.get_charactors_ascii_symbol())
 special_atoms.extend(char_utils.get_charactors_full_number())
 special_atoms.extend(char_utils.get_charactors_full_symbol())
+special_atoms.remove(u"'")
 
 # Define terminating characters that are specifically handled as a 'single word' in the vocaburary. 
 # For example, "A car." is devided into "A", "car" and ".".

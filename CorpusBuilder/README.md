@@ -16,7 +16,7 @@ Corpus files are JSON formatted text files that contain the series of source/tar
 * MeCab Library
 
 MeCab is a morphologinal analyzer that is used to tokenize Japanese sentenses. MeCab Python library needs to be installed to run Corpus Bilder.
-[How to setup MeCab](CorpusBuilder/README%20Setup%20MeCab.md)
+[How to setup MeCab](../MeCab/README%20Setup%20MeCab.md)
 
 ## How to run
 From command line, move to the root folder of CorpusBuilder, then type ```python build.py -h``` to see the help.
