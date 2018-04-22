@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.insert(0, '..\\')  # This is required to import common
+sys.path.insert(0, '..//')  # This is required to import common
 # If importing common doesn't go well, check the Python interpreter's current working directory.
 # This has to be 'common' folder.
 # import os
@@ -16,31 +16,31 @@ class TestLetterCaseTagger(unittest.TestCase):
 
     def test_tag(self):
         self.assertListEqual(
-            self.tagger.tag('Apple'),
+            self.tagger.tag(u'Apple'),
             [u'<c1>', u'apple'])
         self.assertListEqual(
-            self.tagger.tag('APPLE'),
+            self.tagger.tag(u'APPLE'),
             [u'<c2>', u'apple'])
         self.assertListEqual(
-            self.tagger.tag('apple'),
+            self.tagger.tag(u'apple'),
             [u'apple'])
         self.assertListEqual(
-            self.tagger.tag('aPple'),
+            self.tagger.tag(u'aPple'),
             [u'aPple'])
         
     def test_untag(self):
         self.assertEqual(
             self.tagger.untag([u'<c1>', u'apple']),
-            'Apple')
+            u'Apple')
         self.assertEqual(
             self.tagger.untag([u'<c2>', u'apple']),
-            'APPLE')
+            u'APPLE')
         self.assertEqual(
             self.tagger.untag([u'apple']),
-            'apple')
+            u'apple')
         self.assertEqual(
             self.tagger.untag([u'aPple']),
-            'aPple')
+            u'aPple')
         
 
 
@@ -88,28 +88,28 @@ class TestSentenseResulver(unittest.TestCase):
             self.tokenizer.split(u"(abc def)"), 
             [u'(', u'abc', u'def', u')'])
         self.assertListEqual(
-            self.tokenizer.split(u"\"abc\""), 
-            [u'"', u'abc', u'"'])
+            self.tokenizer.split(u"He said \"What's up?\""), 
+            [u'He', u'said', u'"', u'<c1>', u"what's", u'up', u'?', u'"'])
 
     def test_concatenate(self):
         self.assertTrue(
             self.tokenizer.concatenate([u'abc', u'def']) == 
-            "abc def")
+            u"abc def")
         self.assertTrue(
             self.tokenizer.concatenate([u'<c1>', u'that', u"isn't", u'cat', u'.', u'<c1>', u'that', u'is', u'a', u'dog', u'.']) ==
-            "That isn't cat. That is a dog.")
+            u"That isn't cat. That is a dog.")
         self.assertTrue(
             self.tokenizer.concatenate([u'abc', u'高い', u'山', u'def']) ==
-            "abc高い山def")
+            u"abc高い山def")
         self.assertTrue(
             self.tokenizer.concatenate([u'abc', u'def', u'高い', u'<fp>', u'山']) ==
-            "abc def高い　山")
+            u"abc def高い　山")
         self.assertTrue(
             self.tokenizer.concatenate([u'abc', u'<br>', u'def']) ==
-            "abc\ndef")
+            u"abc\ndef")
         self.assertTrue(
             self.tokenizer.concatenate([u'abc', u'<sp>', u'def']) ==
-            "abc  def")
+            u"abc  def")
 
 if __name__ == "__main__":
     unittest.main()

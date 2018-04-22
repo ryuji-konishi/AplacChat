@@ -1,15 +1,73 @@
 # MeCab Installtion
 
-This document describes the installation steps of MeCab morphological analyzer and its Python library into Windows and Linux systems with the following system configurations.
+This document describes the installation steps of MeCab morphological analyzer and its Python library into Windows, Mac and Linux systems with the following system configurations.
 
 * Windows
   * Windows 10 64 bit
   * Python 3
+* Mac OS
+  * macOS High Sierra 10.13.3
+  * Python 2
 * Linux
   * Amazon Linux 2
   * Python 2
 
-We also create a user dictionary for MeCab. The dictionary is generated on Windows system, and then it's used on both Windows and Linux systems.
+We also create a user dictionary for MeCab. The dictionary is generated on Windows system, and then it's exported on to Mac and Linux systems.
+
+## Installation Steps for Mac
+References
+* http://ikekou.jp/blog/archives/2736
+* https://qiita.com/nkjm/items/913584c00af199794257
+
+### 1. Install MeCab
+Download the source file archive ```mecab-0.996.tar.gz``` from [here](http://taku910.github.io/mecab/#download).
+```
+# Create the installation directory
+sudo mkdir /usr/local/mecab
+
+cd ~/Downloads
+tar zxfv mecab-0.996.tar.gz
+cd mecab-0.996
+./configure --enable-utf8-only --prefix=/usr/local/mecab
+make
+sudo make install
+```
+
+### 2. Install IPA Dictionary
+Download the source file archive ```mecab-ipadic-2.7.0-20070801.tar.gz``` from [here](http://taku910.github.io/mecab/#download).
+```
+cd ~/Downloads
+tar zxfv mecab-ipadic-2.7.0-20070801.tar.gz
+cd mecab-ipadic-2.7.0-20070801
+./configure --prefix=/usr/local/mecab --with-mecab-config=/usr/local/mecab/bin/mecab-config --with-charset=utf8
+make
+sudo make install
+```
+
+### 3. Add Path
+Add the path to MeCab
+```
+vim ~/.profile
+```
+```
+export PATH=/usr/local/mecab/bin:$PATH
+```
+Reload .profile.
+```
+. ~/.profile
+```
+
+### 4. Install MeCab-Python
+Download the Python file archive ```mecab-python-0.996.tar.gz``` from [here](http://taku910.github.io/mecab/#download).
+```
+cd ~/Downloads
+tar zxfv mecab-python-0.996.tar.gz
+cd mecab-python-0.996
+export CFLAGS=-Qunused-arguments
+export CPPFLAGS=-Qunused-arguments
+python setup.py build
+python setup.py install
+```
 
 ## Installation Steps for Windows
 [Reference](https://qiita.com/satetsu007/items/187e5a3f0ed0b898b152)
@@ -132,11 +190,23 @@ The generated user.dic file needs to be copied to the target system and register
 
 #### Windows
 The user.dic file is assumed to exist under ```C:\prg\aplac\MeCab```.
+
 Open ```C:\Program Files (x86)\MeCab\etc\mecabrc``` and add the following line. The file path has to be absolute.
 ```
 userdic = C:\prg\aplac\MeCab\user.dic
 ```
 
+#### Mac
+The user.dic file is assumed to exist under ```~/prg/aplac/MeCab```.
+
+Open ```/usr/local/mecab/etc/mecabrc```
+```
+sudo vim /usr/local/mecab/etc/mecabrc
+```
+and add the following line.
+```
+userdic = /Users/ryuji/prg/aplac/MeCab/user.dic
+```
 
 
 ## Installation Steps for Windows Method 2 (did not work)

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 from common.dictionary import Dictionary as dic
 from common import char_utils
 from io import StringIO
@@ -47,14 +48,28 @@ special_terminators = [u'.']
 #     [u'＜', '＞']
 # ]
 
-class _MeCab(object):
-    def __init__(self):
-        import MeCab
-        self.m = MeCab.Tagger("-Owakati")   # Option wakati splits text into words concatenated by space ' '
+if (sys.version_info > (3, 0)):
+     # Python 3 code in this block
+    class _MeCab(object):
+        def __init__(self):
+            import MeCab
+            self.m = MeCab.Tagger("-Owakati")   # Option wakati splits text into words concatenated by space ' '
 
-    def tokenize(self, text):
-        words_text = self.m.parse(text)
-        return words_text.split()           # Split text by space into a list
+        def tokenize(self, text):
+            words_text = self.m.parse(text)
+            return words_text.split()           # Split text by space into a list
+else:
+     # Python 2 code in this block
+    class _MeCab(object):
+        def __init__(self):
+            import MeCab
+            self.m = MeCab.Tagger("-Owakati")   # Option wakati splits text into words concatenated by space ' '
+
+        def tokenize(self, text):
+            words_text = self.m.parse(text.encode('utf8'))
+            words_text = unicode(words_text, 'utf8')
+            return words_text.split()           # Split text by space into a list
+
 
 class tokenizer(object):
 
@@ -84,11 +99,11 @@ class tokenizer(object):
             is replaced as with '<br>' tag.
             A) 'abc def' -> ['abc', 'def']
             B) 'That isn't cat. That is a dog.' -> ['That', "isn't", 'cat', '.', 'That', 'is', 'a', 'dog', '.']
-            C) 'abcあいうdef' -> ['abc', 'あ', 'い', 'う', 'def']
-            D) 'abc defあい　うえお' -> ['abc', 'def', 'あ', 'い', '　', 'う', 'え', 'お']
+            C) 'abc高い山def' -> ['abc', '高い', '山', 'def']
+            D) 'abc def高い　山' -> ['abc', 'def', '高い', '<fp>', '高い山']
             E) 'abc\ndef' -> ['abc', '<br>', 'def']
             F) 'abc  def' -> ['abc', '<sp>', 'def']
-            G) 'He said "What's up?"' -> ['He', 'said', '"', What's", 'up?', '"']
+            G) 'He said "What's up?"' -> ['He', 'said', '"', '<c1>', "what's", 'up', '?', '"']
         """
         texts = [sentense.replace(u'\n', u' <br> ').replace(u'　', u' <fp> ')]
 
@@ -118,9 +133,9 @@ class tokenizer(object):
             from split. The special tokens are decoded into the
             actual character for example '<br>' tag is converted into line-break.
             A) ['abc', 'def'] -> 'abc def'
-            B) ['That', "isn't", 'cat', '.', 'That', 'is', 'a', 'dog', '.'] -> 'That isn't cat. That is a dog.'
-            C) ['abc', 'あ', 'い', 'う', 'def'] -> 'abcあいうdef'
-            D) ['abc', 'def', 'あ', 'い', '　', 'う', 'え', 'お'] -> 'abc defあい　うえお'
+            B) ['<c1>', 'that', "isn't", 'cat', '.', '<c1>', 'that', 'is', 'a', 'dog', '.'] -> 'That isn't cat. That is a dog.'
+            C) ['abc', '高い', '山', 'def'] -> 'abc高い山def'
+            D) ['abc', 'def', '高い', '<fp>', '山'] -> 'abc def高い　山'
             E) ['abc', '<br>', 'def'] -> 'abc\ndef'
             F) ['abc', '<sp>', 'def'] -> 'abc  def'
         """

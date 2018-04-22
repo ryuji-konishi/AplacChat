@@ -1,3 +1,4 @@
+import sys
 
 # Unocode code page ranges. Note that they are not UTF8, nor UTF16, but code page values.
 # https://ja.wikipedia.org/wiki/Unicode%E4%B8%80%E8%A6%A7_3000-3FFF
@@ -16,10 +17,19 @@ hiragana_ranges = [[0x3041, 0x3094], [0x3099, 0x309E]]
 katakana_ranges = [[0x30A1, 0x30F6], [0x30FB, 0x30FE]]
 katakana_half_ranges = [[0xFF66, 0xFF9D]]
 
-def _get_code_ranges(code_ranges, chars):
-    for rng in code_ranges:
-        for code in range(rng[0], rng[1]):
-            chars.append(chr(code))
+
+if (sys.version_info > (3, 0)):
+     # Python 3 code in this block
+    def _get_code_ranges(code_ranges, chars):
+        for rng in code_ranges:
+            for code in range(rng[0], rng[1]):
+                chars.append(chr(code))
+else:
+     # Python 2 code in this block
+    def _get_code_ranges(code_ranges, chars):
+        for rng in code_ranges:
+            for code in range(rng[0], rng[1]):
+                chars.append(unichr(code))
 
 def _is_within_ranges(code_ranges, code):
     for rng in code_ranges:
