@@ -52,7 +52,7 @@ sudo make install
 ```
 
 ### 3. Add so file path
-Modigy ```/etc/ld.so.conf``` path so that the MeCab's so file is loaded.
+Modify ```/etc/ld.so.conf``` so that the MeCab's so file is loaded.
 ```
 sudo vim /etc/ld.so.conf
 ```

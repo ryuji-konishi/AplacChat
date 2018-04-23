@@ -101,7 +101,7 @@ systemctl status nginx
 Now you can see '502 Bad Gateway' when you access to your EC2 instance domain URL with web browser. This means the web server is running.
 
 ### 3. Setup Database
-Currently we use MariaDB as the main database of the app. Follow the instructions in (this document)(README%20Setup%20MariaDB%20on%20AWS%20EC2.md) to set up MariaDB.
+Currently SQLite3 is used as the main database of the app. SQLite comes as default in the Amazon EC2 AMI used.
 
 ### 4. Change user
 ```
@@ -200,10 +200,8 @@ dotnet build
 Run Entity Framework Core commands for the initial creation and the migrations of database.
 Before proceeding, the database connection string has to be set as environment variable.
 ```
-export MYSQL_CONNECTION_APPDB="server=localhost;database=aplacchat;userid=apps;password=yourpassword;"
+CONNECTION_APPDB="Data Source=file:/home/apps/prg/aplac/aplacchat.db"
 ```
-
-Note the above user 'apps' is created during MariaDB installation described in the earlier section. This user is supposed to have access to database 'aplacchat' and local access is only granted.
 
 Enter the following command to execute the migration that creates a new schema 'aplacchat' in DB if doesn't exist.
 ```
@@ -262,7 +260,7 @@ Open the file ```/home/apps/prg/aplac/frontend/frontend.env``` and modify the fo
 ASPNETCORE_URLS=http://localhost:5051
 CHAT_EMBED_URL=http://your_public_dnsname_here/Embed/Index
 CHAT_INFER_URL=http://your_public_dnsname_here/infer
-MYSQL_CONNECTION_APPDB="server=localhost;database=aplacchat;userid=apps;password=yourpassword;"
+CONNECTION_APPDB="Data Source=file:/home/apps/prg/aplac/aplacchat.db"
 ```
 
 And copy the file to /etc/sysconfig directory.
