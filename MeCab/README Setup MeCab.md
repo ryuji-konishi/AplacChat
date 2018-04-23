@@ -14,18 +14,90 @@ This document describes the installation steps of MeCab morphological analyzer a
 
 We also create a user dictionary for MeCab. The dictionary is generated on Windows system, and then it's exported on to Mac and Linux systems.
 
+## Installation Steps for Amazon Linux
+The target EC2 AMI is below.
+
+**Amazon Linux 2 LTS Candidate AMI 2017.12.0 (HVM), SSD Volume Type - ami-38708c5a**
+
+### Preparation
+Before proceeding, install gcc tools and Python headers that are not included in the original Amazon EC2 AMI used here. They are required in the following steps.
+```
+sudo yum groupinstall "Development Tools"
+sudo yum install python-devel
+```
+
+### 1. Install MeCab
+Download the source file and compile it. If the following wget command failed to download, get the archive ```mecab-0.996.tar.gz``` from [here](http://taku910.github.io/mecab/#download).
+```
+cd ~
+wget -O mecab-0.996.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7cENtOXlicTFaRUE"
+tar zxvf mecab-0.996.tar.gz
+cd mecab-0.996
+./configure
+make
+make check
+sudo make install
+```
+
+### 2. Install IPA Dictionary
+Download the dictionary file and compile it. If the following wget command failed to download, get the archive  ```mecab-ipadic-2.7.0-20070801.tar.gz``` from [here](http://taku910.github.io/mecab/#download).
+```
+cd ~
+wget -O mecab-ipadic-2.7.0-20070801.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7MWVlSDBCSXZMTXM"
+tar zxvf mecab-ipadic-2.7.0-20070801.tar.gz
+cd mecab-ipadic-2.7.0-20070801
+./configure --with-charset=utf8
+make
+sudo make install
+```
+
+### 3. Add so file path
+Modigy ```/etc/ld.so.conf``` path so that the MeCab's so file is loaded.
+```
+sudo vim /etc/ld.so.conf
+```
+Add the line below at the bottom of the file.
+```
+/usr/local/lib      # add this line at the bottom
+```
+Take effect of change by reloading.
+```
+sudo ldconfig
+```
+
+### 4. Install MeCab-Python
+Download the script file and run it. If the following wget command failed to download, get the archive  ```mecab-python-0.996.tar.gz``` from [here](http://taku910.github.io/mecab/#download).
+```
+cd ~
+wget -O mecab-python-0.996.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7UlJpaWJKM01KRVE"
+tar zxvf mecab-python-0.996.tar.gz
+cd mecab-python-0.996
+```
+Before running ```setup.py```, the file path to ```mecab-config``` needs to be a full path. Update ```setup.py``` by replacing 'mecab-config' by '/usr/local/bin/mecab-config'.
+```
+vim setup.py
+```
+Now run the setup.
+```
+python setup.py build
+sudo python setup.py install
+```
+
 ## Installation Steps for Mac
 References
 * http://ikekou.jp/blog/archives/2736
 * https://qiita.com/nkjm/items/913584c00af199794257
 
-### 1. Install MeCab
-Download the source file archive ```mecab-0.996.tar.gz``` from [here](http://taku910.github.io/mecab/#download).
+### 1. Create the Installation Directory
 ```
-# Create the installation directory
 sudo mkdir /usr/local/mecab
+```
 
+### 2. Install MeCab
+Download the source file and compile it. If the following wget command failed to download, get the archive ```mecab-0.996.tar.gz``` from [here](http://taku910.github.io/mecab/#download).
+```
 cd ~/Downloads
+wget -O mecab-0.996.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7cENtOXlicTFaRUE"
 tar zxfv mecab-0.996.tar.gz
 cd mecab-0.996
 ./configure --enable-utf8-only --prefix=/usr/local/mecab
@@ -33,10 +105,11 @@ make
 sudo make install
 ```
 
-### 2. Install IPA Dictionary
-Download the source file archive ```mecab-ipadic-2.7.0-20070801.tar.gz``` from [here](http://taku910.github.io/mecab/#download).
+### 3. Install IPA Dictionary
+Download the dictionary file and compile it. If the following wget command failed to download, get the archive  ```mecab-ipadic-2.7.0-20070801.tar.gz``` from [here](http://taku910.github.io/mecab/#download).
 ```
 cd ~/Downloads
+wget -O mecab-ipadic-2.7.0-20070801.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7MWVlSDBCSXZMTXM"
 tar zxfv mecab-ipadic-2.7.0-20070801.tar.gz
 cd mecab-ipadic-2.7.0-20070801
 ./configure --prefix=/usr/local/mecab --with-mecab-config=/usr/local/mecab/bin/mecab-config --with-charset=utf8
@@ -44,7 +117,7 @@ make
 sudo make install
 ```
 
-### 3. Add Path
+### 4. Add Path
 Add the path to MeCab
 ```
 vim ~/.profile
@@ -57,10 +130,11 @@ Reload .profile.
 . ~/.profile
 ```
 
-### 4. Install MeCab-Python
-Download the Python file archive ```mecab-python-0.996.tar.gz``` from [here](http://taku910.github.io/mecab/#download).
+### 5. Install MeCab-Python
+Download the script file and run it. If the following wget command failed to download, get the archive  ```mecab-python-0.996.tar.gz``` from [here](http://taku910.github.io/mecab/#download).
 ```
 cd ~/Downloads
+wget -O mecab-python-0.996.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7UlJpaWJKM01KRVE"
 tar zxfv mecab-python-0.996.tar.gz
 cd mecab-python-0.996
 export CFLAGS=-Qunused-arguments
