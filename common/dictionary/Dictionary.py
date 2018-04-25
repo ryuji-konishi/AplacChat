@@ -25,7 +25,8 @@ class English(object):
     """
     # Additional words that don't exist in the original dictionary.
     addons = [u"isn't", u"wasn't", u"aren't", u"weren't", u"don't", u"didn't", u"hasn't", u"haven't", u"hadn't"
-        u"ain't", u"it's", u"i'm", u"he's", u"she's", u"they're", u"we're", u"there're"]
+        u"ain't", u"it's", u"i'm", u"he's", u"she's", u"they're", u"we're", u"there're",
+        u"i've", u"you've", u"we've", u"what's", u"who's", u"where's", u"there's", u"here's"]
 
     def __init__(self):
         # Load dictionary file

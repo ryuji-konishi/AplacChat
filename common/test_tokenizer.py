@@ -73,11 +73,11 @@ class TestSentenseResulver(unittest.TestCase):
             self.tokenizer.split(u"That isn't cat. That is a dog."), 
             [u'<c1>', u'that', u"isn't", u'cat', u'.', u'<c1>', u'that', u'is', u'a', u'dog', u'.'])
         self.assertListEqual(
-            self.tokenizer.split(u"abc高い山def"), 
-            [u'abc', u'高い', u'山', u'def'])
+            self.tokenizer.split(u"abcあいうdef"),
+            [u'abc', u'あ', u'い', u'う', u'def'])
         self.assertListEqual(
-            self.tokenizer.split(u"abc def高い　山"), 
-            [u'abc', u'def', u'高い', u'<fp>', u'山'])
+            self.tokenizer.split(u"abc defあい　うえお"),
+            [u'abc', u'def', u'あ', u'い', u'<fp>', u'う', u'え', u'お'])
         self.assertListEqual(
             self.tokenizer.split(u"abc\ndef"), 
             [u'abc', u'<br>', u'def'])
@@ -99,11 +99,11 @@ class TestSentenseResulver(unittest.TestCase):
             self.tokenizer.concatenate([u'<c1>', u'that', u"isn't", u'cat', u'.', u'<c1>', u'that', u'is', u'a', u'dog', u'.']) ==
             u"That isn't cat. That is a dog.")
         self.assertTrue(
-            self.tokenizer.concatenate([u'abc', u'高い', u'山', u'def']) ==
-            u"abc高い山def")
+            self.tokenizer.concatenate([u'abc', u'あ', u'い', u'う', u'def']) ==
+            "abcあいうdef")
         self.assertTrue(
-            self.tokenizer.concatenate([u'abc', u'def', u'高い', u'<fp>', u'山']) ==
-            u"abc def高い　山")
+            self.tokenizer.concatenate([u'abc', u'def', u'あ', u'い', u'<fp>', u'う', u'え', u'お']) ==
+            "abc defあい　うえお")
         self.assertTrue(
             self.tokenizer.concatenate([u'abc', u'<br>', u'def']) ==
             u"abc\ndef")

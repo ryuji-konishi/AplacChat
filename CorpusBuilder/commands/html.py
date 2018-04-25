@@ -35,11 +35,13 @@ def download_html(html_path):
     local_filename, _ = urllib.request.urlretrieve(url)
     return local_filename       # the file is in the sytem temp folder
 
-def clean(input_path):
+def clean(input_path, expected_encodings = ('ASCII', 'UTF-8', 'SHIFT_JIS', 'CP932')):
     """ Clean the HTML files.
         - Check if HTML files are correctly readable. If not download the original file from the site again.
         - Check if HTML files contain 404 Not Found. Delete these files.
         input_path is either a folder path or file path, both in absolute path.
+        expected_encodings are the set of character encodings that are HTML file encodings expected to be.
+        Refer to the list of encodings http://chardet.readthedocs.io/en/latest/supported-encodings.html
     """
     
     if os.path.isfile(input_path):
@@ -57,15 +59,17 @@ def clean(input_path):
         f_abst = file[0]    # absolute path
         f_rel = file[1]     # relative path
         print ("(", idx, "of", len(files), ") file", f_rel)
-        file_content = file_utils.read_filelist_any_encoding(f_abst)
-        if (len(file_content) == 0):
+        file_content, enc = file_utils.read_filelist_any_encoding(f_abst)
+        if (len(file_content) == 0 or not enc in expected_encodings):
             print(u"File read failed. Attempting to download the original file...")
             downloaded_file = download_html(f_rel)
-            file_content = file_utils.read_filelist_any_encoding(downloaded_file)
+            file_content, enc = file_utils.read_filelist_any_encoding(downloaded_file)
             if (len(file_content) == 0):
                 log(u"Failed to read file even with re-downloaded file", f_abst)
                 continue
             else:
+                if (not enc in expected_encodings):
+                    log(u"The file encoding", enc, "is not as expected. But proceed.", f_abst)
                 print(u"Replaced with downloaded file", f_rel)
                 shutil.copyfile(downloaded_file, f_abst)
 

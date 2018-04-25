@@ -48,27 +48,28 @@ special_terminators = [u'.']
 #     [u'＜', '＞']
 # ]
 
-if (sys.version_info > (3, 0)):
-     # Python 3 code in this block
-    class _MeCab(object):
-        def __init__(self):
-            import MeCab
-            self.m = MeCab.Tagger("-Owakati")   # Option wakati splits text into words concatenated by space ' '
+""" MeCab was once considered but decided not to use as of Apr.2018 """
+# if (sys.version_info > (3, 0)):
+#      # Python 3 code in this block
+#     class _MeCab(object):
+#         def __init__(self):
+#             import MeCab
+#             self.m = MeCab.Tagger("-Owakati")   # Option wakati splits text into words concatenated by space ' '
 
-        def tokenize(self, text):
-            words_text = self.m.parse(text)
-            return words_text.split()           # Split text by space into a list
-else:
-     # Python 2 code in this block
-    class _MeCab(object):
-        def __init__(self):
-            import MeCab
-            self.m = MeCab.Tagger("-Owakati")   # Option wakati splits text into words concatenated by space ' '
+#         def tokenize(self, text):
+#             words_text = self.m.parse(text)
+#             return words_text.split()           # Split text by space into a list
+# else:
+#      # Python 2 code in this block
+#     class _MeCab(object):
+#         def __init__(self):
+#             import MeCab
+#             self.m = MeCab.Tagger("-Owakati")   # Option wakati splits text into words concatenated by space ' '
 
-        def tokenize(self, text):
-            words_text = self.m.parse(text.encode('utf8'))
-            words_text = unicode(words_text, 'utf8')
-            return words_text.split()           # Split text by space into a list
+#         def tokenize(self, text):
+#             words_text = self.m.parse(text.encode('utf8'))
+#             words_text = unicode(words_text, 'utf8')
+#             return words_text.split()           # Split text by space into a list
 
 
 class tokenizer(object):
@@ -76,21 +77,21 @@ class tokenizer(object):
     def __init__(self):
         self.dic = dic.Dictionary()
         self.tagger = LetterCaseTagger()
-        self.morph_tokenizer = _MeCab()     # The delegated morphological analyzer tokenizer
+        # self.morph_tokenizer = _MeCab()     # The delegated morphological analyzer tokenizer
 
-    def _morph_tokenize(self, texts):
-        """ Loop throught the text list, and tokenize the text into multiple words
-            by the morphological analyzer tokenizer.
-            Return the list of tokenized words.
-        """
-        result = []
-        for text in texts:
-            if len(text) > 1 and text not in special_tokens:
-                words = self.morph_tokenizer.tokenize(text)
-                result.extend(words)
-            else:
-                result.append(text)
-        return result
+    # def _morph_tokenize(self, texts):
+    #     """ Loop throught the text list, and tokenize the text into multiple words
+    #         by the morphological analyzer tokenizer.
+    #         Return the list of tokenized words.
+    #     """
+    #     result = []
+    #     for text in texts:
+    #         if len(text) > 1 and text not in special_tokens:
+    #             words = self.morph_tokenizer.tokenize(text)
+    #             result.extend(words)
+    #         else:
+    #             result.append(text)
+    #     return result
 
     def split(self, sentense):
         """ Split the given sentense into a list at each character/word level
@@ -99,8 +100,8 @@ class tokenizer(object):
             is replaced as with '<br>' tag.
             A) 'abc def' -> ['abc', 'def']
             B) 'That isn't cat. That is a dog.' -> ['That', "isn't", 'cat', '.', 'That', 'is', 'a', 'dog', '.']
-            C) 'abc高い山def' -> ['abc', '高い', '山', 'def']
-            D) 'abc def高い　山' -> ['abc', 'def', '高い', '<fp>', '高い山']
+            C) 'abcあいうdef' -> ['abc', 'あ', 'い', 'う', 'def']
+            D) 'abc defあい　うえお' -> ['abc', 'def', 'あ', 'い', '　', 'う', 'え', 'お']
             E) 'abc\ndef' -> ['abc', '<br>', 'def']
             F) 'abc  def' -> ['abc', '<sp>', 'def']
             G) 'He said "What's up?"' -> ['He', 'said', '"', '<c1>', "what's", 'up', '?', '"']
@@ -108,13 +109,14 @@ class tokenizer(object):
         texts = [sentense.replace(u'\n', u' <br> ').replace(u'　', u' <fp> ')]
 
         words = self._split_by_space(texts)
-
         for atom in special_atoms:
             words = self._split_by_atomic(atom, words)
-
+        words = self._split_by_char_code(words)
+        words = self._split_by_terminator(words)
+        words = self._breakdown(words)
         words = self._letter_case(words)
 
-        words = self._morph_tokenize(words)
+        # words = self._morph_tokenize(words)
 
         return words
 
@@ -124,8 +126,8 @@ class tokenizer(object):
             actual character for example '<br>' tag is converted into line-break.
             A) ['abc', 'def'] -> 'abc def'
             B) ['<c1>', 'that', "isn't", 'cat', '.', '<c1>', 'that', 'is', 'a', 'dog', '.'] -> 'That isn't cat. That is a dog.'
-            C) ['abc', '高い', '山', 'def'] -> 'abc高い山def'
-            D) ['abc', 'def', '高い', '<fp>', '山'] -> 'abc def高い　山'
+            C) ['abc', 'あ', 'い', 'う', 'def'] -> 'abcあいうdef'
+            D) ['abc', 'def', 'あ', 'い', '　', 'う', 'え', 'お'] -> 'abc defあい　うえお'
             E) ['abc', '<br>', 'def'] -> 'abc\ndef'
             F) ['abc', '<sp>', 'def'] -> 'abc  def'
         """

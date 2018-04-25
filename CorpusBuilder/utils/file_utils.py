@@ -36,7 +36,7 @@ def read_file_any_encoding(path):
     return result
 
 def read_filelist_any_encoding(path):
-    """ Return a list of text lines."""
+    """ Return a list of text lines and the detected file encoding."""
     enc = detect_encoding(path)
     result = []
     try:
@@ -47,9 +47,12 @@ def read_filelist_any_encoding(path):
         print(sys.exc_info()[0])
     finally:
         f.close()
-    return result
+    return result, enc.upper()
 
 def detect_encoding(path):
+    """ Return the file encoding detected. Refer to the list of encodings
+        http://chardet.readthedocs.io/en/latest/supported-encodings.html
+    """
     detector = UniversalDetector()
     f = open(path, "rb")
     for line in f:

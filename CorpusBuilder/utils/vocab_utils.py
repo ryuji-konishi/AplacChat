@@ -17,7 +17,7 @@ class VocabStore(object):
         self.reset_report()
         if vocab_file:
             if os.path.exists(vocab_file):
-                vocab = file_utils.read_filelist_any_encoding(vocab_file)
+                vocab, _ = file_utils.read_filelist_any_encoding(vocab_file)
                 sp_cnt = len(special_tokens)
                 # Vocab files are supposed to contain special tokens at the beginning of file.
                 # Verify if the vocab starts with special tokens. Check if the first several elements contains the special tokens.

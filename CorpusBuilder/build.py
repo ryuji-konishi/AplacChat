@@ -42,7 +42,7 @@ def f_html_parse(args):
     corpus_dir = conv_abs(args.corpus)
 
     # APLaC specific
-    size_limit_KB = 10 * 1024       # 10MB
+    size_limit_KB = 5 * 1024       # 5MB
     html.parse(html_dir, corpus_dir, aplac.validate_pair_html, aplac.html_target_tag, size_limit_KB)
 
 def f_corpus_generate(args):
@@ -51,7 +51,7 @@ def f_corpus_generate(args):
 
     # APLaC specific
     pair_loaders = [aplac.SaluteLoader(), aplac.ConversationLoader()]
-    size_limit_KB = 10 * 1024       # 10MB
+    size_limit_KB = 5 * 1024       # 5MB
     corpus.generate(corpus_dir, aplac.myname, aplac.yourname, pair_loaders, aplac.validate_pair_corpus, size_limit_KB)
 
 def f_corpus_compile(args):
@@ -154,8 +154,8 @@ if __name__ == "__main__":
     # class Namespace:
     #     def __init__(self, **kwargs):
     #         self.__dict__.update(kwargs)    
-    # args = Namespace(html = "C:\\Tmp\\aplac\\html\\xs", corpus ="C:\\Tmp\\aplac\\corpus\\test", 
-    #     data ="C:\\Tmp\\aplac\\data\\xs", vocab = "C:\\Tmp\\aplac\\data\\test")
-    # f_html_parse(args)
+    # args = Namespace(html = "C:\\Tmp\\aplac\\html\\corrupted", corpus ="C:\\Tmp\\aplac\\corpus\\aplac_conv", 
+    #     data ="C:\\Tmp\\aplac\\data\\aplac.net\\aplac_conv", vocab = "C:\\Tmp\\aplac\\data\\aplac.net")
+    # f_corpus_compile(args)
 
     print ("Finished.")
