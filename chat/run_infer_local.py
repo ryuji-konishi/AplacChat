@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
   data_path = "/Users/ryuji/tmp/aplac/9_Hello"
   nmt.nmt.FLAGS.inference_input_file=data_path + "/infer/my_infer_file.txt"
-  nmt.nmt.FLAGS.inference_output_file=data_path + "/infer/output_infer"
+  nmt.nmt.FLAGS.inference_output_file=data_path + "/infer/output_infer.txt"
   nmt.nmt.FLAGS.out_dir=data_path + "/model"
 
   tf.app.run(main=nmt.nmt.main, argv=[sys.argv[0]] + unparsed)

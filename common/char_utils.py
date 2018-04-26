@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 
 # Unocode code page ranges. Note that they are not UTF8, nor UTF16, but code page values.
