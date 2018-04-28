@@ -3,9 +3,9 @@ Description=APLaC-Chat Chat Web App
 After=network.target
 
 [Service]
-ExecStart=/home/apps/prg/virtualenv/tf140py2/bin/gunicorn run_infer_web:app -b localhost:8000
-WorkingDirectory=/home/apps/prg/aplac/chat
-User=apps
+ExecStart=/home/aplac/virtualenv/tf140py2/bin/gunicorn run_infer_web:app -b localhost:8000
+WorkingDirectory=/home/aplac/aplac/chat
+User=aplac
 Restart=on-failure
 
 [Install]

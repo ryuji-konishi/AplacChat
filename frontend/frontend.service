@@ -3,9 +3,9 @@ Description=APLaC-Chat Frontend  Web App
 After=network.target
 
 [Service]
-ExecStart=/home/apps/prg/dotnet/sdk/dotnet frontend.dll
-WorkingDirectory=/home/apps/prg/aplac/frontend/src/bin/
-User=apps
+ExecStart=/usr/bin/dotnet frontend.dll
+WorkingDirectory=/home/aplac/aplac/frontend/src/bin/
+User=aplac
 Restart=on-failure
 EnvironmentFile=/etc/sysconfig/frontend.env
 
