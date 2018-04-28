@@ -6,9 +6,9 @@
 PROJECT_ID=ryuji-test1
 BUCKET_NAME=${PROJECT_ID}-mlengine
 REGION=asia-east1
-DATA_NAME="10_12974"
-LOCAL_DATA_PATH=/home/apps/tmp/aplac/$DATA_NAME
-JOB_NAME="job_180415_090124_10_12974_standard_gpu"
+DATA_NAME="11_13158"
+LOCAL_DATA_PATH=/home/aplac/data/$DATA_NAME
+JOB_NAME="job_180425_2041_11_13158_4L512"
 
 #
 # Copy from GCP Storage
@@ -16,9 +16,9 @@ JOB_NAME="job_180415_090124_10_12974_standard_gpu"
 REMOTE_DATA_PATH=gs://$BUCKET_NAME/$DATA_NAME/data
 OUTPUT_PATH=gs://$BUCKET_NAME/$DATA_NAME/model/$JOB_NAME
 
-mkdir $LOCAL_DATA_PATH/model
+mkdir -p $LOCAL_DATA_PATH/model
 gsutil -m cp -r $OUTPUT_PATH/* $LOCAL_DATA_PATH/model/
-mkdir $LOCAL_DATA_PATH/data
+mkdir -p $LOCAL_DATA_PATH/data
 gsutil -m cp -r $REMOTE_DATA_PATH/vocab.src $LOCAL_DATA_PATH/data/vocab.src
 
 #
