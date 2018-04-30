@@ -9,6 +9,8 @@ Choose the following AMI from the list.
 
 **Amazon Linux 2 LTS Candidate AMI 2017.12.0 (HVM), SSD Volume Type - ami-38708c5a**
 
+Note Amazon Linux 2 is based on RedHat and CentOS.
+
 Note **Amazon Linux AMI 2017.09.1 (HVM), SSD Volume Type - ami-942dd1f6** is not suitable as it doesn't have ```systemd``` command. [Reference](https://serverfault.com/questions/889248/how-to-enable-systemd-on-amazon-linux-ami)
 
 ### 2. Security Group

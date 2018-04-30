@@ -19,6 +19,10 @@ regexs_both = [
     u'^[0-9|０-９| ]+[.|．|:|：]',
     # 1-1.概況　オーストラリアの犯罪状況
     u'^[0-9|０-９| ]+[-|－|−]+[0-9|０-９| ]+[.|．|:|：]*',
+    # 更新記録簿1998年01月～12月分
+    u'更新記録簿.*[0-9].*～.*',
+    # 更新記録簿／What's New
+    u'更新記録簿／.+',
     # beginning of
     u'^[　|～|〜|－|／|、|●|★|■|→|:|;|~]+', 
     # numbers in brackets at the beginning （１） （その１）これまで
@@ -28,7 +32,9 @@ regexs_both = [
     # constant keywords at the beginning
     u'^[日本／|◆コラム|今週の１枚|更新記録簿|を|初稿福島記]',
     # exact line
-    u'^Home$|^ツイート$',
+    u'^Home$|^ツイート$|^文責：田村$|^（文責・田村）$|^APLaCのトップに戻る$|^バックナンバーはここ$|^APLaC/Sydney（シドニー多元生活文化研究会）$',
+    u'^禁無断転載／（但しリンクはフリーにどうぞ！）$|^Tel＆Fax ：\+61\-2\-9427\-3738$|^FB Page$|^はてな別館$|^APLAC BLOG$|^APLaCリンク集$',
+    u'^[０-９]+日$',
     # Copyright 1996
     u'Copyright [0-9|０-９|-|－|−]+',
     # email address

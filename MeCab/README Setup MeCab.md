@@ -1,4 +1,9 @@
-# MeCab Installtion
+# MeCab
+MeCab is a morphologinal analyzer that is used to tokenize Japanese sentenses. This MeCab Python module is used (called) by Corpus Builder to generate the vocaburary file when it applies the word-level tokenization.
+
+**As of Apr.2018, this word-level tokenization is disabled due to the system performance resource limitation. Hence this MeCab module is not used. This document is left as a resource.**
+
+# Installtion
 
 This document describes the installation steps of MeCab morphological analyzer and its Python library into Windows, Mac and Linux systems with the following system configurations.
 

@@ -1,7 +1,7 @@
 # Corpus Builder
 
 ## What is Corpus Builder
-Corpus Builder is used to generate the NMT data set that include train, dev, test and vocaburary files. To generate them, Corpus Builder has the following functionalities:
+Corpus Builder is used to generate the NMT dataset that include train, dev, test and vocaburary files. To generate them, Corpus Builder has the following functionalities:
 - Clean the pre-downloaded HTML files by checking file corruption and unwanted files
 - Parse HTML files and extract text sentenses, and store those sentenses into corpus files
 - Generate the standard vocaburary file that include the very basic and general text charactors
@@ -10,28 +10,22 @@ Corpus Builder is used to generate the NMT data set that include train, dev, tes
 ## What is Corpus Files
 Corpus files are JSON formatted text files that contain the series of source/target pair texts. Corpus files are used as medium file before generating the NMT data set, for the purposes of storing data temporarily or organising different sources of data.
 
-## System Requirements
-* Python 3
-* Windows
-* MeCab Library
-
-MeCab is a morphologinal analyzer that is used to tokenize Japanese sentenses. MeCab Python library needs to be installed to run Corpus Bilder.
-[How to setup MeCab](../MeCab/README%20Setup%20MeCab.md)
+## How to setup
+Refer to [README Setup Corpus Builder](README%20Setup%20Corpus%20Builder.md).
 
 ## How to run
-From command line, move to the root folder of CorpusBuilder, then type ```python build.py -h``` to see the help.
-Also the followings are unit tests.
+Corpus Builder is a Python script which main script file is ```build.py```. First, run the command below to see the help.
 ```
-python test_aplac.py
-python test_parsers.py
-python test_resources.py
-python test_utils.py
+python build.py -h
 ```
 
-To debug with Visual Studio Code, open the CorpusBuilder folder as the project directory, and run the each py file.
+Corpus Builder has severl sub-commands. For example, when your parse HTML files and generate corpus files, you use ```html parse``` sub-command. The help can be shown with the command below.
+```
+python build.py html parse -h
+```
 
 ## HTML Parsing
-There are 3 different types of HTML parsers used. Each of them parses the same HTML and generate sorce/target pairs, but they analyze HTML in different ways.
+There are 3 different types of HTML analysis and parsing used. Each of them parses the same HTML and generate sorce/target pairs, but they analyze HTML in different ways.
 
 #### A. Header/Body
 The source text is extracted from the header texts (H1, H2, H3 etc). The target text is the body of the trailing paragraphs that appear following after the header. This text contains line breaks.
@@ -69,6 +63,9 @@ Line break.
 
 #### \<sp\>
 Space. This is the half-width space.
+
+#### \<fp\>
+This is the Full-width space.
 
 \<br\> and \<sp\> are required because line-breaks and spaces compose the source and target files. Line-breaks are used to delimit the lines, and spaces are used to separate words in those files.
 
