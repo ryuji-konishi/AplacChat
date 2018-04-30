@@ -1,0 +1,29 @@
+@page
+@model LoginModel
+
+<div class="row">
+    <div class="col" style="padding: 60px;">
+        <div class="jumbotron" style="text-align: center; opacity: 0.5; margin-bottom: 0px;">
+            <h1 style="color: #3c763d;">APLaC Chat</h1>
+            <p>A.I. Chat Bot</p>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col" style="padding: 15px;">
+        <section id="socialLoginForm">
+            <p>Choose your favarite SNS to log in.</p>
+            <hr />
+            <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                <div>
+                    <p>
+                        @foreach (var provider in Model.ExternalLogins)
+                        {
+                            <button type="submit" class="btn btn-default" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                        }
+                    </p>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>

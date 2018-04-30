@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
-using frontend.Model;
+using frontend.Data;
 using Newtonsoft.Json;
 using System.Net.Http;
 
@@ -55,7 +55,7 @@ namespace frontend.Pages.Embed
 
         private async Task saveChatRecordAsync(string input, string output)
         {
-            var record = new Model.ChatRecord
+            var record = new Data.ChatRecord
             {
                 UTC = DateTime.UtcNow,
                 Input = input,

@@ -41,7 +41,9 @@ You need different configuration whether you are debugging locally or the packag
 There are following environment variables that are specific to APLaC Chat front-end application.
 * CHAT_EMBED_URL - The URL which points to the chat frame page that is designed to be embedded into the parent page using iframe HTML tag.
 * CHAT_INFER_URL - The URL which plays a role of APLaC Chat inference API. This URL receives POST requests with text, and returns the resulted text which is the result of NMT Inference.
-* CONNECTION_APPDB - The DB connection string to access to the application DB on MySQL.
+* CONNECTION_APPDB - The DB connection string to access to the application DB.
+  * For MySQL (MariaDB), it would be like "server=localhost;database=aplacchat;userid=apps;password=yourpassword;"
+  * For SQLite, it would be like "Data Source=file:/home/aplac/aplac/aplacchat.db"
 
 The above environment variables are set by Visual Studio Code when you debug locally, and set in command terminal when it goes on production.
 

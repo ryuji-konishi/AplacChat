@@ -1,7 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 
-namespace frontend.Model
+namespace frontend.Data
 {
     public class ChatRecord
     {
