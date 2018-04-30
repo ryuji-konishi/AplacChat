@@ -69,18 +69,8 @@ The launch URL for web browsers can also be set in `launchBrowser` element, for 
   },
 ```
 
-## Build and Deployment (TBD)
-*When you deploy the .NET Core project on Linux server, follow this section. As of Feb.2018, this section is not complete yet and left as a side node.*
-
-First we generate a publish package with ```dotnet``` command into a self-contained directory that can run on the server.
-```
-dotnet publish -c Release --self-contained -r linux-x64
-```
-Refer to [a list of Runtime Identifiers (RIDs)](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog#linux-rids) that is set as the runtime option (-r).
-The package folder ```publish``` is generated under bin folder. opy this folder to the server using SCP, FTP, or other file transfer method.
-
-### Reference
-https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?tabs=aspnetcore2x
+## Build and Deployment
+It is out of the scope of this document. Refer to [How to setup Chat/Frontend on AWS EC2](frontend/README%20Setup%20chat-frontend%20on%20AWS%20EC2.md).
 
 ## Development Notes
 This section keeps the record of key notes, references and other important points that are found during the development.
