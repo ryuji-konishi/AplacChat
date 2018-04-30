@@ -13,10 +13,6 @@ This environment is for both development and actual use of APLaC Chat training a
 * virtualenv
 * Tensorflow 1.4.0
 * Google Cloud SDK
-* MeCab Library
-
-MeCab is a morphologinal analyzer that is used to tokenize Japanese sentenses. MeCab Python library needs to be installed to run Corpus Bilder.
-[How to setup MeCab](../MeCab/README%20Setup%20MeCab.md)
 
 ### Installing Tensorflow
 #### 1. Install pip
