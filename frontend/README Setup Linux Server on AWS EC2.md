@@ -99,5 +99,3 @@ Add the line below.
 ```
 export PATH=$PATH:/opt/google-cloud-sdk/bin
 ```
-
-#### Initialization
