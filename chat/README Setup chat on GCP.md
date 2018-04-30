@@ -38,6 +38,18 @@ Define a local folder name where the input files are stored. During the training
 ```
 DATA_NAME="4_2316"
 ```
+Define a subcategory name of the data. This sub-categorization is useful when you pre-train or post-train the same dataset without changing the vocaburary.
+```
+DATA_SUBCATEGORY="aplac_conv"
+```
+In the end, the local data path becomes below.
+```
+LOCAL_DATA_PATH=/Users/ryuji/tmp/aplac/$DATA_NAME
+```
+The train step is defined here so that you can increase the number when you would re-train.
+```
+TRAIN_STEP=200000
+```
 
 ## Create Google Cloud Storage
 
@@ -51,24 +63,22 @@ In this bucket, the following two folders will be created in the end.
 
 ### Local directory
 ```
-    chat
-        generated
-            $DATA_NAME
-                data
-                    train.src
-                    train.tgt
-                    vocab.src
-                    vocab.tgt
+    $DATA_NAME
+        data
+            vocab.src
+            $DATA_SUBCATEGORY
+                train.src
+                train.tgt
 ```
 ### GCP Storage
 ```
     Buckets/$PROJECT_ID-mlengine
         $DATA_NAME
             data
-                train.src
-                train.tgt
                 vocab.src
-                vocab.tgt
+                $DATA_SUBCATEGORY
+                    train.src
+                    train.tgt
             model
                 $JOB_NAME
                     hparams
@@ -76,12 +86,14 @@ In this bucket, the following two folders will be created in the end.
 
 ## Upload the Input Files
 
-Upload the input files which you prepaired in advance and are located in ```generated/$DATA_NAME``` under the current directory.
-The remote directory in GCS is ```gs://$BUCKET_NAME/data``` constant.
+Upload the input files which you prepaired in advance and are located in ```$LOCAL_DATA_PATH```.
+
+The remote directory in GCS ```$REMOTE_DATA_PATH``` is defined below.
 ```
-LOCAL_DATA_PATH="generated/$DATA_NAME"
 REMOTE_DATA_PATH=gs://$BUCKET_NAME/$DATA_NAME/data
-gsutil -m cp -r "$LOCAL_DATA_PATH/data/*" "$REMOTE_DATA_PATH"
+REMOTE_DATA_PATH=gs://$BUCKET_NAME/$DATA_NAME/data
+gsutil -m cp -r "$LOCAL_DATA_PATH/data/vocab.src" "$REMOTE_DATA_PATH"
+gsutil -m cp -r "$LOCAL_DATA_PATH/data/$DATA_SUBCATEGORY/*" "$REMOTE_DATA_PATH/$DATA_SUBCATEGORY"
 ```
 
 After running the command, you can check the storage contents [here](https://console.cloud.google.com/storage).
@@ -89,7 +101,7 @@ After running the command, you can check the storage contents [here](https://con
 ## Run the Training Job
 The job is named after the current date and time.
 ```
-JOB_NAME=job_$(date +"%y%m%d_%H%M%S")
+JOB_NAME=job_$(date +"%y%m%d_%H%M")_${DATA_NAME}
 OUTPUT_PATH=gs://$BUCKET_NAME/$DATA_NAME/model/$JOB_NAME
 ```
 
@@ -107,24 +119,33 @@ gcloud ml-engine jobs submit training $JOB_NAME \
  --package-path nmt \
  --module-name nmt.nmt \
  --region $REGION \
- --scale-tier=basic-gpu \
+ --config config.yaml \
  -- \
  --src="src" \
  --tgt="tgt" \
  --vocab_prefix="$REMOTE_DATA_PATH/vocab" \
- --train_prefix="$REMOTE_DATA_PATH/train" \
- --dev_prefix="$REMOTE_DATA_PATH/dev" \
- --test_prefix="$REMOTE_DATA_PATH/test" \
+ --train_prefix="$REMOTE_DATA_PATH/$DATA_SUBCATEGORY/train" \
+ --dev_prefix="$REMOTE_DATA_PATH/$DATA_SUBCATEGORY/dev" \
+ --test_prefix="$REMOTE_DATA_PATH/$DATA_SUBCATEGORY/test" \
  --out_dir="$OUTPUT_PATH" \
- --num_train_steps=12000 \
+ --num_train_steps=$TRAIN_STEP \
  --steps_per_stats=100 \
- --num_layers=2 \
- --num_units=128 \
+ --encoder_type="gnmt" \
+ --attention="scaled_luong" \
+ --attention_architecture="gnmt_v2" \
+ --num_layers=4 \
+ --residual=True \
+ --num_units=512 \
+ --beam_width=10 \
+ --length_penalty_weight=1.0 \
  --dropout=0.2 \
  --metrics="bleu" \
  --share_vocab=True \
  --src_max_len=200 \
- --tgt_max_len=200
+ --tgt_max_len=200 \
+ --start_decay_step=100000 \
+ --decay_steps=20000 \
+ --decay_factor=0.9
 ```
 
 You can check the jobs [here](https://console.cloud.google.com/mlengine/jobs)
@@ -140,7 +161,7 @@ gsutil -m cp -r $OUTPUT_PATH/* $LOCAL_DATA_PATH/model/
 If data folder download is required:
 ```
 mkdir $LOCAL_DATA_PATH/data
-gsutil -m cp -r $OUTPUT_PATH/* $LOCAL_DATA_PATH/model/
+gsutil -m cp -r $REMOTE_DATA_PATH/* $LOCAL_DATA_PATH/data/
 ```
 
 ### Modify HParams Paths
@@ -163,7 +184,7 @@ sed -i -- "s/$S1/$S2/g" $HPARAMS
 ## Try Inference with the Resulted Data
 Start the inference web server locally with the training data you just downloaded.
 ```
-python run_infer_web.py --out_dir=$LOCAL_DATA_PATH/model
+python run_infer_web.py --out_dir=$LOCAL_DATA_PATH/model/$JOB_NAME
 ```
 
 

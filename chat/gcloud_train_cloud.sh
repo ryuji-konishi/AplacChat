@@ -104,7 +104,7 @@ TRAIN_STEP=72000
 # Get the Result
 #
 mkdir $LOCAL_DATA_PATH/model
-gsutil -m cp -r dir $OUTPUT_PATH/* $LOCAL_DATA_PATH/model/
+gsutil -m cp -r $OUTPUT_PATH/* $LOCAL_DATA_PATH/model/
 
 #
 # Modify hparams
