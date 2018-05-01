@@ -12,45 +12,22 @@
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/embed.css" />
+        <link rel="stylesheet" href="~/css/chatbody.css" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/embed.min.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/css/chatbody.min.css" asp-append-version="true" />
     </environment>
 </head>
 <body>
-    <div id="chat-body" class="container-fluid">
-        <div id="chat-scroll" class="row" style="height: 834px; max-height: 834px;">
-            <div id="chat-records"></div>
-        </div>
-    
-        <div id="chat-form" class="row">
-            <!-- You need anti forgery token when you submit post request. This tag is
-                referenced as with name '__RequestVerificationToken' -->
-            @Html.AntiForgeryToken()
-            <textarea rows="1" cols="100" id="chat-input" placeholder="こんにちは！" style="resize: none;"></textarea>
-            <div class="row small text-muted">
-                <div class="col-11 col-sm-10 col-xs-10">
-                    <p>上のボックスにメッセージを書いて、最後にエンターを押してください<br />Type your message and press enter</p>
-                </div>
-                <div class="col-1 col-sm-2 col-xs-2">
-                    <p class="pull-right">
-                        <a href="http://aplac-chat.koni4.net" target="_blank">
-                            APLaC-Chat<img style="margin-left: 10px; height: 17px; width: 17px; opacity: 0.8;" src="~/images/helcat_icon_64x64.png">
-                        </a>
-                    </p>
-                </div>
-            </div>
-            <div class="alert alert-warning" role="alert" id="show-message" style="display: none"></div>
-        </div>
-    </div>
-
+    @await Html.PartialAsync("_ChatBodyPartial")
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="~/js/embed.js" asp-append-version="true"></script>
+        <script src="~/js/chatbody.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
@@ -65,12 +42,13 @@
                 crossorigin="anonymous"
                 integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
         </script>
-        <script src="~/js/embed.min.js" asp-append-version="true"></script>
+        <script src="~/js/chatbody.min.js" asp-append-version="true"></script>
     </environment>
     <script type="text/javascript">
         $(window).load(function () {
             initLayout($('body'), $('#chat-form'), $('#chat-scroll'));
             init($("#chat-form input[name='__RequestVerificationToken']").val(),
+                "/Embed/Index",
                 $('#chat-form'), $('#chat-scroll'), $('#chat-records'));
         });
     </script>

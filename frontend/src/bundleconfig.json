@@ -28,9 +28,15 @@
     ]
   },
   {
-    "outputFileName": "wwwroot/js/embed.min.js",
+    "outputFileName": "wwwroot/css/chatbody.min.css",
     "inputFiles": [
-      "wwwroot/js/embed.js"
+      "wwwroot/css/chatbody.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/chatbody.min.js",
+    "inputFiles": [
+      "wwwroot/js/chatbody.js"
     ],
     "minify": {
       "enabled": true,

@@ -1,7 +1,9 @@
 var strAntiForgeryToken;		// Anti forgery token is required for AJAX post requests.
+var strSubmitChatURL;				// The URL to which the chat message is submitted.
 
-var init = function(antiForgeryToken, divForm, divScroll, divRecords) {
+var init = function(antiForgeryToken, submitChatURL, divForm, divScroll, divRecords) {
 	strAntiForgeryToken = antiForgeryToken;
+	strSubmitChatURL = submitChatURL;
 	var input = divForm.find('#chat-input')
 	input.keypress(function(e) {
 		var code = (e.keyCode ? e.keyCode : e.which);
@@ -21,8 +23,8 @@ var init = function(antiForgeryToken, divForm, divScroll, divRecords) {
 	input.focus();
 }
 
-var initLayout = function(body, divForm, divScroll) {
-	var totalHeight = body.height()
+var initLayout = function(divBody, divForm, divScroll) {
+	var totalHeight = divBody.height()
 	var formHeight = divForm.height()
 	// Set the height of scroll div based on the total height (HTML body)
 	// and the form div where the form div height is constant.
@@ -47,7 +49,7 @@ var submitChat = function(divForm, divScroll, divRecords) {
 	appendChatSend(divScroll, divRecords, text)
 	showBusyImage(divForm);
 	$.ajax({
-		url : "/Embed/Index",
+		url : strSubmitChatURL,
 		beforeSend: function (xhr) {
 			xhr.setRequestHeader("XSRF-TOKEN", strAntiForgeryToken);
 		},

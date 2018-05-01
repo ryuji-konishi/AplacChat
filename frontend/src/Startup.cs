@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using frontend.Data;
+using frontend.Services;
 
 namespace frontend
 {
@@ -47,6 +48,8 @@ namespace frontend
                 {
                     options.Conventions.AuthorizePage("/Index");
                 });
+
+            services.AddTransient<IChatMessageHandler, ChatMessageHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,39 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
-using frontend.Data;
+using frontend.Services;
 
 namespace frontend.Pages
 {
     public class IndexModel : PageModel
-    {
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly Data.ApplicationDbContext _db;
-        
+    {        
+        private readonly IChatMessageHandler _handler;
+        private class PostMessage
+        {
+            public string text { get; set; }
+        }
         public string EmbedIndexURL { get; set; }   // URL of chat frame to be embedded in the page.
 
-        public IndexModel(IConfiguration configuration, Data.ApplicationDbContext context,
-            SignInManager<ApplicationUser> signInManager)
+        public IndexModel(IConfiguration configuration, IChatMessageHandler handler)
         {
+            _handler = handler;
             EmbedIndexURL = configuration.GetSection("CHAT_EMBED_URL").Value;
-            _db = context;
-            _signInManager = signInManager;
         }
 
         public void OnGet()
         {
-            // this is a test for EF loading
-            var records = _db.ChatRecords.Where(p => p.Id == 0);
-            foreach (var r in records)
-            {
-                Console.WriteLine(r.Id);
-            }
 
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            // Get the request text sent from the front-end
+            var msg = Utility.getAjaxPostParameter<PostMessage>(this);
+            if (msg == null)
+                return new StatusCodeResult(500);
+
+            // Transfer the request to the Chat inference component and receive the result.
+            var response = await _handler.HandleInferAsync(msg.text);
+
+            return new JsonResult(response);
         }
     }
 }

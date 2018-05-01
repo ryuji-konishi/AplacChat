@@ -1,14 +1,43 @@
 ﻿@page
 @model IndexModel
 
+@section Links {
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/chatbody.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/chatbody.min.css" asp-append-version="true" />
+    </environment>
+}
+
 <h3>Let's have a chat with Tamura-san!</h3>
 <p>This chat system uses <a href="https://aplac.net/">APLaC</a>'s essays, written by Mr.Tamura, as the human language corpus. The responses you get here are all based on his essays!</p>
 
-<iframe src="@Model.EmbedIndexURL" scrolling="no" width="100%" 
-    height="300" frameborder="0" style="border:0"></iframe>
+<div id="chat-frame" style="height: 300px; max-height: 300px;">
+    @await Html.PartialAsync("_ChatBodyPartial")
+</div>
+<!-- <iframe src="@Model.EmbedIndexURL" scrolling="no" width="100%" 
+    height="300" frameborder="0" style="border:0"></iframe> -->
 
 <h3>Chat anyware!</h3>
 <p>Use the code below to embed the chat frame into your web site. He can be anywhere!</p>
 <input type="text" style="width: 100%" 
     value="<iframe src=&quot;@Model.EmbedIndexURL&quot; scrolling=&quot;no&quot; width=&quot;100%&quot; height=&quot;300&quot; frameborder=&quot;0&quot; style=&quot;border:0&quot;></iframe>"
  />
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/chatbody.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/chatbody.min.js" asp-append-version="true"></script>
+    </environment>
+    <script type="text/javascript">
+        $(window).load(function () {
+            initLayout($('#chat-frame'), $('#chat-form'), $('#chat-scroll'));
+            init($("#chat-form input[name='__RequestVerificationToken']").val(),
+                "/Index",
+                $('#chat-form'), $('#chat-scroll'), $('#chat-records'));
+        });
+    </script>
+}

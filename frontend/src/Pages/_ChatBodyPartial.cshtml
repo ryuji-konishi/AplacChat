@@ -1,0 +1,27 @@
+
+
+<div id="chat-body" class="container-fluid">
+    <div id="chat-scroll" class="row">
+        <div id="chat-records"></div>
+    </div>
+
+    <div id="chat-form" class="row">
+        <!-- You need anti forgery token when you submit post request. This tag is
+            referenced as with name '__RequestVerificationToken' -->
+        @Html.AntiForgeryToken()
+        <textarea rows="1" cols="100" id="chat-input" placeholder="こんにちは！" style="resize: none;"></textarea>
+        <div class="row small text-muted">
+            <div class="col-11 col-sm-10 col-xs-10">
+                <p>上のボックスにメッセージを書いて、最後にエンターを押してください<br />Type your message and press enter</p>
+            </div>
+            <div class="col-1 col-sm-2 col-xs-2">
+                <p class="pull-right">
+                    <a href="http://aplac-chat.koni4.net" target="_blank">
+                        APLaC-Chat<img style="margin-left: 10px; height: 17px; width: 17px; opacity: 0.8;" src="~/images/helcat_icon_64x64.png">
+                    </a>
+                </p>
+            </div>
+        </div>
+        <div class="alert alert-warning" role="alert" id="show-message" style="display: none"></div>
+    </div>
+</div>
