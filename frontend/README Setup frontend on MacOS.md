@@ -167,7 +167,26 @@ CREATE TABLE `ChatRecords` (
 );
 ```
 
+### User Authentication
+The user authentication mechanism is half implemented with .NET Core Identity framework. As of Mar.2018, this user authentication is disabled, and it's left incomplete. You can enable it by reverting the following parts.
+* launch.json - SNS OAuth credentials are to be defined. Refer to [Environment Variable Settings](README%20Environment%20Variable%20Settings.md].
+* Startup.cs
+  * Enable the code that set SNS OAuth credentials
+  * Enable the code that set '/Accout/Login' with ConfigureApplicationCookie()
+  * Enable the code that set '/Index' to require user authentication with AddRazorPagesOptions()
 
+Currently it's left incomplete. To make it complete, you need to consider:
+* HTTP with SSL (HTTPS) - Facebook requires HTTPS connection during authentication.
+* Privacy Policy - Facebook requires [Privacy Policy page](https://termsfeed.com/blog/privacy-policy-url-facebook-app/).
+* Google and Facebook are tested. Twitter and Microsoft can be added too. The login button picture is only done for Google. Others can do the same too.
+* Chat records are to be linked with User. Also the historical chat records are to be populated on page load.
+
+Also notice that there are two ways to include the chat-box in pages. One is done with '_ChatBodyPartial.cshtml', the other is with iframe. The corresponding URLs are, respectively:
+* A. /Index
+* B. /Embed/Index
+If you enable the user authentication, A is the page that the user needs authentication, while B is not.
+
+Currently both of above behave in the exactly same way. But once the user authentication is integrated, A requires saving chat records with user ID. The corresponding class.method is frontend.Pages.IndexModel.OnPostAsync().
 
 ### Test Run on Windows
 .NET Core is cross-platform. You can run frontend on a Windows machine.

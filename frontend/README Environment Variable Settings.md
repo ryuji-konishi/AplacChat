@@ -33,10 +33,14 @@ There are following environment variables that are specific to APLaC Chat front-
   * For SQLite, it would be like "Data Source=file:/home/aplac/aplac/aplacchat.db"
 
 ### Variables for OAuth Credentials
+** As of Mar.2018 this is disabled. This document section is left as a note.**
+
 The APLaC-Chat frontend component has a user authentication feature with various OAuth providers like Facebook, Twitter, Google and Microsoft. The followings are the credential values used to carry out authentication procedures.
 
 * Authentication_Google_ClientId
 * Authentication_Google_ClientSecret
+* Authentication_Facebook_AppID
+* Authentication_Facebook_AppSecret
 
 Refer to [this page](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/?view=aspnetcore-2.1) about how to integrate .NET Core with external OAuth providers.
 

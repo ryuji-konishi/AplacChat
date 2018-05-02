@@ -32,22 +32,27 @@ namespace frontend
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAuthentication().AddGoogle(googleOptions =>
-            {
-                googleOptions.ClientId = Configuration["Authentication_Google_ClientId"];
-                googleOptions.ClientSecret = Configuration["Authentication_Google_ClientSecret"];
-            });
+            // services.AddAuthentication().AddGoogle(googleOptions =>
+            // {
+            //     googleOptions.ClientId = Configuration["Authentication_Google_ClientId"];
+            //     googleOptions.ClientSecret = Configuration["Authentication_Google_ClientSecret"];
+            // });
+            // services.AddAuthentication().AddFacebook(facebookOptions =>
+            // {
+            //     facebookOptions.AppId = Configuration["Authentication_Facebook_AppID"];
+            //     facebookOptions.AppSecret = Configuration["Authentication_Facebook_AppSecret"];
+            // });
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = "/Account/Login";
-            });
+            // services.ConfigureApplicationCookie(options =>
+            // {
+            //     options.LoginPath = "/Account/Login";   // Account/Login is called if the user is not authenticated.
+            // });
 
-            services.AddMvc()
-                .AddRazorPagesOptions(options =>
-                {
-                    options.Conventions.AuthorizePage("/Index");
-                });
+            services.AddMvc();
+                // .AddRazorPagesOptions(options =>
+                // {
+                //     options.Conventions.AuthorizePage("/Index");     // To access to /Index the user authentication is required.
+                // });
 
             services.AddTransient<IChatMessageHandler, ChatMessageHandler>();
         }
