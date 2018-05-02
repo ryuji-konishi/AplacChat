@@ -13,3 +13,17 @@ body {
     background-image: linear-gradient(90deg, transparent 50%, rgba(255,255,255,.5) 50%);
     background-size: 10px 50px;
 }
+
+.login-google {
+    border: 0px;
+    width: 191px;
+    height: 46px;
+    background: url("/images/google/btn_google_signin_light_normal_web.png") no-repeat;
+    display: inline-block;
+}
+.login-google:hover {
+    background: url("/images/google/btn_google_signin_light_focus_web.png") no-repeat;
+}
+.login-google:active {
+    background: url("/images/google/btn_google_signin_light_pressed_web.png") no-repeat;
+}

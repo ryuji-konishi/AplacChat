@@ -196,16 +196,9 @@ Same as Chat service described above, we use SystemD to run the Chat component a
 ### 1. Set environment variables
 Before starting frontend, you need to set the environment variables that are stored in ```frontend.env``` file, and this file is reference in the service definition file.
 
-Open the file ```/home/aplac/aplac/frontend/frontend.env``` and modify the following environment variables.
+Open the file ```/home/aplac/aplac/frontend/frontend.env``` and modify the environment variables. Refer to [Environment Variable Settings](README%20Environment%20Variable%20Settings.md] for more details.
 
-```
-ASPNETCORE_URLS=http://localhost:5051
-CHAT_EMBED_URL=http://your_public_dnsname_here/Embed/Index
-CHAT_INFER_URL=http://your_public_dnsname_here/infer
-CONNECTION_APPDB="Data Source=file:/home/aplac/aplac/aplacchat.db"
-```
-
-And copy the file to /etc/sysconfig directory.
+After the file is set, copy it to /etc/sysconfig directory.
 ```
 sudo cp /home/aplac/aplac/frontend/frontend.env /etc/sysconfig
 ```
