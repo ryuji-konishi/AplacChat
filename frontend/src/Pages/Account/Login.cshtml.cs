@@ -14,10 +14,12 @@ namespace frontend.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        public string EmbedIndexURL { get; set; }   // URL of chat frame to be embedded in the page.
         
         public LoginModel(IConfiguration configuration, SignInManager<ApplicationUser> signInManager)
         {
             _signInManager = signInManager;
+            EmbedIndexURL = configuration.GetSection("CHAT_EMBED_URL").Value;
         }
 
         [BindProperty]

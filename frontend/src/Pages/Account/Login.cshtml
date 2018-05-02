@@ -1,14 +1,7 @@
 @page
 @model LoginModel
 
-<div class="row">
-    <div class="col" style="padding: 60px;">
-        <div class="jumbotron" style="text-align: center; opacity: 0.5; margin-bottom: 0px;">
-            <h1 style="color: #3c763d;">APLaC Chat</h1>
-            <p>A.I. Chat Bot</p>
-        </div>
-    </div>
-</div>
+<h3>Let's have a chat with Tamura-san!</h3>
 <div class="row">
     <div class="col" style="padding: 15px;">
         <section id="socialLoginForm">
@@ -24,6 +17,18 @@
                     </p>
                 </div>
             </form>
+            <hr />
         </section>
     </div>
 </div>
+
+<p>This chat system uses <a href="https://aplac.net/">APLaC</a>'s essays, written by Mr.Tamura, as the human language corpus. The responses you get here are all based on his essays!</p>
+
+<iframe src="@Model.EmbedIndexURL" scrolling="no" width="100%" 
+    height="300" frameborder="0" style="border:0"></iframe>
+
+<h3>Chat anyware!</h3>
+<p>Use the code below to embed the chat frame into your web site. He can be anywhere!</p>
+<input type="text" style="width: 100%" 
+    value="<iframe src=&quot;@Model.EmbedIndexURL&quot; scrolling=&quot;no&quot; width=&quot;100%&quot; height=&quot;300&quot; frameborder=&quot;0&quot; style=&quot;border:0&quot;></iframe>"
+ />

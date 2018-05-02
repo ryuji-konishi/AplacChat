@@ -1,9 +1,10 @@
+@using System
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>APLac - Chat</title>
+    <title>APLac-Chat</title>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -33,7 +34,7 @@
                 </button>
                 <a asp-page="/Index" class="navbar-brand navbar-brand-logo">
                     <div class="logo">
-                        <img src="./images/helcat_64x64.png">
+                        <img src="/images/helcat_64x64.png">
                     </div>
                     <div class="brand"> APLaC Chat </div>
                 </a>
@@ -55,7 +56,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2017 - Koni4</p>
+            <p>&copy; @System.DateTime.Now.Year.ToString() - Koni4</p>
         </footer>
     </div>
 
