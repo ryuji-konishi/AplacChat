@@ -10,15 +10,15 @@
     </environment>
 }
 
-<h3>Let's have a chat with Tamura-san!</h3>
-<p>This chat system uses <a href="https://aplac.net/">APLaC</a>'s essays, written by Mr.Tamura, as the human language corpus. The responses you get here are all based on his essays!</p>
+<h3>APLaC田村さんと会話ができる？深層学習を利用したチャットボット</h3>
+<p>このチャットボットには、田村さんが長年書き続けている<a href="https://aplac.net/">APLaCのエッセイ</a>を学習させてあります。話しかけると興味深い応答が返ってくるかも知れません。</p>
 
 <div id="chat-frame" style="height: 300px; max-height: 300px;">
     @await Html.PartialAsync("_ChatBodyPartial")
 </div>
 
-<h3>Chat anyware!</h3>
-<p>Use the code below to embed the chat frame into your web site. He can be anywhere!</p>
+<h3>ブログ埋め込みタグ</h3>
+<p>以下のタグを埋め込む事で、上のチャット欄を自由にブログ等へ追加することができます。</p>
 <input type="text" style="width: 100%" 
     value="<iframe src=&quot;@Model.EmbedIndexURL&quot; scrolling=&quot;no&quot; width=&quot;100%&quot; height=&quot;300&quot; frameborder=&quot;0&quot; style=&quot;border:0&quot;></iframe>"
  />
