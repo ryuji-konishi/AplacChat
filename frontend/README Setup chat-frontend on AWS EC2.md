@@ -212,7 +212,7 @@ Same as Chat service described above, we use SystemD to run the Chat component a
 ### 1. Set environment variables
 Before starting frontend, you need to set the environment variables that are stored in ```frontend.env``` file, and this file is reference in the service definition file.
 
-Open the file ```/home/aplac/aplac/frontend/frontend.env``` and modify the environment variables. Refer to [Environment Variable Settings](README%20Environment%20Variable%20Settings.md] for more details.
+Open the file ```/home/aplac/aplac/frontend/frontend.env``` and modify the environment variables. Refer to [Environment Variable Settings](README%20Environment%20Variable%20Settings.md) for more details.
 
 After the file is set, copy it to /etc/sysconfig directory.
 ```
