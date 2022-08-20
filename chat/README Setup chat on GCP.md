@@ -22,9 +22,9 @@ In this section we are going to define several symbols as the shell script envir
 $ pwd
 /Users/ryuji/prg/aplac/chat
 ```
-Assuming you already have a cloud project on GCP, and in this document it's named as 'ryuji-test1'.
+Assuming you already have a cloud project on GCP, and in this document it's named as 'aplac-chat'.
 ```
-PROJECT_ID=ryuji-test1
+PROJECT_ID=aplac-chat
 ```
 To access to GCS, you need to create a bucket. Here we have the bucket name defined as below.
 ```
