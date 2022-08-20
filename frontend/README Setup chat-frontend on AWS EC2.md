@@ -81,6 +81,22 @@ cd ~
 ```
 The following steps are done with this user.
 
+#### Reinstall Python Commands
+Due to Python2.7 compatibility issue, you need to set the PATH. and then install pip and virtualenv for this specific user.
+```
+vim ~/.bashrc
+```
+Add the following line.
+```
+export PATH="$HOME/.local/bin:$PATH"
+```
+Install pip and virtualenv.
+```
+curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
+python get-pip.py
+sudo pip install --upgrade virtualenv
+```
+
 Before proceeding, if not done yet, login to Google Cloud Platform with SDK command below. This command setups your Google user account configuration within the newly created user.
 ```
 gcloud init
@@ -196,7 +212,7 @@ Same as Chat service described above, we use SystemD to run the Chat component a
 ### 1. Set environment variables
 Before starting frontend, you need to set the environment variables that are stored in ```frontend.env``` file, and this file is reference in the service definition file.
 
-Open the file ```/home/aplac/aplac/frontend/frontend.env``` and modify the environment variables. Refer to [Environment Variable Settings](README%20Environment%20Variable%20Settings.md] for more details.
+Open the file ```/home/aplac/aplac/frontend/frontend.env``` and modify the environment variables. Refer to [Environment Variable Settings](README%20Environment%20Variable%20Settings.md) for more details.
 
 After the file is set, copy it to /etc/sysconfig directory.
 ```

@@ -9,6 +9,8 @@ Choose the following AMI from the list.
 
 **Amazon Linux 2 LTS Candidate AMI 2017.12.0 (HVM), SSD Volume Type - ami-38708c5a**
 
+As of Aug.2022, **Amazon Linux 2 AMI 2.0.20220606.1 x86_64 HVM gp2**
+
 Note Amazon Linux 2 is based on RedHat and CentOS.
 
 Note **Amazon Linux AMI 2017.09.1 (HVM), SSD Volume Type - ami-942dd1f6** is not suitable as it doesn't have ```systemd``` command. [Reference](https://serverfault.com/questions/889248/how-to-enable-systemd-on-amazon-linux-ami)
@@ -55,7 +57,11 @@ sudo yum update
 sudo amazon-linux-extras install nginx1.12
 sudo yum install git
 ```
-
+If easy_install didn't work due to Python2.7 compatibility issue, try below.
+```
+curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
+python get-pip.py
+```
 ### 2. Setup .NET Core 2.0
 The installation steps are described in the [.NET Core 2.0 release note on github](
 https://github.com/dotnet/core/blob/master/release-notes). Refer to the latest release version before proceeding.

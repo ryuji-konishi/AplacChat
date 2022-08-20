@@ -36,7 +36,7 @@ sqlite3 -version
 ```
 
 ### Application Configuration
-Refer to [Environment Variable Settings](README%20Environment%20Variable%20Settings.md] about how to configure APLaC Chat for different running configurations.
+Refer to [Environment Variable Settings](README%20Environment%20Variable%20Settings.md) about how to configure APLaC Chat for different running configurations.
 
 ## Visual Studio Code Configuration
 
@@ -169,7 +169,7 @@ CREATE TABLE `ChatRecords` (
 
 ### User Authentication
 The user authentication mechanism is half implemented with .NET Core Identity framework. As of Mar.2018, this user authentication is disabled, and it's left incomplete. You can enable it by reverting the following parts.
-* launch.json - SNS OAuth credentials are to be defined. Refer to [Environment Variable Settings](README%20Environment%20Variable%20Settings.md].
+* launch.json - SNS OAuth credentials are to be defined. Refer to [Environment Variable Settings](README%20Environment%20Variable%20Settings.md).
 * Startup.cs
   * Enable the code that set SNS OAuth credentials
   * Enable the code that set '/Accout/Login' with ConfigureApplicationCookie()
