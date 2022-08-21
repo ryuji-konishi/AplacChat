@@ -1,0 +1,37 @@
+2018-04-25 19:06:27 The input directory is c:\tmp\aplac\corpus\aplac_conv
+2018-04-25 19:06:27 The vocab file is c:\tmp\aplac\data\aplac.net\vocab.src
+2018-04-25 19:06:27 The output directory is c:\tmp\aplac\data\aplac.net\aplac_conv
+2018-04-25 19:06:27 Searching corpus files in the input directory...
+2018-04-25 19:06:27 Total 24 files to process. Loading...
+2018-04-25 19:06:27 ( 0 of 24 ) file aplac (1).cor
+2018-04-25 19:06:27 ( 1 of 24 ) file aplac (10).cor
+2018-04-25 19:06:27 ( 2 of 24 ) file aplac (11).cor
+2018-04-25 19:06:27 ( 3 of 24 ) file aplac (12).cor
+2018-04-25 19:06:27 ( 4 of 24 ) file aplac (13).cor
+2018-04-25 19:06:28 ( 5 of 24 ) file aplac (14).cor
+2018-04-25 19:06:28 ( 6 of 24 ) file aplac (15).cor
+2018-04-25 19:06:28 ( 7 of 24 ) file aplac (16).cor
+2018-04-25 19:06:28 ( 8 of 24 ) file aplac (17).cor
+2018-04-25 19:06:28 ( 9 of 24 ) file aplac (18).cor
+2018-04-25 19:06:28 ( 10 of 24 ) file aplac (19).cor
+2018-04-25 19:06:28 ( 11 of 24 ) file aplac (2).cor
+2018-04-25 19:06:28 ( 12 of 24 ) file aplac (20).cor
+2018-04-25 19:06:28 ( 13 of 24 ) file aplac (21).cor
+2018-04-25 19:06:28 ( 14 of 24 ) file aplac (22).cor
+2018-04-25 19:06:28 ( 15 of 24 ) file aplac (3).cor
+2018-04-25 19:06:29 ( 16 of 24 ) file aplac (4).cor
+2018-04-25 19:06:29 ( 17 of 24 ) file aplac (5).cor
+2018-04-25 19:06:29 ( 18 of 24 ) file aplac (6).cor
+2018-04-25 19:06:29 ( 19 of 24 ) file aplac (7).cor
+2018-04-25 19:06:29 ( 20 of 24 ) file aplac (8).cor
+2018-04-25 19:06:29 ( 21 of 24 ) file aplac (9).cor
+2018-04-25 19:06:29 ( 22 of 24 ) file conv (1).cor
+2018-04-25 19:06:29 ( 23 of 24 ) file conv (2).cor
+2018-04-25 19:06:30 Exporting the train data into file...
+2018-04-25 19:34:00 CorpusStore exported 558103 of sentenses.
+2018-04-25 19:34:00 Exporting the dev data into file...
+2018-04-25 19:34:03 CorpusStore exported 746 of sentenses.
+2018-04-25 19:34:03 Exporting the test data into file...
+2018-04-25 19:34:05 CorpusStore exported 719 of sentenses.
+2018-04-25 19:34:05 Vocaburary file is updated with 9658 of newly added words.
+2018-04-25 19:34:05 Vocaburaries are now in total of 13158
