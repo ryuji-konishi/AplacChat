@@ -18,6 +18,12 @@ https://cloud.google.com/ai-platform/training/docs/runtime-version-list
 * Tensorflow
 * Google Cloud SDK
 
+### Switching between Python 2 and Python 3
+Just to leave a note, switching between Python versions was done by editing the PATH environment varilabe in the file below.
+```
+~/.bash_profile
+```
+
 ### Installing Tensorflow
 #### 1. Upgrade pip and check Tensorflow version
 Before proceeding, you should upgrade pip to the latest version with command below.
