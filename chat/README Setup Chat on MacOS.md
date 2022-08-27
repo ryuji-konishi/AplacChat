@@ -16,6 +16,7 @@ https://cloud.google.com/ai-platform/training/docs/runtime-version-list
 ### Things to be installed
 * virtualenv
 * Tensorflow
+* Tensorflow Addons
 * Google Cloud SDK
 
 ### Switching between Python 2 and Python 3
@@ -63,6 +64,7 @@ vim ~/.bash_profile
 #### 5. Install tensorflow into virtualenv
 ```
 pip install tensorflow
+pip install tensorflow-addons
 ```
 #### Check
 Check if Tensorflow is successfully installed.
