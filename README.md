@@ -1,10 +1,12 @@
 # AplacChat
 
-AplacChat is a deep learning project that focuses on Neural Machine Translation (NMT). The final outcome is [here](http://aplac-chat.koni4.net/).
-AplacChat consists of the following components.
+AplacChat is a deep learning project that focuses on Neural Machine Translation (NMT). AplacChat consists of the following components.
 * Corpus Builder
 * Chat
 * Front-End Web Page
+
+The final outcome is [here](http://aplac-chat.koni4.net/).
+[![chat window](aplac-chat_embed_image.png)](http://aplac-chat.koni4.net/)
 
 ## Running Environment
 * Python 2 for MacOS/Linux
