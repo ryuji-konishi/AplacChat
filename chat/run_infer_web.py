@@ -17,7 +17,8 @@ FLAGS, unparsed = parser.parse_known_args()
 
 if not FLAGS.out_dir:
 #    FLAGS.out_dir = "/Users/ryuji/prg/aplac/chat/generated/4_2316/model"	# MacBookAir13
-    FLAGS.out_dir = "/home/aplac/aplac/chat/generated/10_12974/model"	# AWS EC2
+#    FLAGS.out_dir = "/home/aplac/aplac/chat/generated/10_12974/model"	# AWS EC2
+    FLAGS.out_dir = "/home/aplac/aplac/chat/generated/11_13158/model"	# AWS EC2
 controller.init(FLAGS)
 
 #Do not add debug=True when VSCode is used. Otherwise breakpoint doesn't hit.
